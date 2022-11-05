@@ -1,0 +1,153 @@
+\providecommand{\rootdir}{../..}
+\providecommand{\imgpath}{\rootdir/images/chap1}
+\providecommand{\fontpath}{\rootdir/fonts}
+\documentclass[\rootdir/main.tex]{subfiles}
+\addbibresource{\rootdir/references.bib}
+\begin{document}
+\chapter{Background on the Hopfield model}\label{chap:hopfield}
+\section{The standard Hopfield Model}\label{sec:standard_hop}
+At the end of the eighties, the american physicist J. Hopfield popularized what is now known as the Hopfield model.
+It is one of the first proposed models capable of mimicking, in a very simplified way, our human brain in the memorization process. In other words, it is a physical system able to assosciate some patterns that need to be stored to stable states of the systems~\cite{JJHop}. The way in which these patterns are stored, the very nature of the stable states that are associated and the collective properties of the system, make this model strongly correlated to physics concepts and theories, such as basins of attraction, spin glasses and statistical mechanics in general.\\
+The \acrshort{shm} is often addressed to as an associative memory, \ie a network whcih main purpose is to learn the association between an some items.\\
+Clearly, the storage capacity of such model is not unlimited. We have some constraints on the number of memories that we can ``learn'' and, as we will see, this is the main point that governs the properties of the system.\\
+The building blocks of the Hopfield network are called \emph{formal neurons} \ie a simplified mathematical model that which mimics the behavior of the biological neuron~\cite{formal_neuron, statmecoflearn}. They're two state elements represented by a binary variable $S = \pm 1$, where the $+1$ state means \emph{active} and the $-1$ state means \emph{passive}.
+A given neuron $S_i$ can change its state after receiving signal from other neurons $S_j$ through their \emph{synaptic efficiency} $J_{ij}$. By analogy of notation with statistical mechanics neurons can be mapped into spins and the \emph{synaptic efficiency} into the coupling between spins, thus leading to the Ising model variables.\\
+The idea underlying the memorization process comes directly from the study of the interaction of human neurons from a neurobiological point of view which translates into the well-known Hebb rule \cref{sec:hebbrule}.
+Obviously, this situation is quite far from the real biological counterpart which is extremely more elaborated. However, the aim of such simplified models is to capture the collective properties of the system. Other theories from statistical mechanics (\eg liquid crystals, Ising Model etc.) neglect most of the microscopic details but at the same time they provide very accurate results about the macroscopic behaviour of the system. Hence, a simple mathematical description is appropriate for our purpose~\cite{statmecoflearn}.
+
+\subsection{The Hebbian rule}\label{sec:hebbrule}
+The core of the \acrshort{shm} lies in the choice of the couplings $J_{ij}$. Indeed, those are the quenched variables that determine the evolution of the dynamical variables \ie \emph{neurons} (or \emph{spins}).
+Inspired by neuroscientific studies on the activity of neurons, D. O. Hebb found that neurons that are often active at the same time increase their \emph{synaptic efficiency} \cite{hebb}. The results of the Hebb's work is often summarized as \emph{neurons that fire together wire together}. This is the so called Hebb's rule.
+In order to understand how this applies to the \acrshort{shm}, we introduce some notation.
+A general binary configuration is defined as:
+\begin{equation}\label{eq:general_config}
+    \symbf{\sigma} = \{\sigma_1, \dots, \sigma_N\} \equiv \{-1, 1\}^N,
+\end{equation}
+\ie a network of $N$ neurons they can be in either the active or passive state.\\
+The aim is to store in some way a set of patterns in the network, that is we want to introduce a sort of memory in the system.\\
+We indicate with $\symbf{\xi}$ the stored patterns, in order to distinguish them from general configurations like \cref{eq:general_config}.
+\begin{equation}\label{eq:patterns}
+    {\xi^\mu} = \{\xi_1^\mu, \dots, \xi_N^\mu\} \equiv \{-1, 1\}^N \quad \mu = 1\,, \dots,\, M.
+\end{equation}\\
+In short, we have $M$ binary patterns of size $N$ that we want to be \emph{remembered} by the system.
+If have a configuration that is slightly different from a stored one, then if we run \cref{eq:neur_dynamics} (where $S_i \rightarrow \xi_i$) we should be able to retrieve the original pattern just by exploiting the $J_{ij}$.
+The Hebb's rule defines the couplings as:
+\begin{equation}\label{eq:weights}
+    J_{ij} = (1 - J_{ij})\frac{1}{N} \sum_{\mu = 1}^{M} \xi_i^\mu \xi_j^\mu.
+\end{equation}
+If two neurons $i$ and $j$ are in the same state, then they give a contribution equal to $1/N$ to the corresponding element in the matrix $J$. If the neurons are in different states, the contribution will be $-1/N$. Obviously, $J$ is a $NxN$ symmetric matrix. Moreover, we exclude self-connections \ie $J_{ii} = 0$, hence all the diagonal elements are set to 0.\\
+In short, patterns $\xi$ are memorized just by exploiting a weighted average of the co-activation of neurons.
+The next step is to define a sort of dynamics that make the network able to retrieve a stored pattern from a slightly different one.
+
+\subsection{Dynamics}
+Stable states are retrieved through a dynamical rule defined on discrete time.
+\begin{equation}
+    S_i(t+1) = \text{sgn}\left(h_i(t) - \theta_i \right),
+\end{equation}
+where $t = 1, 2, \dots$ and $h_i(t)$ is a local field
+\begin{equation}
+    \sum_{j = 1}^{N} J_{ij}(S_j + 1).
+\end{equation}
+\Cref{eq:neur_dynamics} just tells us that state of a neuron $i$ evolves just by comparing the information coming from all the other neurons with a local threshold.
+Taking $\theta_i = \sum_j J_{ij}$ we get the following dynamical rule
+\begin{equation}\label{eq:neur_dynamics}
+    S_i(t+1) = \text{sgn}\left(J_{ij}S_j(t) \right).
+\end{equation}\\
+Stored patterns $\xi$ are \emph{fixed points} of the dynamics, so they do not evolve if subject to \cref{eq:neur_dynamics}. Indeed, it must happen that
+\begin{equation}\label{eq:stablestates}
+    \xi_i^{\mu}(t+1) = \text{sgn}\left(J_{ij}\xi_j^{mu}(t) \right).
+\end{equation}
+This can be easily seen just by substituting \cref{eq:weights} into \cref{eq:stablestates}:
+\begin{equation}
+\begin{split}
+    &\operatorname{sgn}\left[\sum_{j=1}^N\left(\frac{1}{N} \sum_{\nu=1}^M \xi_i^\nu \xi_j^\nu\right) \xi_j^\mu\right] = \\
+    &\operatorname{sgn}\left[\sum_{\mu=1}^M \xi_i^\nu\left(\frac{1}{N} \sum_{j=1}^N \xi_j^\nu \xi_j^\mu\right)\right] = \\
+    & \operatorname{sgn}\left[\sum_{\nu=1}^P \xi_i^\nu \delta_{\mu \nu}\right] = \xi_i^{\mu}.
+\end{split}
+\end{equation}
+
+\subsection{Phase Diagram}
+We can introduce an energy function that maps this system to a disordered Ising model.\\
+For any binary configuration $\symbf{\sigma}$, we define:
+\begin{equation}\label{eq:energy_ising}
+    E(\symbf{\sigma}) = \frac{1}{2} \sum_{i, j} J_{ij} \sigma_i \sigma_j.
+\end{equation}
+Also, the partition function is
+\begin{equation}\label{eq:prob_configuration}
+    Z = \sum_{\symbf{\sigma}} exp\{- \beta E(\symbf{\sigma}) \},
+\end{equation}
+where $\beta = 1/T$ is the temperature parameter.\\
+The probability of a given configuration is given by the Boltzmann distribution:
+\begin{equation}
+    \mathrm{P}(\symbf{\sigma}) = \frac{e^{- \beta E(\symbf{\sigma})}}{Z}
+\end{equation}
+Moreover, we introduce the \emph{load parameter}, \ie:
+\begin{equation}
+    \alpha = \frac{M}{N},
+\end{equation}
+which is just the number of stored patterns written in terms of the length of the configurations.\\
+\Citeauthor{amit_phase} studied the phase diagram of the Hopfield Model through the replica method \cite{amit_phase}.\\
+Results show that there exist a critical value of the load parameter $\alpha_c = 0.138$ above which retrieval states disappear discontinuously. Here, the system is on a spin glass phase. Below $\alpha_c$ patterns can be retrieved at $T = 0$ with an error smaller than $1.5\%$. Moreover, for $\alpha \leq 0.05$ patterns become global minimum. For $0.05 < \alpha < \alpha_c$ patterns are metastable.
+
+\section{The modern Hopfield model}\label{sec:modern_hop}
+The \acrlong{hm} introduced by J. J. Hopfield is able to store a number of patterns that grows linearly with the number of neurons $N$, as we discussed in \cref{sec:standard_hop}. The mathematical reason why \acrshort{shm} gets confused when many memories are stored is that several memories produce contributions to the energy which are of the same order. In other words the energy decreases too slowly as the pattern approaches a memory in the configuration space.\\
+Further studies over the years have led to the development of \glspl{dam}, namely networks able to store a number of patterns that is much more greater than the number of neurons in the system.\\
+A first step in this direction was made by~\textcite{krotov} with the introduction of a new energy function:
+\begin{equation}\label{eq:dense_energy}
+    E\left(\symbf{\sigma}\right) = - \sum_{\mu = 1}^{M} F(\symbf{\xi}^{\mu} \symbf{\sigma}),
+\end{equation}
+for some smooth function $F(x)$ that could be for example a polynomial $F(x) = x^a$.\\
+For the case $a = 2$ we get back to the \acrlong{shm} with the corresponding storage capacity. For $ a > 2$ the storage capacity where perfect retrieval is assumed is \cite{krotov}:
+\begin{equation}
+    M \approxeq \frac{1}{2 (2a -3)!!} \frac{N^{a - 1}}{\operatorname{log}(N)},
+\end{equation}
+where \emph{perfect retrieval} means that the energy minimization lead to a configuration that is perfectly aligned with one stored pattern. Hence, for \glspl{dam} the model can remember a number of patterns that is of order $O(N^{a - 1})$~\cite{Demircigil_2017}.\\
+\Cref{eq:dense_energy} can be further generalized by including exponential interactions $F = \operatorname{exp}(x)$ thus bringing to exponential storage capacity $e^{O(N)}$~\cite{EGardner_1987}.\\
+This is the starting point for the \acrfull{mhm} that we consider in this dissertation.\\
+Up to now, everything is valid for binary states, that is $\sigma_i = \pm 1$. \textcite{hopfield_is_all_you_need} extended these arguments to include also continuous-valued patterns.\\
+In the following sections we go into details about energy and update rules for both the binary and continuous case.
+
+\subsection{Binary case}
+Here we deal with binary configurations, $\sigma_i = \pm 1$, just like in \cref{sec:standard_hop}.
+The new energy function is defined as:
+\begin{equation}\label{eq:modern_binary_energy}
+\begin{split}
+    E\left(\symbf{\sigma} \right) & = - \frac{1}{\lambda} \operatorname{log} \left( \sum_{\mu = 1}^{M} \operatorname{exp}(\lambda \symbf{\xi}^{\mu} \cdot \symbf{\sigma})\right) \\
+    & = - \operatorname{lse}(\lambda, \, \symbf{\xi} \cdot \symbf{\sigma}),
+\end{split}
+\end{equation}
+where $\operatorname{lse}(\cdot)$ is the \emph{log-sum-exp} operator.\\
+\Cref{eq:modern_binary_energy} can be seen as a sum of $M$ energies, each of which takes into account the overlap between the configuration and the $\mu$-th pattern. Therefore, it is sufficient that the the configuration has a not negligible overlap with one of the stored patterns to give a huge negative contribution to the energy. Conversely if all the overlaps are negligible, then the contribution to the energy will be quite small.
+\subsubsection{Phase diagram}
+The goal is to \emph{learn} $M = e^{\alpha N}$ patterns and thus we can define the \emph{load parameter} as:
+\begin{equation}
+    \alpha = \frac{\operatorname{log}(M)}{N}
+\end{equation}
+\textbf{The phase diagram of this model is still under investigation from Prof. Carlo Lucibello and Marc Mezard}.
+
+\subsection{Continuous case}
+If we relax the binary variables constraint, we can modify the energy function in order to adapt our model to deal with real-valued patterns, \ie configurations where $\sigma_i \in \mathbb{R}$, for example $\sigma_i \sim \mathcal{N}(0,1)$.
+The new energy function reads
+\begin{equation}
+    E\left(\symbf{\sigma} \right) = - \operatorname{lse}
+    \left( \lambda, \symbf{\xi} \cdot \sigma \right) + \frac{1}{2} \symbf{\sigma}^2 + \frac{\operatorname{log}(M)}{\lambda} + \frac{1}{2}\left(\operatorname{max}_{\mu}\| \xi^{\mu}\|\right)^2,
+\end{equation}
+and it can be proven~\parencite{hopfield_is_all_you_need} that $0 \leq E\left(\symbf{\sigma} \right) \leq 2\left(\operatorname{max}_{\mu}\| \xi^{\mu}\|\right)^2$.
+\subsubsection{Dynamics}
+The update rule in this case is simply:
+\begin{equation}\label{eq:update_rule_continuous}
+    \symbf{\sigma}(t + 1) = \symbf{\xi} \operatorname{softmax}(\lambda \symbf{\xi} \symbf{\sigma}),
+\end{equation}
+where, given a certain vector $\symbf{x} \in \mathbb{R}^k$, the output of $\operatorname{softmax}(\symbf{x})$ is still a vector of dimension $k$,
+\begin{equation}
+    \operatorname{softmax}(\symbf{x})_j = \frac{e^{x_j}}{\sum_{i = 1}^k e^{x_k}}, \qquad j = 1,\dots,k. 
+\end{equation}
+This dynamics converges globally for $t \to \infty$ to a fixed point \cite{hopfield_is_all_you_need, cccp, rangarajan}.\\
+Moreover, \citeauthor{hopfield_is_all_you_need} demonstrated that \cref{eq:update_rule_continuous} retrieves a pattern after just one time step with an exponentially small error.\\
+The fact that here the key mechanism is based on the softmax suggests some similarity with Transformers where the (self)-attention-mechanism is used~\cite{attention}. Indeed, it is possible to derive the (self)-attention update rule starting from \cref{eq:update_rule_continuous} and vice versa~\cite{hopfield_is_all_you_need}.\\
+As an application, beyond the basic behaviour as a \acrlong{dam}, since we allow the presence of continuous values for neurons together with the fact it suffices to apply the update rule just once, the \acrlong{mhm} can also be thought as a layer into deep learning architectures~\parencite[see][for details]{hopfield_is_all_you_need}.
+\subsection{Phase Diagram}
+We do not have a phase diagram!!!
+
+\subbibliography
+\end{document}

@@ -1,0 +1,23 @@
+\providecommand{\rootdir}{../..}
+\providecommand{\imgpath}{\rootdir/images/chap0}
+\providecommand{\fontpath}{\rootdir/fonts}
+\documentclass[\rootdir/main.tex]{subfiles}
+\addbibresource{\rootdir/references.bib}
+\begin{document}
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+Starting from the end of the twentieth century, the study of theories based on statistical mechanics, spin glasses and complex systems in general has contributed in a crucial way to the growth of many fields of applications, from biology to neuroscience, computer science and machine learning . The latter is probably one of the most popular topics among numerous researchers coming from different scientific backgrounds. The ability to make a machine to learn ``something'' by itself is a very fascinating concept especially when performances are similar to that of a human being~\textbf{citare qualcosa}.
+
+Nowadays we can benefit of many state-of-the art \acrshort{ml} models for different perceptual tasks such as image recognition~\cite{resnet, vgg}, \acrfull{nlp}~\cite{lstm}, and many others. Moreover, the increase in research efforts along with the growth of computational resources have led to the development of incredibly powerful and elaborate models such as \glspl{gan}~\cite{gans} and Transformers~\cite{attention}. For the latter, in \cref{sec:modern_hop} we discuss how those are related to the update function of \acrfull{mhm}.
+Most \acrshort{ml} architectures work as \emph{input systems} \ie those model take an input and produce an output. Instead, in this work we put our attention on the so called \glspl{ann} where the system evolves over time towards a stable state. This is quite different from \emph{input systems} where an output is produced for every input. The difference is that in \acrshort{ann} the input flows toward an attractor, thus producing a signal that the output can be read \cite{amit_1989}.
+
+\section*{Attractor Neural Networks}
+In our context, an \acrshort{ann} is a particular \acrshort{ml} architecture (\ie a network composed by neurons) that evolves over time under a certain dynamics. The time evolution of such network bring the system towards a fixed point~\cite{amit_1989}. In the most general case, the arrival points of the dynamics could be also cycles of states or non periodic sequences but those are not important for our purpose. 
+\acrshort{ann} with fixed points are strongly related to \glspl{am}.
+
+\section*{Associative memories}
+
+
+\subbibliography % we have no 'else' action
+
+\end{document}

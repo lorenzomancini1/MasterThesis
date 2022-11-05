@@ -1,0 +1,186 @@
+\providecommand{\rootdir}{../..}
+\providecommand{\imgpath}{\rootdir/images/chap1}
+\providecommand{\fontpath}{\rootdir/fonts}
+\documentclass[\rootdir/main.tex]{subfiles}
+\addbibresource{\rootdir/references.bib}
+\begin{document}
+\chapter{Numerical simulations}\label{chap:numerical_sim}
+Numerical simulations are very useful when analytical analysis becomes too hard or impossible even if some approximation are introduced. This could be the case of the Ising model with dimension $d > 3$ where no analytical solution exists and the results present in the literature are obtained by means of Monte Carlo simulations~\parencite[\eg][]{Cosme_2015,3d_ising}.\\
+For our purpose, the key procedure to be performed is to retrieve stored patterns through energy minimization. However, at least in the binary cases, the energy landscape of the \acrlong{hm} is very complicated. For this reason we need to exploit some kind of stochastic dynamics rather than the update rules defined in \cref{eq:neur_dynamics}.\\
+This is done through a class of methods called \acrfull{mcmc}. As we will see in \cref{sec:numsim_continuous}, the situation is different for the continuous case where the update rule is given by \cref{eq:update_rule_continuous}.
+
+\section{Markov Chains}
+A Markov Chain is defined as a \emph{stochastic process} where each state depends only on the previous one, \ie it satisfies the Markov Property.\\ 
+In mathematical terms,  to have a finite set $S$ called state space and a sequence $x = \left(x_n \right)_{n \geq 0}$ with elements in $S$. We can set:
+\begin{equation*}
+    x_m^n = \left(x_m, x_{m+1}, \dots, x_n \right).
+\end{equation*}
+\begin{definition}[Markov Property]\label{def:markov_property}
+    A Markov Chain with values in $S$ is a sequence $\left(X_n \right)_{n \geq 0}$ of $S$-valued random variables such that for each $n \geq 0$ and each sequence $x = \left(x_n \right)_{n \geq 0}$ with elements in $S$:
+    \begin{equation}\label{eq:markov_property}
+         \mathrm{P}\left(X_{n+1}=x_{n+1} \mid X_0^n=x_0^n\right)=\mathrm{P}\left(X_{n+1}=x_{n+1} \mid X_n=x_n\right).
+\end{equation}
+\end{definition}
+In \cref{eq:markov_property} the conditional probabilities $\mathrm{P}_{yx} \coloneq \mathrm{P}\left(X_{n+1}=x \mid X_n=y\right)$ are ofter referred to as \emph{one step transition probabilities}. If $\mathrm{P}_{yx}$ does not depend on $n$, then the chain is said to be \emph{homogeneous}. If all the one step transition probabilities are known, one can define a $|S| \times |S|$ matrix called \emph{transition matrix} $P$.
+\begin{definition}[Stationary distribution]
+    A distribution $\symbf{\pi}$ on $S$ is called \emph{stationary} for an homogeneous Markov Chain if
+    \begin{equation*}
+        \symbf{\pi} P = \symbf{\pi},
+    \end{equation*}
+    where $P$ is the transition matrix of the chain.
+\end{definition}
+
+\begin{definition}[Reversible distribution and detailed balance]\label{def:detailed_balance}
+    A distribution $\symbf{\pi}$ is called \emph{reversible} for a Markov Chain if, for $x,\,y \in S$ the \emph{detailed balance} condition holds:
+    \begin{equation*}
+        \pi_x P_{xy} = \pi_y P_{yx}
+    \end{equation*}
+\end{definition}
+It can be shown that a reversible distribution is stationary.
+\begin{definition}[Irreducible transition matrix]
+    A transition matrix $P$ is called \emph{irreducible} if and only if for every $x \neq y$ there exist $n \geq 1$ such that $ \mathrm{P}_{xy}^n > 0$.
+\end{definition}
+The last definition just tells that $P$ is irreducible if and only if we can move from $x$ to $y$ in a certain number of steps $n$ bigger or equal than one.
+\begin{definition}[Period of a state]
+    Given a state $x \in S$ and a transition matrix $P$, the \emph{period} of $x$ is the greatest common divisor of $n$ such that $\mathrm{P}_{xx}^n > 0$.
+\end{definition}
+It is not hard to prove that if the Markov Chain is irreducible then all the states have the same period. In this last case, if the period is equal to $1$, the chain is called \emph{aperiodic}.
+If $P$ is irreducible then there exist a unique stationary distribution $\symbf{\pi}$ and it has positive entries, \ie $\symbf{\pi}_x > 0 \forall x \in S$. Moreover, if it is also aperiodic, every initial distribution $\symbf{\nu}$ will tend to the stationary one $\symbf{\pi}$.\\
+The goal of \acrshort{mcmc} is to \emph{sample} from a stationary distribution of a Markov Chain when direct sampling of i.i.d random variables is computationally hard.
+In other words, our goal is to generate an irreducible Markov Chain $\left(X_n \right)_{n \geq 0}$ with a certain stationary distribution $\symbf{\pi}$ that is our target distribution.\\
+For our simulations we relied on the well known Metropolis algorithm~\cite{metropolis}. 
+
+\section{Metropolis algorithm}\label{sec:metr-lg}
+This algorithm is based on the assumptions that there exist a stationary distribution and this distribution is unique. For the existence we have seed that \cref{def:detailed_balance} is a sufficient condition. For the second requirement we need aperiodicity and positive recurrence. Detailed balance can be rewritten as:
+\begin{equation*}
+    \frac{P_{xy}}{P_{yx}} = \frac{\pi_y}{\pi_{x}}.
+\end{equation*}
+The next step is to separate the transition probability into a product of two terms, the proposal distribution $g\left(y | x \right)$, \ie the conditional probability of proposing a new state $y$ given $x$, and the acceptance distribution $A(y,x)$, \ie probability of accepting the proposed state $y$:
+\begin{equation*}
+    P_{xy} = A(y, x)g(y | x)
+\end{equation*}
+Hence, from the previous equation it follows that:
+\begin{equation*}
+    \frac{A(y, x)}{A(x, y)} = \frac{\pi_y}{\pi_x} \frac{g(x | y)}{g(y | x)}.
+\end{equation*}
+We can choose $A(\cdot | \cdot)$ in multiple different ways. Usually, following the Metropolis choice we set:
+\begin{equation}
+    A(y , x) = \operatorname{min} \left(1,  \frac{\pi_y}{\pi_x} \frac{g(x | y)}{g(y | x)}\right)
+\end{equation}
+Thus, the Metropolis algorithm can be summarized as follows.
+\begin{algorithm}
+    \caption{General Metropolis algorithm}
+    \label{alg:1}
+    \begin{algorithmic}[1]
+    \REQUIRE $x_0$, $t_{max} > 0$
+        \FOR{$t = 1$ to $t_{max} + 1$}
+        \STATE sample $x_{t} \sim g(x' | x_{t-1}) $ 
+        \STATE sample $u \sim U(0, 1)$
+        \IF {$u \leq A(x', x_t)$}
+            \STATE $x_{t-1} \gets x_{t} $
+        \ENDIF
+        \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
+When dealing with binary states -- which is our case except for the continuous Hopfield -- a \emph{single spin-flip dynamics} can be applied. The underlying idea is pretty simple. At each step a random neuron is selected and if the energy variation that would occur by flipping that neuron (spin) is negative, we accept the new state with probability one. Instead, if it is positive we accept the new state with a suitable probability. It is important to note that this last step --that as we will show in a moment is strictly dependent on the temperature of the system-- is what introduces \emph{stochasticity} in our dynamics. If our configurations are made by $N$ neurons, the proposal distribution of the single spin-flip dynamics is just the uniform distribution $g(y | x) = 1/N$. On the other hand, if the equilibrium distribution is given by \cref{eq:prob_configuration} we have that:
+\begin{equation*}
+    \frac{A(y, x)}{A(x, y)} = e^{- \beta \Delta E},
+\end{equation*}
+where $y$ is the state in which a random neuron is flipped and $\Delta E$ is the consequent energy variation.\\
+By setting the maximum between $A(x,\, y)$ and $A(y,\, x)$ to $1$, one gets~\cite{binder2010monte}:
+\begin{equation}\label{eq:acceptance_prob}
+A(x, \,y) = 
+\left\{
+\begin{alignedat}{3}
+% R & L   &  R & L   &  R & L 
+ & e^{-\beta \Delta E} \qquad & \Delta  E > 0 \\
+ & 1 \qquad & \text{otherwise}
+\end{alignedat}
+\right.
+\end{equation}
+In the following sections we're going to show details on the Monte Carlo algorithms used for the simulations.
+Some initial examples are also shown.
+
+\section{Standard Hopfield Model}
+As stated by \cref{eq:acceptance_prob} we need the enenrgy variation which derives from a spin-flip in a given configuration. Whenever possible it is better to find an analytic expression for $\Delta E$, since in this way we can significantly reduce the computational cost. This is not true in general.\\
+For the \acrlong{shm} this expression can be derived without much efforts. Let's say that we have a configuration $\symbf{\sigma} \in \{-1, +1 \}^N$ and we choose to flip the $k$-th neuron. We indicate with $\symbf{\sigma}_i$ and $\symbf{\sigma}_f$ the initial and final configurations respectively. Obviously those are equal except for the $k$-th element.
+\begin{equation*}
+\begin{split}
+        E(\symbf{\sigma}_i) & = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \frac{1}{2}\left(\sum_j J_{kj} \sigma_k \sigma_j + \sum_i J_{ik} \sigma_i \sigma_k \right) \\
+        & = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \sum_j J_{kj} \sigma_k \sigma_j,
+\end{split}
+\end{equation*}
+where the terms inside the parentheses are equal since the matrix $J$ is symmetric.\\
+Similarly, one gets:
+\begin{equation*}
+        E(\symbf{\sigma}_f) = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \sum_j J_{kj} \left(-\sigma_k\right) \sigma_j,
+\end{equation*}
+Hence, the variation in energy reads:
+\begin{equation}\label{eq:energy_var_shm}
+    \Delta E \equiv E(\symbf{\sigma}_f) - E(\symbf{\sigma}_i) = -2 \sigma_k \sum_j J_{kj} = -2 \sigma_k \sum_i J_{ik}.
+\end{equation}
+
+\begin{algorithm}
+    \caption{Metropolis algorithm for the \acrlong{shm}}
+    \label{alg:shm_metropolis}
+    \begin{algorithmic}[1]
+    \REQUIRE $\symbf{\sigma}$, $J$, $\beta$
+        \STATE $N \gets |\symbf{\sigma}|$ 
+        \STATE fliprate $\gets 0$
+        \FOR{$i$ in random permutation $N$}
+        \STATE Compute $\Delta E$ using \cref{eq:energy_var_shm}
+        \IF {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
+            \STATE $\sigma[i] \gets - \sigma[i]$
+            \STATE fliprate $\gets$ fliprate + 1
+        \ENDIF
+        \ENDFOR
+    \RETURN $\symbf{\sigma}$, $\text{fliprate} / N$
+    \end{algorithmic}
+\end{algorithm}
+
+It is important to notice that the computational complexity of \cref{alg:shm_metropolis} is due to the computation of $\Delta E$. However, \cref{eq:energy_var_shm} allows the previous algorithm to be of order $O(N)$. Instead, if we had calculated this value by taking the difference between the final and the initial energies, we would have obtained an order complexity of the order $O(N^2)$. As we will see in \cref{sec:numsim_mh} this analytical trick does not lead to particular advantages.
+
+The \texttt{fliprate} parameter just tells what fraction of flips we obtain in $N$ trials. This is useful to set up a stopping condition for the algorithm if the number of flips goes below a certain threshold. If it is $0$ it menas that the state arrived to a minimimum (either local or global).
+Summarizing everything, the procedure of minimization is quite simple: we choose a random neuron and we flip it, if the consequent $\Delta E$ is negative we accept the flip, otherwise we accept it with a probability that depends on the temperature ($\beta = 1/ T$). An high value of temperature makes the state able to ``jump out'' of local minima, whereas, for $T \to 0$ the dynamics becomes deterministic and even a very small barrier in the energy landscape traps our configuration.\\
+All the steps described in \cref{alg:shm_metropolis} define what is usually addressed to as a Monte Carlo sweep. Shortly speaking, the full \acrlong{mcmc} algorithm executes the Metropolis algorithm for a certain number of times that is the number of sweeps that one wants to perform.
+
+The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our computations we set \texttt{earlystop} to zero so that the algorithm stops if no more spin-flips occur. Moreover, one might need to allow the system to visit states with higher energy, thus making the dynamics more ``stochastic''. One common procedure is to gradually reduce such randomness as a function of the number of sweeps. Such method is called \acrfull{sa} since we start with a low $\beta$ (high $T$) and we ``cool down'' the dynamics until we reach a very high $\beta$ (low $T$). In this way the system should have enough momentum to avoid local minima and to reach the global ones. However, we will make use of \acrshort{sa} in \cref{chap:fact}.
+
+\begin{algorithm}
+    \caption{\acrlong{mcmc} for the \acrlong{shm}}
+    \label{alg:shm_mcmc}
+    \begin{algorithmic}[1]
+    \REQUIRE $\symbf{\sigma}$, $J$, $\beta$, nsweeps, earlystop
+        \STATE $\symbf{\sigma_{\text{rec}}} \gets \symbf{\sigma}$ 
+        \FOR{$\_ = 1$ to nsweeps}
+        \STATE $\symbf{\sigma_{\text{rec}}},\, \text{fliprate} \gets \text{metropolis}\left(\symbf{\sigma_{\text{rec}}},\, J,\, \beta \right)$  
+        \IF {fliprate $\leq$ earlystop}
+            \STATE break
+        \ENDIF
+        \ENDFOR
+    \RETURN $\symbf{\sigma_{\text{rec}}}$
+    \end{algorithmic}
+\end{algorithm}
+
+The spirit of the \acrlong{hm} lies in the fact of being able to retrieve a stored pattern whenever we're presented with a perturbed version of the original configuration. In this sense, we need a criterion that allows us to measure how far we are from the correct retrieval. Given a stored pattern $\symbf{\xi}^{\mu}$ and a configuration $\symbf{\sigma}$, the overlap -- or magnetization -- between the two is defined as:
+\begin{equation*}
+    m = \frac{\symbf{\xi}^{\mu} \cdot \symbf{\symbf{\sigma}}}{N},
+\end{equation*}
+where $N$ is the dimension and it must be the same for the two vectors.\\
+Obviously, $-1 \leq m \leq 1$ and when it is equal to unity one speaks about \emph{perfect retrieval}.
+
+Most of our numerical simulations make use of \cref{alg:shm_mcmc} where $\symbf{\sigma}$ is a noisy pattern. In this regard, we refer to $p$ as the \emph{perturb} probability (or spin-flip probability) used to perturb a pattern. Shortly speaking, given $\symbf{\xi}^{\mu}$, we flip each neuron with probability $p$. This also applies for the \acrlong{mhm} in the binary case. Instead for the continuous version we need to introduce a gaussian noise \cref{sec:numsim_continuous}.
+
+\begin{figure}
+    \centering
+    \input{\imgpath/hebb_example}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
+
+\section{Modern Hopfield}\label{sec:numsim_mh}
+\subsection{Binary case}
+\subsection{Continuous case}\label{sec:numsim_continuous}
+
+\subbibliography
+\end{document}

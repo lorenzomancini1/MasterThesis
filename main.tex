@@ -1,0 +1,39 @@
+\RequirePackage{import}
+\documentclass[a4paper, 12pt]{book}
+\import{./preamble/}{mypreamble}
+\begin{document}
+                        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FRONT MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter 
+\pagestyle{empty}
+\subfileinclude{./frontmatter/titlepage}
+
+\import{./frontmatter/}{abstract}
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+\printglossary[type=\acronymtype]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+\pagestyle{fancy}
+
+\subfileinclude{./chapters/chap0/Intro}
+\subfileinclude{./chapters/chap1/Hopfield}
+\subfileinclude{./chapters/chap2/NumericalSim}
+\subfileinclude{./chapters/chap3/RadiusoftheBAs}
+\subfileinclude{./chapters/chap4/MatrixFactorization}
+\printlength\textwidth
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BACK MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+\printbibliography[heading=bibintoc, title={References}]
+
+\end{document}
