@@ -171,11 +171,12 @@ Obviously, $-1 \leq m \leq 1$ and when it is equal to unity one speaks about \em
 
 Most of our numerical simulations make use of \cref{alg:shm_mcmc} where $\symbf{\sigma}$ is a noisy pattern. In this regard, we refer to $p$ as the \emph{perturb} probability (or spin-flip probability) used to perturb a pattern. Shortly speaking, given $\symbf{\xi}^{\mu}$, we flip each neuron with probability $p$. This also applies for the \acrlong{mhm} in the binary case. Instead for the continuous version we need to introduce a gaussian noise \cref{sec:numsim_continuous}.
 
+We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken and perturbed with spin-flip probability $p = 0.2$ and the \acrlong{mcmc} is executed on the perturbed configuration for $\texttt{nsweeps} = 100$ with $\beta = 100$. Then the overlap between the retrieved state and the original one is measured. In \cref{fig:shm:p02:final_overlaps} it can be clearly observed that there is a sharp peak centered at very high magnetization \ie $m \approx 1$. However, it is worth to mention that also a broad distribution centered at a lower value of $m$ appears.  
 \begin{figure}
     \centering
     \input{\imgpath/overlaps}
-    \caption{Caption}
-    \label{fig:my_label}
+    \caption{Final overlaps after \acrshort{mcmc} at low temperature. Here, the spin-flip probability is $p = 0.2$ and $500$ independent trials are made.}
+    \label{fig:shm:p02:final_overlaps}
 \end{figure}
 
 \section{Modern Hopfield}\label{sec:numsim_mh}
