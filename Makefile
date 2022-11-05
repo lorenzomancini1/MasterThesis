@@ -1,0 +1,25 @@
+# TO DO: FIX THE STRUCTURE OF THE PROJECT (AVOID MKDIRS TO BE TOO LONG)
+
+PROJ = main
+LC = latexmk
+AUXSDIR = .build
+OPT = -halt-on-error
+ARGS = -pv -pdfxe -outdir=$(AUXSDIR) -pdfxelatex="xelatex $(OPT)" -bibtex
+
+all: $(PROJ).pdf
+
+$(PROJ).pdf : $(PROJ).tex mkdirs
+	$(LC) $(ARGS)
+
+clean:
+	rm -rf $(AUXSDIR)
+
+mkdirs:
+	mkdir -p $(AUXSDIR)/frontmatter
+	mkdir -p $(AUXSDIR)/chapters/chap0
+	mkdir -p $(AUXSDIR)/chapters/chap1
+	mkdir -p $(AUXSDIR)/chapters/chap2
+	mkdir -p $(AUXSDIR)/chapters/chap3
+	mkdir -p $(AUXSDIR)/chapters/chap4
+
+.PHONY: all clean
