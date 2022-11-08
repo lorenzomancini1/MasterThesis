@@ -72,14 +72,14 @@ Thus, the Metropolis algorithm can be summarized as follows.
     \caption{General Metropolis algorithm}
     \label{alg:1}
     \begin{algorithmic}[1]
-    \REQUIRE $x_0$, $t_{max} > 0$
-        \FOR{$t = 1$ to $t_{max} + 1$}
-        \STATE sample $x_{t} \sim g(x' | x_{t-1}) $ 
-        \STATE sample $u \sim U(0, 1)$
-        \IF {$u \leq A(x', x_t)$}
-            \STATE $x_{t-1} \gets x_{t} $
-        \ENDIF
-        \ENDFOR
+    \Require $x_0$, $t_{max} > 0$
+        \For{$t = 1$ to $t_{max} + 1$}
+        \State sample $x_{t} \sim g(x' | x_{t-1}) $ 
+        \State sample $u \sim U(0, 1)$
+        \If {$u \leq A(x', x_t)$}
+            \State $x_{t-1} \gets x_{t} $
+        \EndIf
+        \EndFor
     \end{algorithmic}
 \end{algorithm}
 When dealing with binary states -- which is our case except for the continuous Hopfield -- a \emph{single spin-flip dynamics} can be applied. The underlying idea is pretty simple. At each step a random neuron is selected and if the energy variation that would occur by flipping that neuron (spin) is negative, we accept the new state with probability one. Instead, if it is positive we accept the new state with a suitable probability. It is important to note that this last step --that as we will show in a moment is strictly dependent on the temperature of the system-- is what introduces \emph{stochasticity} in our dynamics. If our configurations are made by $N$ neurons, the proposal distribution of the single spin-flip dynamics is just the uniform distribution $g(y | x) = 1/N$. On the other hand, if the equilibrium distribution is given by \cref{eq:prob_configuration} we have that:
@@ -124,17 +124,17 @@ Hence, the variation in energy reads:
     \caption{Metropolis algorithm for the \acrlong{shm}}
     \label{alg:shm_metropolis}
     \begin{algorithmic}[1]
-    \REQUIRE $\symbf{\sigma}$, $J$, $\beta$
-        \STATE $N \gets |\symbf{\sigma}|$ 
-        \STATE fliprate $\gets 0$
-        \FOR{$i$ in random permutation $N$}
-        \STATE Compute $\Delta E$ using \cref{eq:energy_var_shm}
-        \IF {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
-            \STATE $\sigma[i] \gets - \sigma[i]$
-            \STATE fliprate $\gets$ fliprate + 1
-        \ENDIF
-        \ENDFOR
-    \RETURN $\symbf{\sigma}$, $\text{fliprate} / N$
+    \Require $\symbf{\sigma}$, $J$, $\beta$
+        \State $N \gets |\symbf{\sigma}|$ 
+        \State fliprate $\gets 0$
+        \For{$i$ in random permutation $N$}
+        \State Compute $\Delta E$ using \cref{eq:energy_var_shm}
+        \If {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
+            \State $\sigma[i] \gets - \sigma[i]$
+            \State fliprate $\gets$ fliprate + 1
+        \EndIf
+        \EndFor
+    \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
     \end{algorithmic}
 \end{algorithm}
 
@@ -150,15 +150,15 @@ The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our 
     \caption{\acrlong{mcmc} for the \acrlong{shm}}
     \label{alg:shm_mcmc}
     \begin{algorithmic}[1]
-    \REQUIRE $\symbf{\sigma}$, $J$, $\beta$, nsweeps, earlystop
-        \STATE $\symbf{\sigma_{\text{rec}}} \gets \symbf{\sigma}$ 
-        \FOR{$\_ = 1$ to nsweeps}
-        \STATE $\symbf{\sigma_{\text{rec}}},\, \text{fliprate} \gets \text{metropolis}\left(\symbf{\sigma_{\text{rec}}},\, J,\, \beta \right)$  
-        \IF {fliprate $\leq$ earlystop}
-            \STATE break
-        \ENDIF
-        \ENDFOR
-    \RETURN $\symbf{\sigma_{\text{rec}}}$
+    \Require $\symbf{\sigma}$, $J$, $\beta$, nsweeps, earlystop
+        \State $\symbf{\sigma_{\text{rec}}} \gets \symbf{\sigma}$ 
+        \For{$\_ = 1$ to nsweeps}
+        \State $\symbf{\sigma_{\text{rec}}},\, \text{fliprate} \gets \text{metropolis}\left(\symbf{\sigma_{\text{rec}}},\, J,\, \beta \right)$  
+        \If {fliprate $\leq$ earlystop}
+            \State break
+        \EndIf
+        \EndFor
+    \textbf{return} $\symbf{\sigma_{\text{rec}}}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -197,12 +197,12 @@ Hence, the energy variation is (referring to \cref{eq:modern_binary_energy}):
 + \frac{1}{\lambda} \log \left( \sum_{\mu = 1}^{M} \exp\left( \lambda \cdot m_{fin}^\mu\right) \right)\\
 & = - \frac{1}{\lambda} \left[\log \left(\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{fin}^\mu \right)\right)
 - \log \left(\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\right)\right]\\
-& -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{fin}^\mu\right)}{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
+& = -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{fin}^\mu\right)}{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
 \end{split}
 \end{equation*}
 So we obtain:
 \begin{equation}\label{eq:numsim:mhm:energyvariation}
-    \Delta E =  -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\exp\left(-2\lambda\xi_{k}^{\mu}\sigma_k \right) }{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
+    \Delta E_{\text{spin-flip}} =  -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\exp\left(-2\lambda\xi_{k}^{\mu}\sigma_k \right) }{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
 \end{equation}
 Here, the magnetization $m$ is not rescaled by $N$. (boh forse ho fatto un po' di confusione con la notazione).
 We have two problems:
@@ -225,15 +225,15 @@ To reduce this problem we exploit the Kahan summation algorithm~\cite{kahan_trun
     \caption{Kahan summation}
     \label{alg:kahan_summation}
     \begin{algorithmic}[1]
-    \REQUIRE $x$
-    \STATE sum $\gets 0$
-    \STATE c $\gets 0$
-    \FOR{$i = 1$ to $|x|$}
-        \STATE $y \gets x[i]$ - c
-        \STATE $t \gets $ sum + $y$
-        \STATE c $\gets t$ - sum - $y$
-        \STATE sum $\gets t$
-    \ENDFOR
+    \Require $x$
+    \State sum $\gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $y \gets x[i]$ - c
+        \State $t \gets $ sum + $y$
+        \State c $\gets t$ - sum - $y$
+        \State sum $\gets t$
+    \EndFor
     \end{algorithmic}
 \end{algorithm}
 
@@ -248,16 +248,16 @@ Hence, following the work of~\textcite{numerically_stable} in ~\cref{alg:lse} we
     \caption{Log-Sum-Exp algorithm}
     \label{alg:lse}
     \begin{algorithmic}[1]
-    \REQUIRE $x$
-    \STATE $s \gets 0$
-    \STATE c $\gets 0$
-    \FOR{$i = 1$ to $|x|$}
-        \STATE $w[i] \gets \exp\left(x[i] - a\right)$
-        \IF{$i \neq k$}
-            \STATE $s \gets s + w[i]$
-        \ENDIF
-    \ENDFOR
-    \RETURN $a + \log1p (s)$ 
+    \Require $x$
+    \State $s \gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $w[i] \gets \exp\left(x[i] - a\right)$
+        \If{$i \neq k$}
+            \State $s \gets s + w[i]$
+        \EndIf
+    \EndFor
+    \textbf{return} $a + \log1p (s)$ 
     \end{algorithmic}
 \end{algorithm}
 
@@ -268,27 +268,82 @@ In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm
     \caption{Metropolis algorithm for the \acrlong{mhm}}
     \label{alg:mhm_metropolis}
     \begin{algorithmic}[1]
-    \REQUIRE $\symbf{\sigma}$, $\symbf{\xi}$, $\beta$, $\lambda$
-        \STATE $N \gets |\symbf{\sigma}|$ 
-        \STATE fliprate $\gets 0$
-        \STATE $E \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
-        \FOR{$i$ in random permutation $N$}
-        \STATE $\sigma[i] \gets - \sigma[i]$
-        \STATE $E_{new} \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
-        \STATE $\Delta E \gets E_{new} - E$
-        \IF {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
-            \STATE $\sigma[i] \gets - \sigma[i]$
-            \STATE fliprate $\gets$ fliprate + 1
-            \STATE $E \gets E_{new}$
-        \ELSE
-            \STATE $\sigma[i] \gets - \sigma[i]$
-        \ENDIF
-        \ENDFOR
-    \RETURN $\symbf{\sigma}$, $\text{fliprate} / N$
+    \Require $\symbf{\sigma}$, $\symbf{\xi}$, $\beta$, $\lambda$
+        \State $N \gets |\symbf{\sigma}|$ 
+        \State fliprate $\gets 0$
+        \State $E \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
+        \For{$i$ in random permutation $N$}
+        \State $\sigma[i] \gets - \sigma[i]$
+        \State $E_{new} \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
+        \State $\Delta E \gets E_{new} - E$
+        \If {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
+            \State $\sigma[i] \gets - \sigma[i]$
+            \State fliprate $\gets$ fliprate + 1
+            \State $E \gets E_{new}$
+        \Else
+            \State $\sigma[i] \gets - \sigma[i]$
+        \EndIf
+        \EndFor
+    \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
     \end{algorithmic}
 \end{algorithm}
 
 \subsection{Continuous case}\label{sec:numsim_continuous}
+The same considerations for the numerical stability argument hold also for the continuous case of the \acrshort{mhm}.\\
+Here, patterns and configurations are generated by sampling from a standard normal distribution, \ie:
+\begin{equation*}
+    \xi_i^{\mu} \sim \mathcal{N}\left(0, 1\right), \qquad i = 1, \dots, N.
+\end{equation*}
+Here, the parameter used to perturb a stored pattern is governed by the variance of a gaussian noise. In mathematical terms:
+\begin{equation*}
+    \tilde{\xi}_i^{\mu} = \xi_i^{\mu} + \mathcal{N}\left(0, \delta\right),
+\end{equation*}
+where $\tilde{\xi}_i^{\mu}$ is the perturbed version of the $i$-th element belonging to the $\mu$-th pattern.\\
+The key operation of the update rule is the $\operatorname{softmax}$ operation, as stated in~\cref{eq:hop:cont_energy}. In~\cref{alg:softmax} the implementation of such function is shown~\cite{numerically_stable}.
+
+\begin{algorithm}
+    \caption{Softmax algorithm}
+    \label{alg:softmax}
+    \begin{algorithmic}[1]
+    \Require $x$
+    \State $s \gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $w[i] \gets \exp\left(x[i] - a\right)$
+        \If{$i \neq k$}
+            \State $s \gets s + w[i]$
+        \EndIf
+    \EndFor
+    \For{$i = 1$ to $|x|$}
+        \State $g[i] \gets w[i]/(1+s)$
+    \EndFor
+    \textbf{return} $g$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Update function for the continuous \acrshort{mhm}}
+    \label{alg:update_continuous_mhm}
+    \begin{algorithmic}[1]
+    \Require $\symbf{\sigma}$, $\symbf{\xi}$, $\lambda$
+    \State $\symbf{\sigma}_{rec} \gets \symbf{\sigma}$
+    \State $\symbf{\sigma}_{rec} \gets \symbf{\xi} \times \operatorname{softmax}\left(\lambda \symbf{\xi}^T \times \symbf{\sigma}_{rec}\right)$
+    \textbf{return} $\symbf{\sigma}_{rec}$
+\end{algorithmic}
+\end{algorithm}
+
+\clearpage
+\subsubsection{Energy landscape}
+Also in this case with real variables, the energy landscape is non trivial. Nevertheless, visualization methods are easier to apply with respect to the binary counterpart but the results are quite far from giving a satisfactory description of what really happens.
+One simple method is to plot the energy on the plane defined by three patterns $\symbf{\xi}^1$, $\symbf{\xi}^2$ and $\symbf{\xi}^3$. Then, any new configuration belonging to the plane defined by such patterns can be written as:
+\begin{equation*}
+    \symbf{\sigma} = \symbf{\xi}^1 + \epsilon_1 \left(\symbf{\xi}^2 - \symbf{\xi}^1\right) + \epsilon_2 \left(\symbf{\xi}^3 - \symbf{\xi}^1\right)
+\end{equation*}
+\begin{figure}
+    \centering
+    \input{\imgpath/contour}
+    \caption{Contour plot of the energy on the plane defined by three random patterns. Three minima -- each of which correspond to the three patterns used for building the plane -- can be observed.}
+\end{figure}
 
 \subbibliography
 \end{document}

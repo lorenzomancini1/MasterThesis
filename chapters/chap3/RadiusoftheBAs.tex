@@ -5,5 +5,75 @@
 \addbibresource{\rootdir/references.bib}
 \begin{document}
 \chapter{Radius of the Basins of Attractions}\label{chap:radius}
+An important question about the properties of the \acrlong{hm} is related to the \acrlong{ba} concept. In particular, one might be interested in the size of such basins. There are several ways to quantify ``how large'' is a \acrshort{ba}~\parencite[see \eg][]{hamming_radius}. In our work we focus on the maximum information that a pattern can lose in order to let the model be able to retrieve the original configuration, thus relating with the $p$ parameter introduced in~\cref{chap:numerical_sim} for the binary cases and the $\delta$ parameter for the continuous one.
 
+The key quantity that we investigate is the conditional retrieval probability \pret{p} (or equivalently \pret{\delta}) \ie the probability to correctly retrieve a stored pattern given that it was perturbed with probability $p$ (gaussian noise with variance $\delta$). The meaning of \emph{correct retrieval} and the computation of the corresponding probability form the main topics of this chapter. As it happens in statistical mechanics, the goal is to infer the behaviour of the retrieval probability in the thermodynamic limit, that is $N \to \infty$. This is clearly not an easy task since the main computational slowdown is represented by the size of our patterns.\\
+Some interesting questions related to the characterization of the basins of attractions are:
+\begin{itemize}
+    \item does \pret{p} become a sharp threshold as we reach the thermodynamic limit?
+    \item is there some anisotropy in bla bla bla?
+    \item what kind of phase transition does the system display as we approach the critical value of $\alpha_c$?
+\end{itemize}
+In the following sections we show the main results that try to answer the previous questions. However, it is worth anticipating that the analysis made for modern hopfield is still being verified by analytical calculations of its phase diagram.
+
+\section{Retrieval probability}
+Here we refer to the Ising-like cases of the \acrshort{hm}, \ie the \acrshort{shm} and the binary version of the \acrshort{mhm} keeping in mind that everything also applies for the continuous \acrshort{shm} with the necessary changes.
+
+The retrieval probability \pret{p} is simply defined as the frequency of correct retrievals over a certain number of samples. To get a reasonable value for the probability, the number of samples should be as large as possible.\\
+What does a correct retrieval mean? The idea is to perform a zero-temperature \acrshort{mcmc} in order to minimize energy in a (quasi)-deterministic way. Doing so, any configuration \bsigma\ evolves towards state where the energy decreases or, at most, remains unchanged. However, it must be specified that a $\beta$ that is too large will make the system unable to jump out of even a tiny energy barrier. In this regard, we refer to $beta$ as a small -- but not too small -- value. For most of our simulations it is of the order of $O(10^2)$.
+
+If a \acrshort{mcmc} run over a configuration \bsigma\ leads to a final magnetization that is bigger than a certain threshold (we'll discuss this in the respective sections) we consider it as a success. In other words, a correct retrieval is a random variable that follows a Bernoulli distribution.\\
+If we make many samples with the same procedure we obtain that the number of success obey to a Binomial distribution:
+\begin{equation*}\label{eq:binomial_dist}
+    \operatorname{Pr}(k ; n, c)=\operatorname{Pr}(X=k)=\left(\begin{array}{l}
+        n \\
+        k
+        \end{array}\right) c^k(1-c)^{n-k},
+\end{equation*}
+where
+\begin{equation*}
+    \left(\begin{array}{l}
+        n \\
+        k
+        \end{array}\right)=\frac{n !}{k !(n-k) !}
+\end{equation*}
+is the usual binomial coefficient, $k$ is the number of successes and $n$ is the number of trials. (qua il parametro p della distribuzione binomiale si confonde con la perturb probability. devo cambiare qualcosa).\\
+The parameter that governs \cref{eq:binomial_dist} is our retrieval probability, \ie $c \rightarrow \pret{p}$.
+In order to determine \pret{p} we rely on averaging the number of successes over an ensemble of samples. What we expect for such probability is to be a sigmoid-like decreasing function of $p$. This actually makes sense since, if we peturb just a little bit a pattern, then the model should be able to retrieve it with probability very close to one. As $p$ increases the model becomes less and less able to perform retrieval until it reaches probability zero. In~\cref{alg:retrieval} the steps to compute \pret{p} for a range of noises $p$ is shown
+
+\begin{algorithm}
+    \caption{Compute \pret{p} for a range of $p$}
+    \label{alg:retrieval}
+    \begin{algorithmic}[1]
+    \Require $N$, $\alpha$, $p$, $\beta$, $\mathtt{nsamples}$,$\mathtt{nsweeps}$, $\mathtt{earlystop}$, $m_0$
+    \State $M \gets N\alpha$ (or $\exp(N\alpha)$)
+    \State $\mathtt{np} \gets |p|$
+    \State Initialize \texttt{freqs}, \texttt{ferrors} \Comment{arrays that contain probabilities and related errors}
+
+    \For{$i = 1$ to $\mathtt{np}$}
+        \State Initialize $m_f$ \Comment{array with final magnetizations}
+        \For{$\mathtt{sample} = 1$ to $\mathtt{nsamples}$}
+            \State Generate $M$ patterns of length $N$
+            \State Store the patterns \Comment{\ie build $J$ for \acrshort{shm} otherwise do nothing}
+            \State Take a random pattern \bxi
+            \State Perturb \bxi\ with $p[i]$ (or $\mathcal{N\left(0, \delta\right)}$) and obtain $\bsigma_{pert}$
+            \State Run the \acrshort{mcmc} with $\beta$, \texttt{nsweeps} and \texttt{earlystop}
+            \State Compute final overlap $m$
+            \State $m_f[\text{sample}] \gets m$
+        \EndFor
+        \State Compute the number of \texttt{successes} by checking $m_f \geq m_0$ elementwise
+        \State $freqs[i] \gets$ mean(\texttt{successes})
+        \State $ferrors[i] \gets$ std(\texttt{successes})
+    \EndFor
+    \State \textbf{return} \texttt{freqs}, \texttt{ferrors}
+\end{algorithmic}
+\end{algorithm}
+\begin{figure}
+    \centering
+    \input{\imgpath/pret_example}
+    \caption{Ciaoo}
+\end{figure}
+
+
+\subbibliography
 \end{document}
