@@ -66,14 +66,84 @@ In order to determine \pret{p} we rely on averaging the number of successes over
         \State $ferrors[i] \gets$ std(\texttt{successes})
     \EndFor
     \State \textbf{return} \texttt{freqs}, \texttt{ferrors}
-\end{algorithmic}
+    \end{algorithmic}
 \end{algorithm}
+
 \begin{figure}
     \centering
     \input{\imgpath/pret_example}
     \caption{Ciaoo}
 \end{figure}
 
+As can be observed in~\cref{alg:retrieval} the error of each point of \pret{p} is computed just by taking the standard error of the number of successes. (qua ci dovrei scrivere che tipo dove la prob è viene fuori 1 (oppure 0) allora l'errore viene nullo?).
 
+\section{Critical Noise}
+As can be deduced from~\cref{pret_example}, in the thermodynamic limit $N \to \infty$, the retrieval probability becomes a step function $\tilde{\theta}(p - p_c)$:
+\begin{equation*}
+    \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases},
+\end{equation*}
+where we use the tilde to distinguish it from the usual notation of the step function.\\
+The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely. Otherwise retrieval is not possible.\\
+
+To start with this, we first have to find the function that approximates our \pret{p}. To this end, since we deal with a sigmoid-like function, we make a fit using:
+\begin{equation}\label{eq:fit_pret}
+\begin{split}
+    \pret{p}_{\alpha,\, N} & = \exp\left(k_{1} + k_{2}p + \cdots + k_{n}p^{n-1} \right)\\
+             & = \exp\left( \sum_{i = 1}^{n} k_{i} p^{i-1} \right),
+\end{split}
+\end{equation}
+where we assume that:
+\begin{equation*}
+    k_{i} \equiv k_{i}^{\left(\alpha,\,N\right)}, \qquad i = 1, \dots, n.
+\end{equation*}
+In other words, we fit our retrieval probability with an exponential of a polynomial up to a certain degree. This can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library.\\
+
+Now, the idea is to find the value of $p$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how te latter scales with the size of the system. Mathematically, we need to solve for $p$:
+\begin{equation}\label{eq:finite_critical_noise}
+    \pret{p}_{\alpha,\, N} = \exp\left( \sum_{i = 1}^{n} k_{i} p^{i-1} \right) = y, \qquad y \in (0,\, 1).
+\end{equation}
+Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose.\\
+If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$ and the value that such function reaches as $N \to \infty$ is the critical noise in the thermodynamic limit, \ie:
+\begin{equation}\label{eq:critical_noise}
+   p_c\left(\alpha\right) \equiv p_c^{\alpha} = \lim_{N \to \infty} p_c(N)^{\alpha,\, y}.
+\end{equation}
+Following this procedure, results should not change if we vary $y$, since we assumed that as $N \to \infty$ the retrieval probability becomes a step function and this is why the superscript $y$ was omitted in the definition of $p_c\left(\alpha\right)$. Indeed, what we are computing with~\cref{eq:critical_noise} is the value for $p$ for which the \pret{p} jumps from $1$ to $0$ in the thermodynamic limit. (qui forse vorrei metterci la figura di una step function ma mi sa che è un po' banale). From now on we fix $y = 0.5$ for simplicity.
+
+In the following paragraphs we briefly explain the algorithm used to find the finite critical noises and their relative errors.
+
+\subsection{Root-finding algorithm}
+The goal is to solve~\cref{eq:finite_critical_noise}. 
+Let's say that we have the function that fits the retrieval probability for $\alpha$ (here we omit it for notation simplicity), \ie we have the set of coefficients $\vec{k}^{*} = \left(k_1^{*}, \dots, k_n^{*}\right)$. We write:
+\begin{equation}
+    f(p, \vec{k}^{*}) \coloneq \pret{p} - 0.5,
+\end{equation}
+that is, we need to find the zero of $f(p)$.\\
+Now, this problem can be solved with several root-finding algorithms like the Newton method, the secant method, inverse interpolation and so on.\\
+For our purpose we rely on the Brent method~\cite{brentq} which is a combination of the bisection method, inverse quadratic interpolation and secand method.\\
+The implementation of such algorithm is present in the \texttt{scipy.optimize} Python library and simply requires the function $f$, an initial guess, and two points within which the function changes sign.
+Applying this algorithm to our fitted retrieval probability function allow us to obtain a finite critical noise value. 
+
+\subsubsection{Error propagation}
+The results of \texttt{curve\_fit} for \pret{p} are:
+\begin{itemize}
+    \item the set of coefficients $\vec{k}^{*} = \left(k_1^{*}, \dots, k_n^{*}\right)$;
+    \item the covariance matrix related to $\vec{k}^{*}$.
+\end{itemize}
+How can we exploit the covariance matrix in order to compute the uncertainty of the $p_c(N)$? Error propagation is not straightforward in this case. However, there are two possible solutions to overcome this problem.
+
+Qua devo scrivere la roba con la funzione implicita ma devo sistemare bene la notazione sennò non si capisce nulla.
+
+The second method is based on numerical simulations. Given $\vec{k}^{*}$ and the related covariance matrix $K$, we have that:
+\begin{equation*}
+    K_{ii} = \sigma_{k_i^{*}}^{2}.
+\end{equation*}
+Hence, a brutal method to obtain the uncertainty on $p_c(N)$ is to sample a set of coefficients $\vec{k} = \left(k_1, \dots, k_n\right)$ as:
+\begin{equation*}\label{eq:brutal_method}
+    k_{i} \sim \mathcal{N}\left(k_{i}^{*}, \sigma_{k_i^{*}}^{2}\right).
+\end{equation*}
+With~\cref{eq:brutal_method} we are sampling each coefficient $k_i$ from a normal distribution which has mean equal to the value found during the fit and variance equal to the corresponding diagonal element of the covariance matrix.\\
+In this way we can apply the Brent method in order to compute another $p_c(N)$. If we iterate this procedure many times, we end up with a distribution of finite critical noises. So, the we can use as uncertainty of the standard deviation of such distribution.
+
+\section{Results for the \acrshort{shm}}
 \subbibliography
 \end{document}
