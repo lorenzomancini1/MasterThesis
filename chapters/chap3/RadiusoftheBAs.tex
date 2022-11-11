@@ -144,12 +144,27 @@ Hence, a brutal method to obtain the uncertainty on $p_c(N)$ is to sample a set 
 With~\cref{eq:brutal_method} we are sampling each coefficient $k_i$ from a normal distribution which has mean equal to the value found during the fit and variance equal to the corresponding diagonal element of the covariance matrix.\\
 In this way we can apply the Brent method in order to compute another $p_c(N)$. If we iterate this procedure many times, we end up with a distribution of finite critical noises. So, we can use as uncertainty the standard deviation of such distribution.
 
-\section[Results for the \acrshort{shm}]{Results for the standard Hopfield}
+\section{Results for the standard Hopfield}
 \begin{figure}[h]
     \centering
     \import{\imgpath}{exp_fit_N200}
 \end{figure}
-In this way we can apply the Brent method in order to compute another $p_c(N)$. If we iterate this procedure many times, we end up with a distribution of finite critical noises. So, we can use as uncertainty the standard deviation of such distribution.
+\begin{figure}[h]
+    \centering
+    \import{\imgpath}{exp_fit_N700}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \import{\imgpath}{exp_fit_N1000}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \import{\imgpath}{exp_fit_N1500}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \import{\imgpath}{scaling_fit}
+\end{figure}
 
 %\section{Results for the \acrshort{mhm}}
 \subbibliography
