@@ -10,4 +10,5 @@ $(PROJ).pdf : $(PROJ).tex
 
 clean :
 	rm -rf $(LOGSDIR)
+	rm -rf `biber --cache`
 

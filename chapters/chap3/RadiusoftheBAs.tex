@@ -78,7 +78,7 @@ In order to determine \pret{p} we rely on averaging the number of successes over
 As can be observed in~\cref{alg:retrieval} the error of each point of \pret{p} is computed just by taking the standard error of the number of successes. (qua ci dovrei scrivere che tipo dove la prob è viene fuori 1 (oppure 0) allora l'errore viene nullo?).
 
 \section{Critical Noise}
-As can be deduced from~\cref{pret_example}, in the thermodynamic limit $N \to \infty$, the retrieval probability becomes a step function $\tilde{\theta}(p - p_c)$:
+As can be deduced from~\cref{fig:pret_example}, in the thermodynamic limit $N \to \infty$, the retrieval probability becomes a step function $\tilde{\theta}(p - p_c)$:
 \begin{equation*}
     \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases},
 \end{equation*}
@@ -87,85 +87,76 @@ The value of $p_c$ is what we want to estimate since it is strictly related to t
 
 To start with this, we first have to find the function that approximates our \pret{p}. To this end, since we deal with a sigmoid-like function, we make a fit using:
 \begin{equation}\label{eq:fit_pret}
-\begin{split}
-    \pret{p}_{\alpha,\, N} & = \exp\left(k_{1} + k_{2}p + \cdots + k_{n}p^{n-1} \right)\\
-             & = \exp\left( \sum_{i = 1}^{n} k_{i} p^{i-1} \right),
-\end{split}
+    \pret{p}_{\alpha,\, N} = \frac{1}{1 + \exp \left[ - k_1 (p - k_2) \right]} + k_3
 \end{equation}
-where we assume that:
-\begin{equation*}
-    k_{i} \equiv k_{i}^{\left(\alpha,\,N\right)}, \qquad i = 1, \dots, n.
-\end{equation*}
-In other words, we fit our retrieval probability with an exponential of a polynomial up to a certain degree. This can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library.\\
+This fit can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library.\\
 
 Now, the idea is to find the value of $p$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how te latter scales with the size of the system. Mathematically, we need to solve for $p$:
 \begin{equation}\label{eq:finite_critical_noise}
-    \pret{p}_{\alpha,\, N} = \exp\left( \sum_{i = 1}^{n} k_{i} p^{i-1} \right) = y, \qquad y \in (0,\, 1).
+    \pret{p}_{\alpha,\, N} \overset{!}{=} y, \qquad y \in (0,\, 1).
 \end{equation}
 Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose.\\
-If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$ and the value that such function reaches as $N \to \infty$ is the critical noise in the thermodynamic limit, \ie:
-\begin{equation}\label{eq:critical_noise}
-   p_c\left(\alpha\right) \equiv p_c^{\alpha} = \lim_{N \to \infty} p_c(N)^{\alpha,\, y}.
+If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$
+\begin{equation}\label{eq:solution_fit}
+    p_c(N)^{\alpha,\, y} = - \frac{\log\left(\left(y - k_3\right)^{-1} - 1\right)}{k_1} + k_2
 \end{equation}
 Following this procedure, results should not change if we vary $y$, since we assumed that as $N \to \infty$ the retrieval probability becomes a step function and this is why the superscript $y$ was omitted in the definition of $p_c\left(\alpha\right)$. Indeed, what we are computing with~\cref{eq:critical_noise} is the value for $p$ for which the \pret{p} jumps from $1$ to $0$ in the thermodynamic limit. (qui forse vorrei metterci la figura di una step function ma mi sa che è un po' banale). From now on we fix $y = 0.5$ for simplicity.
-
-In the following paragraphs we briefly explain the algorithm used to find the finite critical noises and their relative errors.
-
-\subsection{Root-finding algorithm}
-The goal is to solve~\cref{eq:finite_critical_noise}. 
-Let's say that we have the function that fits the retrieval probability for $\alpha$ (here we omit it for notation simplicity), \ie we have the set of coefficients $\vec{k}^{*} = \left(k_1^{*}, \dots, k_n^{*}\right)$. We write:
+The uncertainty on $p_c\left(N\right)^{\alpha,\, y}$ can be simply obtained with error propagation. Regarding this last point, we assume that the coefficients $k_{i}^{*}$ are uncorrelated:
 \begin{equation}
-    f(p, \vec{k}^{*}) \coloneq \pret{p} - 0.5,
+    \sigma_{\pcn} = \sqrt{ \sum_{i = 1}^{3} \left( \frac{\partial \pcn}{\partial k_i} \cdot \sigma_{k_i^*} \right)^2 }   
 \end{equation}
-that is, we need to find the zero of $f(p)$.\\
-Now, this problem can be solved with several root-finding algorithms like the Newton method, the secant method, inverse interpolation and so on.\\
-For our purpose we rely on the Brent method~\cite{brentq} which is a combination of the bisection method, inverse quadratic interpolation and secand method.\\
-The implementation of such algorithm is present in the \texttt{scipy.optimize} Python library and simply requires the function $f$, an initial guess, and two points within which the function changes sign.
-Applying this algorithm to our fitted retrieval probability function allow us to obtain a finite critical noise value. 
-
-\subsubsection{Error propagation}
-The results of \texttt{curve\_fit} for \pret{p} are:
-\begin{itemize}
-    \item the set of coefficients $\vec{k}^{*} = \left(k_1^{*}, \dots, k_n^{*}\right)$;
-    \item the covariance matrix related to $\vec{k}^{*}$.
-\end{itemize}
-How can we exploit the covariance matrix in order to compute the uncertainty of the $p_c(N)$? Error propagation is not straightforward in this case. However, there are two possible solutions to overcome this problem.
-
-Qua devo scrivere la roba con la funzione implicita ma devo sistemare bene la notazione sennò non si capisce nulla.
-
-The second method is based on numerical simulations. Given $\vec{k}^{*}$ and the related covariance matrix $K$, we have that:
+The \emph{critical noise} in the thermodynamic limit is defined as:
+\begin{equation}\label{eq:critical_noise}
+   p_c\left(\alpha\right) \equiv p_c^{\alpha} = \lim_{N \to \infty} p_c(N)^{\alpha,\, y},
+\end{equation}
+and can be estimated by performing a finite-size analysis. Indeed, if we plot $p_c \left(N, \alpha\right)$ against $1/N$ and if we are able to find some reasonable relationship between the points -- that is we can find a function that fits our data -- then our result is simply the intercept of such function with the $y$-axis. More precisely:
+\begin{equation}\label{eq:scaling_noise}
+    p_c(N, \alpha) \approx q + \frac{1}{N}a + \frac{1}{N^2} b + O\left(N^{-3}\right),
+\end{equation}
+where
 \begin{equation*}
-    K_{ii} = \sigma_{k_i^{*}}^{2}.
+    p_c(\alpha) \gets q.
 \end{equation*}
-Hence, a brutal method to obtain the uncertainty on $p_c(N)$ is to sample a set of coefficients $\vec{k} = \left(k_1, \dots, k_n\right)$ as:
-\begin{equation*}\label{eq:brutal_method}
-    k_{i} \sim \mathcal{N}\left(k_{i}^{*}, \sigma_{k_i^{*}}^{2}\right).
-\end{equation*}
-With~\cref{eq:brutal_method} we are sampling each coefficient $k_i$ from a normal distribution which has mean equal to the value found during the fit and variance equal to the corresponding diagonal element of the covariance matrix.\\
-In this way we can apply the Brent method in order to compute another $p_c(N)$. If we iterate this procedure many times, we end up with a distribution of finite critical noises. So, we can use as uncertainty the standard deviation of such distribution.
+Summarizing everything, in order to get our critical noise for a given $\alpha$ in the thermodynamic limit we have to proceed as follows:
+\begin{itemize}
+    \item Simulate retrievals probability accordingly to~\cref{alg:retrieval};
+    \item fit the simulation data with the sigmoid-like function~\cref{eq:fit_pret};
+    \item compute the \emph{finite critical noise}, \ie the value where the fit is equale to $y = 0.5$;
+    \item repeat for different sizes and fit the finite critical noises with~\cref{eq:scaling_noise};
+    \item the intercept of this last fit is $p_c(\alpha)$.
+\end{itemize}
 
+In the following sections we show the main results for both the \acrshort{shm} and the \acrshort{mhm}.
 \section{Results for the standard Hopfield}
-\begin{figure}[h]
+Here, all the simulations are done with the following Monte Carlo parameters:
+\begin{itemize}
+    \item the temperature $\beta = 100$;
+    \item the minimum magnetization to have retrieval is set to $m_0 = 0.8$;
+    \item the number of sweeps \texttt{nsweeps} for each \acrshort{mcmc} run is equal to $100$ but we also stop; \item the algorithm if no more spin-flips occur, that is \texttt{earlystop} is equal to $0$.
+\end{itemize}
+The range of noises is choosen accordingly to the load parameter that is being considered. Indeed, setting a fixed range for all the $\alpha$ would have led to inaccurate results. The ideal situation is to narrow as much as possible the range of noises ​​around the zone where the step from $1$ to $0$ occurs. Hence, each range of noises can be determined after some initial experiments.\\
+Also, the number of samples depends on the size of the system that we're considering, since the latter is what affects the computational time required. 
+
+As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the steepness of the sigmoid fitting function increases as the size becomes larger. On the other hand, in~\cref{fig:sh:scaling_example}, we can see the behaviour of $p_c(N, \alpha)$ as a function of $N$.
+\begin{figure}[hbt]
     \centering
-    \import{\imgpath}{exp_fit_N200}
+    \import{\imgpath}{fit_example}
+    \caption{Results of the fitting procedure for three sizes, $N = 200,\, 700$ and $1500$ with load parameter $\alpha = 0.1$. Averages are made for $10^5$, $2\cdot 10^4$ and $5\cdot10^3$ samples respectively. Errorbars are not shown since they're very small with respect to the markers. qua ci dovrei scrivere che i pallini sono i risultati delle simulazioni?}
+    \label{fig:sh_fit_example}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}
     \centering
-    \import{\imgpath}{exp_fit_N700}
+    \import{\imgpath}{scaling_example}
+    \caption{Example of scaling relationship for three different values of $\alpha$. Points are fitted with a polynomial of degree $2$. Errorbars are given by error propagation of\cref{eq:solution_fit}.}
+    \label{fig:sh:scaling_example}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}
     \centering
-    \import{\imgpath}{exp_fit_N1000}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \import{\imgpath}{exp_fit_N1500}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \import{\imgpath}{scaling_fit}
+    \import{\imgpath}{sh_radius}
+    \caption{Results for the radius of the \acrlong{ba}.}
 \end{figure}
 
-%\section{Results for the \acrshort{mhm}}
+\clearpage
+\section{Results for the binary Modern Hopfield}
 \subbibliography
 \end{document}
