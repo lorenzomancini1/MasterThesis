@@ -75,15 +75,18 @@ In order to determine \pret{p} we rely on averaging the number of successes over
     \caption{Ciaoo}
 \end{figure}
 
-As can be observed in~\cref{alg:retrieval} the error of each point of \pret{p} is computed just by taking the standard error of the number of successes. (qua ci dovrei scrivere che tipo dove la prob è viene fuori 1 (oppure 0) allora l'errore viene nullo?).
+Proceeding in this way, for a given $\alpha$ we have an array of lenght equal to the number of samples that we want to perform. Each element of such array is either $1$ or $0$, depending on whether a success has occurred or not. Hence -- as described in~\cref{alg:retrieval} --  the retrieval probability can be estimated by counting the fraction of successes, \ie the mean of the aforementioned array. The corresponding uncertainty is just the standard error over the ensemble of samples. By the way, it is worth mentioning that if we have one hunderd percent (or equivalently zero percent) of successes, the standard error is equal to zero. This might cause some problems in the fitting procedure described in~\cref{radius:critical_noise}, where we have to pass the errors as parameters to the \texttt{curve\_fit} function. As a workaround we set the uncertainty to be the maximum between a very small value and the one obtained from the simulation:
+\begin{equation*}
+    \sigma_{\pret{p}} = \max\left(10^{-4}, \, \text{S. E.}\right)
+\end{equation*}
 
-\section{Critical Noise}
+\section{Critical Noise}\label{sec:radius:critical_noise}
 As can be deduced from~\cref{fig:pret_example}, in the thermodynamic limit $N \to \infty$, the retrieval probability becomes a step function $\tilde{\theta}(p - p_c)$:
 \begin{equation*}
     \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases},
 \end{equation*}
 where we use the tilde to distinguish it from the usual notation of the step function.\\
-The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely. Otherwise retrieval is not possible.\\
+The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely, otherwise retrieval is not possible. Furthermore, it comes out that, if the initial condition contains enough information, then retrieval il computationally efficient, (qui chiedere prof se vuole altri dettagli).
 
 To start with this, we first have to find the function that approximates our \pret{p}. To this end, since we deal with a sigmoid-like function, we make a fit using:
 \begin{equation}\label{eq:fit_pret}
@@ -91,11 +94,11 @@ To start with this, we first have to find the function that approximates our \pr
 \end{equation}
 This fit can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library.\\
 
-Now, the idea is to find the value of $p$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how te latter scales with the size of the system. Mathematically, we need to solve for $p$:
+Now, the idea is to find the value of $p$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how the solution scales with the size of the system. Mathematically, we need to solve for $p$:
 \begin{equation}\label{eq:finite_critical_noise}
     \pret{p}_{\alpha,\, N} \overset{!}{=} y, \qquad y \in (0,\, 1).
 \end{equation}
-Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose.\\
+Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
 If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$
 \begin{equation}\label{eq:solution_fit}
     p_c(N)^{\alpha,\, y} = - \frac{\log\left(\left(y - k_3\right)^{-1} - 1\right)}{k_1} + k_2
@@ -127,11 +130,12 @@ Summarizing everything, in order to get our critical noise for a given $\alpha$ 
 \end{itemize}
 
 In the following sections we show the main results for both the \acrshort{shm} and the \acrshort{mhm}.
+
 \section{Results for the standard Hopfield}
 Here, all the simulations are done with the following Monte Carlo parameters:
 \begin{itemize}
     \item the temperature $\beta = 100$;
-    \item the minimum magnetization to have retrieval is set to $m_0 = 0.8$;
+    \item the minimum magnetization to have a successful retrieval is set to $m_0 = 0.8$;
     \item the number of sweeps \texttt{nsweeps} for each \acrshort{mcmc} run is equal to $100$ but we also stop; \item the algorithm if no more spin-flips occur, that is \texttt{earlystop} is equal to $0$.
 \end{itemize}
 The range of noises is choosen accordingly to the load parameter that is being considered. Indeed, setting a fixed range for all the $\alpha$ would have led to inaccurate results. The ideal situation is to narrow as much as possible the range of noises ​​around the zone where the step from $1$ to $0$ occurs. Hence, each range of noises can be determined after some initial experiments.\\
@@ -153,10 +157,22 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
 \begin{figure}
     \centering
     \import{\imgpath}{sh_radius}
-    \caption{Results for the radius of the \acrlong{ba}.}
+    \caption{Radius of the \acrlong{ba} for the \acrlong{shm}.}
+    \label{fig:sh_radius}
 \end{figure}
+In~\cref{fig:sh_radius} it can be observed how the radius decays to $0$ in a region betwee $0.14 \leq \alpha \leq 0.15$. This suggest that the critical value of the load parameter, $\alpha_c$, lies within that range, thus verifying other numerical results~\cite{amit_phase, another_mc_study} (recall that $\alpha_c \simeq 0.143$).
 
 \clearpage
 \section{Results for the binary Modern Hopfield}
+The procedure to follow for the binary Modern Hopfield is the same as described before. The only change is that here we do not have the coupling matrix $J$, hence the energy variation must be computed accordingly to~\cref{alg:mhm_metropolis}.
+Furthermore, here we have an extra parameter, $\lambda$ that makes the phase diagram of this model richer, leading to multiple values of $\alpha_c$. Therefore, the radius of the \acrlong{ba} strictly depends on the choice of $\lambda$.
+
+Qua ci dovrei scrivere che nel capitolo del diagramma di fase del modern Hopfield abbiamo trovato che per lambda = 0.05 il valore di alpha critico è circa 0.09.
+
+For computational reasons, here we show the results obtained with $\lambda$ equal to $\lambda = 0.05$, which gives a critical load parameter around $\alpha_c \simeq \dots$. To have a reasonable simulation time we need to decrease significantly the sizes of the system with respect to the \acrlong{shm}. Indeed if we set $\alpha = 0.07$ and $N = 200$, then the model stores more than a million patterns and doing a simulation with many samples would have been incredibly heavy. 
+
+Regarding the Monte Carlo parameters, what changes here is only the success threshold which is now set to $m_0 = 0.9$. (qua dovrei spiegare che è uguale se metto m0 = 0.8?)
+
+
 \subbibliography
 \end{document}

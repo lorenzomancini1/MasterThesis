@@ -13,6 +13,7 @@ $(PROJ).pdf : $(PROJ).tex mkdirs
 
 clean:
 	rm -rf $(AUXSDIR)
+	rm -rf `biber --cache`
 
 mkdirs:
 	mkdir -p $(AUXSDIR)/frontmatter
