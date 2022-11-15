@@ -5,7 +5,104 @@
 \addbibresource{\rootdir/references.bib}
 \begin{document}
 \chapter{Phase diagrams}\label{chap:phase_diagram}
-While for the \acrlong{shm} we have numerous and well known studies for its phase diagram~\cite{amit_phase, another_mc_study}
+While for the \acrlong{shm} we have numerous and well known studies for its phase diagram~\cite{amit_phase, another_mc_study, Fiorelli}, the same does not apply for the \acrlong{mhm} whose critical values, phase transitions and so on are still under investigation.\\
+Studying the phase diagram of such models is indeed a very advanced analytical task, which requires strong theoretical background on statistical mechanics and spin glass theory \eg the replica trick, that might also lead to some approximations.
+
+As we have discussed in~\cref{sec:modern_hop}, for the \acrshort{mhm}, the state of stable configurations is determined by three parameters, which are the temperature $T$ (or its inverse $\beta$), the load parameter $\alpha$ and the extra parameters that appears in the enrgy computation $\lambda$.\\ 
+The goal of this chapter is to provide some insights about the critical load parameters thorugh numerical simulations, namely $\alpha_c$, at least in the low $\lambda$ region. Indeed, it might make sense to believe that, for a given temperature $T$, a relationship between the critical load parameter $\alpha_c$ and $\lambda$ exist:
+\begin{equation}
+    \alpha_c \equiv \alpha_c\left(\lambda\right).
+\end{equation}
+We refer to $\alpha_c$ as that value above which the retrieval states disappear, just like it happens in the \acrlong{shm}. Regarding this, it is worth to stress that it is possible to obtain a finite -- \ie not zero -- overlap with the stored patterns even above $\alpha_c$, but meaningful retrieval is precluded~\cite{amit_phase}. We assume that the same holds for the \acrshort{mhm}.
+
+\section{Estimation of }
+If we are below the critical load parameter, $\alpha < \alpha_c$ and we run a low temperature \acrshort{mcmc} starting from one random stored pattern, we expect that the final configuration to be not to far from the initial one. ``Not to far'' means that the final overlap is as close as possible to the initial one, which is equal to unity if we start from a stored pattern. On the other hand, if we are in the region $\alpha > \alpha_c$ we should observe that the overlap of the final configuration is significantly different from the initial one, we say that the configuration \emph{escapes}.\\
+What we are saying is that above $\alpha_c$ the stored patterns no longer correspond to local or global minima of the energy. In this case, stability is governed by either mixed or glassy states. Equivalently, \acrlong{ba} shrink more and more as $\alpha$ increases, until they disappear completely. More details on this will be given in the next chapter.\\
+The transition where \emph{escape} takes place in the thermodynamic limit is $\alpha_c$. We can thus define the \emph{escape probability} for a given $\alpha$ as the frequency of ``escape events'' that occur in an ensemble of samples:
+\begin{equation}
+    \pesc \equiv \pesc \left( \alpha \right).
+\end{equation}
+In order to compute the probability defined in the previous equation we need to perform an average over an ensemble of samples. In other words, we repeat the same experiment multiple times taking independent samples and storing the results as it is shown in~\cref{alg:escape}.
+
+\begin{algorithm}
+    \caption{Computation of \pesc\ for a given range of $\alpha$.}
+    \label{alg:escape}
+    \begin{algorithmic}[1]
+    \Require $N$, $\alpha \alpha$, $\beta$, $\mathtt{nsamples}$,$\mathtt{nsweeps}$, $\mathtt{earlystop}$, $m_0$
+    \State $M \gets N\alpha$ (or $\exp(N\alpha)$)
+    \State $\mathtt{n\alpha} \gets |\alpha \alpha|$
+    \State Initialize \texttt{freqs}, \texttt{ferrors} \Comment{arrays that contain probabilities and related errors}
+
+    \For{$i = 1$ to $\mathtt{n \alpha}$}
+        \State Initialize $m_f$ \Comment{array with final magnetizations}
+        \For{$\mathtt{sample} = 1$ to $\mathtt{nsamples}$}
+            \State Generate $M$ patterns of length $N$
+            \State Store the patterns \Comment{\ie build $J$ for \acrshort{shm} otherwise do nothing}
+            \State Take a random pattern \bxi
+            \State Run the \acrshort{mcmc} with $\beta$, \texttt{nsweeps} and \texttt{earlystop}
+            \State Compute final overlap $m$
+            \State $m_f[\text{sample}] \gets m$
+        \EndFor
+        \State Compute the number of \texttt{escapes} by checking $m_f < m_0$ elementwise
+        \State $freqs[i] \gets$ mean(\texttt{escapes})
+        \State $ferrors[i] \gets$ std(\texttt{escapes})
+    \EndFor
+    \State \textbf{return} \texttt{freqs}, \texttt{ferrors}
+    \end{algorithmic}
+\end{algorithm}
+We expect \pesc\ to be something like a sigmoid for finite size systems, \ie it shows a smooth step -- from zero to one --  that covers a certain range of $\alpha$. Hence, we fit the escape probability with a sigmoid-like function defined by three parameters:
+\begin{equation}\label{eq:fit_pesc}
+    \pesc= \frac{1}{1 + \exp \left[ - k_1 (\alpha - k_2) \right]} + k_3.
+\end{equation}
+This fit can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library giving as results the set of coefficients $\vec{k^*}$ and the related covariance matrix $K^*$.\\
+Now, the idea is to find the value of $\alpha$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how the solution scales with the size of the system. Mathematically, we need to solve for $\alpha$:
+\begin{equation}\label{eq:finite_critical_alpha}
+    \pesc \overset{!}{=} y, \qquad y \in (0,\, 1).
+\end{equation}
+Doing so, we obtain the critical $\alpha$ for finite sizes $\alpha_c\left(N,\,y\right)$, which is a function of the size of the system $N$, and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
+The finite critical $\alpha$ is given by
+\begin{equation}\label{eq:solution_fit}
+    \alpha_c(N)_{y} = - \frac{\log\left(\left(y - k_3^*\right)^{-1} - 1\right)}{k_1^*} + k_2^*,
+\end{equation}
+and its uncertainty can be easily computed with error propagation. Regarding this last point, we assume that the coefficients $k_{i}^{*}$ are uncorrelated:
+\begin{equation}
+    \sigma_{\alpha_c(N)} = \sqrt{ \sum_{i = 1}^{3} \left( \frac{\partial \alpha_c(N)}{\partial k_i^*} \cdot \sigma_{k_i^*} \right)^2 }   
+\end{equation}
+Since we are interested in the thermodynamic limit, we define the cricital load parameter, $\alpha_c$ as:
+\begin{equation}\label{eq:critical_alpha}
+    \alpha_c = \lim_{N \to \infty} \alpha_c(N)^{y},
+ \end{equation}
+ The solution for different sizes given by~\cref{eq:solution_fit} can be plotted against the $1/N$ variable.
+ If we are able to find some reasonable relationship for $\alpha_c(1/N)$ -- that is we can find reasonable function that well describes our data -- then our result is simply the intercept of such function with the $y$-axis. More precisely:
+ \begin{equation}\label{eq:scaling_alpha}
+    \alpha_c(N) \approx q + \frac{1}{N}a + \frac{1}{N^2} b + O\left(N^{-3}\right),
+\end{equation}
+where
+\begin{equation*}
+    \alpha_c \gets q.
+\end{equation*}
+For all our simulations we set $y = 0.5$ in~\cref{eq:solution_fit}. Clearly, everyghing is valid for both the \acrshort{shm} and the \acrshort{mhm}, keeping in mind that, concerning the latter, the critical value depends on $\lambda$.\\
+Moreover, this procedure is the same that we are going to apply in~\cref{chap:radius} for the computation of the critical noise. More details will be given later.
+
+\subsection{Standard Hopfield}
+Just to check that everything works correctly, we can try to estimate $\alpha_c$ for the \acrlong{shm}.
+\begin{figure}
+    \centering
+    \import{\imgpath}{escape_prob_sh}
+    \caption{Results of the \texttt{curve\_fit} procedure for the \acrshort{shm}. It can be clearly observed how the steepness of the curve increases with the size.}
+    \label{fig:sh:escaoe_probs}
+\end{figure}
+\begin{figure}
+    \centering
+    \import{\imgpath}{alpha_c_sh}
+    \caption{Finite-size analysis for the computation of $\alpha_c$ for \acrshort{shm}. The critical value is the intercept with the $y$-axis highlighted in red}
+    \label{fig:sh:critical_alpha}
+\end{figure}
+The result obtained from~\cref{fig:sh:critical_alpha} is:
+\begin{equation}
+    \alpha_c = 0.1454 \pm 0.0002,
+\end{equation}
+which is very similar to the one obtained in~\cite{amit_phase}.
 
 \subbibliography
 

@@ -16,11 +16,11 @@ clean:
 	rm -rf `biber --cache`
 
 mkdirs:
-	mkdir -p $(AUXSDIR)/frontmatter
 	mkdir -p $(AUXSDIR)/chapters/chap0
 	mkdir -p $(AUXSDIR)/chapters/chap1
 	mkdir -p $(AUXSDIR)/chapters/chap2
 	mkdir -p $(AUXSDIR)/chapters/chap3
 	mkdir -p $(AUXSDIR)/chapters/chap4
+	mkdir -p $(AUXSDIR)/chapters/chap5
 
 .PHONY: all clean

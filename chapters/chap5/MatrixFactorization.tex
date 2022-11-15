@@ -21,9 +21,17 @@ that is, we have decomposed $J$ into a product of two matrices. However, in~\cre
 
 As a starting point, we consider the region of the phase diagram related to the \acrlong{shm} where patterns are global minima. This translates into considering the load parameter $\alpha \lesssim 0.05$. At this point, the goal is to find the global minima of the energy defined by $J$. Of course, in the algorithms that we are going to show, we act as if we know the matrix of the patterns $\xi$, and indeed we use the latter to check performances. However, it must be stressed that this is an unsupervised learning task, therefore, in the ideal situation, we do not know $\xi$, thus forcing us to explore some other methods to investigate the behaviour of the algorithms. A solution to this would be, for example, to compare the energy of the configuration obtained with the theoretical energy of a global minima, which is given by the replica trick analysis (chiedere prof).
 
-\subsection{Trapping states}
+\section{Trapping states}
 Let's say that we generate $M = \alpha N$ patterns with $\alpha \lesssim 0.05$ and store them through the computation of $J$. If we run a zero-temperature \acrlong{mcmc} from a random configuration \bsigma, then what kind of minima does the system land on?\\
 To answer this it suffices to run~\cref{alg:shm_mcmc} with a very high $\beta$ and compute the overlaps between the final configuration and all the patterns \bxi.
+\begin{figure}[hbt]
+    \centering
+    \import{\imgpath}{hist_trapping}
+    \label{fig:hist_trapping}
+    \caption{Final overlaps between a configuration obtained from a \acrshort{mcmc} ($\beta = 100$ and $\alpha = 0.04$) and all the stored patterns.}
+\end{figure}
+\Cref{fig:hist_trapping} shows that the distributions of the overlaps tends towards a Dirac delta function centered in zero. This seems to suggest that in the thermodynamic limit the \acrshort{mcmc} lands on a configuration which is ortogonal to all the stored patterns, that is a spin glass state. (e qui dobbiamo dire che questo non è un buon inizio per risolvere matrix factorization).
+
 
 \subbibliography
 
