@@ -1,4 +1,4 @@
-PROJ  = MatrixFactorization
+PROJ  = RadiusoftheBAs
 LC    = latexmk
 LOGSDIR = .build
 ARGS = -pv -pdfxe -outdir=$(LOGSDIR) -pdfxelatex="xelatex -halt-on-error" -bibtex
