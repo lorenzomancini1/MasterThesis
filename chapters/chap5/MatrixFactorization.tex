@@ -28,11 +28,114 @@ To answer this it suffices to run~\cref{alg:shm_mcmc} with a very high $\beta$ a
     \centering
     \import{\imgpath}{hist_trapping}
     \label{fig:hist_trapping}
-    \caption{Final overlaps between a configuration obtained from a \acrshort{mcmc} ($\beta = 100$ and $\alpha = 0.04$) and all the stored patterns.}
+    \caption{Final overlaps between a configuration obtained from a \acrshort{mcmc} ($\beta = 100$ and $\alpha = 0.02$) and all the stored patterns.}
 \end{figure}
-\Cref{fig:hist_trapping} shows that the distributions of the overlaps tends towards a Dirac delta function centered in zero. This seems to suggest that in the thermodynamic limit the \acrshort{mcmc} lands on a configuration which is ortogonal to all the stored patterns, that is a spin glass state. (e qui dobbiamo dire che questo non è un buon inizio per risolvere matrix factorization).
+\Cref{fig:hist_trapping} shows that the distributions of the overlaps tends towards a Dirac delta function centered in zero. This suggests that in the thermodynamic limit the \acrshort{mcmc} lands on a configuration which is ortogonal to all the stored patterns, that is a spin glass state. (e qui dobbiamo dire che questo non è un buon inizio per risolvere matrix factorization). If instead we observed finite magnetizations between the final configuration and a certain number of patterns, the system would be in a mixed state. However, this seems not to be our case.
 
+As a next step, it might be useful make the system explore higher-energy configurations during energy minimization. As we have mentioned in~\cref{chap:numerical_sim}, this procedure is called \acrlong{sa}. As the name suggests, the temperature is lowered during the execution of the \acrshort{mcmc} in a way such that we start with an high temperature for a certain number of sweeps, and then we end up with the standard low temperature dynamics.
+\begin{algorithm}
+    \caption{\acrlong{mcmc} with \acrlong{sa}}
+    \label{alg:1}
+    \begin{algorithmic}[1]
+    \Require $\bsigma$, $J$, $\beta_i$, $\beta_f$, nsweeps, earlystop
+    \State $\bsigma_{rec} \gets \bsigma$
+    \State $T_i \gets 1/\beta_i$
+    \State $T_f \gets 1/\beta_f$
+    \State Create a vector $\symbf{T}$ from $T_i$ to $T_f$ with \texttt{nsweeps} elements
+    \State $\symbf{\beta} \gets 1 \, ./ \, \symbf{T}$
+        \For{$i = 1$ to nsweeps}
+            \State $\symbf{\sigma_{\text{rec}}},\, \text{fliprate} \gets \text{metropolis}\left(\symbf{\sigma_{\text{rec}}},\, J,\, \symbf{\beta[i]} \right)$  
+            \If {fliprate $\leq$ earlystop}
+                \State break
+            \EndIf
+        \EndFor
+    \textbf{return} $\symbf{\sigma_{\text{rec}}}$
+\end{algorithmic}
+\end{algorithm}
+\begin{figure}[hb]
+    \centering
+    \import{\imgpath}{hist_trapping_SA}
+    \caption{Final overlaps between a configuration obtained from a \acrshort{mcmc} (with \acrshort{sa} and $\alpha = 0.02$) and all the stored patterns.}
+    \label{fig:hist_trapping_sa}
+\end{figure}
+Unfortunately, as can be observed in~\cref{fig:hist_trapping_sa} the situation is quite similar to the case without \acrshort{sa}~(\cref{fig:hist_trapping}). In other words, we expect that in the thermodynamic limit the probability to infer the patterns from $J$ goes to zero since energy minimization performed on any initial random configuration returns a state which is orthogonal to all the patterns.
 
+There are at least two trivial method which are somewhat equivalent:
+\begin{enumerate}
+    \item Try to minimize the energy from a random configuration hoping to find a global minimum;
+    \item Initialize a random matrix $\xi$ (composed by $M$ random patterns) and try to minimize the distance with $J$:
+    \begin{equation}\label{eq:distance}
+        d_{\hat{J}, J} = \Vert \hat{J} - J \Vert^2, \qquad \hat{J} = \xi \cdot \xi^T/N,
+    \end{equation}
+    where all the diagonal elements of $\hat{J}$ must be set to zero after every step during minimization.
+\end{enumerate}
+
+\section{First trivial method}
+Let's say that we have both the matrix $J$ and the corresponding matrix of patterns $\xi$ from which $J$ is generated. The idea is to start from a random configuration \bsigma and minimize energy using \acrshort{sa}. After minimization, we compute the overlaps between the final configuration, say $\bsigma_{rec}$, and all the patterns \bxi that compose $\xi$. It must be stressed that this last step would not be possible to perform since, in principle, we only know $J$ but not $\xi$. If we find that there is an overlap close to unity, then we have found an energy minimum. Therefore, we can subtract $\bsigma_{rec}$ from $J$:
+\begin{equation}
+    J \gets J - \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
+\end{equation}
+The full procedure is shown in~\cref{alg:mf:trivial_method_1}, where, for each of the $M$ patterns that we want to find, we try \texttt{nrestarts} initial random configuration. At the end of the algorithm -- in the case where it finds all the minima -- we expect all the elements of $J_{new}$ to be small or, in the ideal case (that is perfect retrieval), zero. 
+\begin{algorithm}
+    \caption{First trivial method for matrix factorization}
+    \label{alg:mf:first_trivial_method}
+    \begin{algorithmic}[1]
+    \Require $N$, $\alpha$, \texttt{nsweeps}, \texttt{nrestarts}
+    \State $M \gets N \cdot \alpha$
+    \State Generate $\xi$, the matrix with $M$ patterns of length $N$
+    \State Store $\xi$ \Comment{\ie compute $J$}
+    \State Initialize $\xi_{new}$ the matrix with the found patterns
+    \State $J_{new} \gets J$ \Comment{make a copy of $J$}
+    \State $M_{new} \gets 0$ \Comment{count the number of found minima}
+    \For{$m = 1$ to $M$}
+        \For{$i = 1$ to \texttt{nrestarts}}
+            \State Create a random configuration \bsigma
+            \State Run the \acrshort{mcmc} (with \texttt{nsweeps}) with \acrshort{sa} from \bsigma\ and get $\bsigma_{rec}$
+            \State Compute $ \symbf{m} \gets \bsigma_{rec}^T \cdot \xi \, ./\, N$ \Comment{overlaps with the stored patterns}
+            \If{ the absolute value of the maximum of $\symbf{m}$ is $\geq 0.8$ }
+                \State $J_{new} \gets J_{new} - \bsigma_{rec} \cdot \bsigma_{rec}^{T} \, ./ \, N$
+                \State $M_{new} \gets M_{new} + 1$
+                \State Add the found configuration to $\xi_{new}$
+                \State \textbf{break for}
+            \EndIf
+        \EndFor
+    \EndFor
+    \State \textbf{return $M_{new}/M$, $\xi_{new}$, $J_{new}$}
+\end{algorithmic}
+\end{algorithm}
+\clearpage
+\section{Second trivial method}
+Another possibility could be to minimize the distance between the coupling matrix induced by $M$ random \bxi. Minimization happens through the usual metropolis algorithm where the configuration is the flattened version of $\xi$, which has length equal to $N \cdot M$. Also, instead of the variation of energy, here we consider the variation of the distance that occurs with a single-spin flip.
+\begin{equation}
+    \Delta E \rightarrow \Delta d,
+\end{equation}
+where $d$ is defined in~\cref{eq:distance}.\\
+This is similar to the first method in a certain sense, indeed we are trying to minimize $M$ random configurations at the same time instead of just one.
+\begin{algorithm}
+\caption{Metropolis algorithm for matrix distance minimization}
+\label{alg:metropolis_on_distance}
+\begin{algorithmic}[1]
+    \Require $J$, $\bsigma$, $N$, $M$, $d_i$, $\beta$
+    \State $n \gets N \cdot M$
+    \State $\mathtt{fliprate} \gets 0$ \Comment{initialize fliprate}
+    \For{$i = 1$ to $n$}
+        \State Select a random neuron and flip it
+        \State Compute the new distance, $d$ with $J$
+        \State $\Delta d \gets d - d_i$
+        \If{$\Delta d < 0$ or $u \sim \mathcal{U}\left(0,\, 1\right) < \exp\left(- \beta \cdot \Delta d\right) $}
+            \State $d_i \gets d$
+            \State $\mathtt{fliprate} += 1$
+        \Else
+            \State Reject the flip
+        \EndIf
+    \EndFor
+    \State \textbf{return $\bsigma$, $d_i$, $\mathtt{fliprate}/N$}
+\end{algorithmic}
+\end{algorithm}
+As can be seen in~\cref{metropolis_on_distance}, we start with a random configuration \bsigma\ of $N \cdot M$ neurons and at each iteration, we compute the distance between the $\hat{J}$ matrix obtained by reshaping \bsigma\ as an $N \times M$ matrix:
+\begin{equation}
+    \bsigma \rightarrow \hat{\xi}_{N \times M} \rightarrow \hat{J} = \frac{\hat{\xi} \cdot \hat{\xi}^T}{N},
+\end{equation} 
+keeping in mind that we have to manually set all the diagonal elements of $\hat{J}$ to zero.
 \subbibliography
-
 \end{document}
