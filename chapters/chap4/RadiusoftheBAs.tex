@@ -19,11 +19,27 @@ In the following sections we show the main results that try to answer the previo
 \section{Retrieval probability}
 Here we refer to the Ising-like cases of the \acrshort{hm}, \ie the \acrshort{shm} and the binary version of the \acrshort{mhm} keeping in mind that everything also applies for the continuous \acrshort{shm} with the necessary changes.
 
-The retrieval probability \pret{p} is simply defined as the frequency of correct retrievals over a certain number of samples. To get a reasonable value for the probability, the number of samples should be as large as possible.\\
-What does a correct retrieval mean? The idea is to perform a zero-temperature \acrshort{mcmc} in order to minimize energy in a (quasi)-deterministic way. Doing so, any configuration \bsigma\ evolves towards state where the energy decreases or, at most, remains unchanged. However, it must be specified that a $\beta$ that is too large will make the system unable to jump out of even a tiny energy barrier. In this regard, we refer to $beta$ as a small -- but not too small -- value. For most of our simulations it is of the order of $O(10^2)$.
-
-If a \acrshort{mcmc} run over a configuration \bsigma\ leads to a final magnetization that is bigger than a certain threshold (we'll discuss this in the respective sections) we consider it as a success. In other words, a correct retrieval is a random variable that follows a Bernoulli distribution.\\
-If we make many samples with the same procedure we obtain that the number of success obey to a Binomial distribution:
+The retrieval probability \pret{p} is simply defined as the frequency of \emph{correct retrievals} over a certain number of samples.
+\begin{definition}[Retrieval probability]
+    Given an ensemble of random patterns matrices, \ie $\xi_{N \times M}$, the \emph{retrieval probability} is defined as:
+    \begin{equation}\label{eq:pret_definition}
+        \mathrm{P}_{\textbf{retrieval}} \left( \alpha, \, p, \, N \right) = \mathbb{E}_{\xi} \left[ \mathbb{I} \left( \frac{\bsigma_t \cdot \bxi}{N} \geq m_0 \right) \right], \qquad \mu \sim \mathrm{U}\left( 1, \, M \right),
+    \end{equation}
+where
+\begin{equation}
+    \bxi \overset{p}{\longrightarrow} \tilde{\bxi} = \bsigma_0 \overset{\text{\tiny MCMC}}{\longrightarrow} \bsigma_t.
+\end{equation}
+\end{definition}
+Last equation tells us that $\bsigma_t$ is the configuration after $t$ Monte Carlo sweeps given that the initial one is the $p$-perturbed version of \bxi.
+Moreover, \pret{p} is a function of three variables:
+\begin{itemize}
+    \item the load parameter $\alpha$ that determines the number of stored patterns in terms of $N$;
+    \item the noise $p$;
+    \item the size of our system, $N$.
+\end{itemize}
+What does a correct retrieval mean? The idea is to perform a zero-temperature \acrshort{mcmc} in order to minimize energy in a (quasi)-deterministic way. Doing so, any configuration \bsigma\ evolves towards state where the energy decreases or, at most, remains unchanged, \ie $E\left( \bsigma_{t + 1}\right) \leq E \left( \bsigma_t \right)$. However, it must be specified that a $\beta$ that is too large will make the system unable to jump out of even a tiny energy barrier. Therefore, we refer to $beta$ as a small -- but not too small -- value. For most of our simulations it is of the order of $O(10^2)$.
+If a \acrshort{mcmc} run over a configuration \bsigma\ leads to a final magnetization that is bigger than a certain threshold (we'll discuss this in the respective sections) we consider it as a \emph{correct retrieval}. In other words, the latter is a random variable that follows a Bernoulli distribution.\\
+If we make many samples with the same procedure we obtain that the number of successes obeys to a Binomial distribution:
 \begin{equation*}\label{eq:binomial_dist}
     \operatorname{Pr}(k ; n, c)=\operatorname{Pr}(X=k)=\left(\begin{array}{l}
         n \\
@@ -39,8 +55,7 @@ where
 \end{equation*}
 is the usual binomial coefficient, $k$ is the number of successes and $n$ is the number of trials. (qua il parametro p della distribuzione binomiale si confonde con la perturb probability. devo cambiare qualcosa).\\
 The parameter that governs \cref{eq:binomial_dist} is our retrieval probability, \ie $c \rightarrow \pret{p}$.
-In order to determine \pret{p} we rely on averaging the number of successes over an ensemble of samples. What we expect for such probability is to be a sigmoid-like decreasing function of $p$. This actually makes sense since, if we peturb just a little bit a pattern, then the model should be able to retrieve it with probability very close to one. As $p$ increases the model becomes less and less able to perform retrieval until it reaches probability zero. In~\cref{alg:retrieval} the steps to compute \pret{p} for a range of noises $p$ is shown
-
+In order to determine \pret{p} we rely on averaging the number of successes over an ensemble of samples following~\cref{eq:pret_definition}. What we expect for such probability is to be a sigmoid-like decreasing function of $p$. This actually makes sense since (for $\alpha, \, N$ fized), if $p$ is small, then the model should be able to retrieve it almost surely. As $p$ increases the model becomes less and less able to perform retrieval until it reaches probability zero. In~\cref{alg:retrieval} the steps to compute \pret{p} for a range of noises $p$ is shown.
 \begin{algorithm}
     \caption{Compute \pret{p} for a range of $p$}
     \label{alg:retrieval}
@@ -75,17 +90,16 @@ In order to determine \pret{p} we rely on averaging the number of successes over
     \caption{Ciaoo}
 \end{figure}
 
-Proceeding in this way, for a given $\alpha$ we have an array of lenght equal to the number of samples that we want to perform. Each element of such array is either $1$ or $0$, depending on whether a success has occurred or not. Hence -- as described in~\cref{alg:retrieval} --  the retrieval probability can be estimated by counting the fraction of successes, \ie the mean of the aforementioned array. The corresponding uncertainty is just the standard error over the ensemble of samples. By the way, it is worth mentioning that if we have one hunderd percent (or equivalently zero percent) of successes, the standard error is equal to zero. This might cause some problems in the fitting procedure described in~\cref{radius:critical_noise}, where we have to pass the errors as parameters to the \texttt{curve\_fit} function. As a workaround we set the uncertainty to be the maximum between a very small value and the one obtained from the simulation:
+Proceeding in this way, for a given $\alpha$ we have an array of lenght equal to the number of samples that we want to perform. Each element of such array is either $1$ or $0$, depending on the value of the final overlap. Hence -- as described in~\cref{alg:retrieval} -- the retrieval probability can be estimated by counting the fraction of successes, \ie the mean of the aforementioned array. The corresponding uncertainty is just the standard error over the ensemble of samples. By the way, it is worth mentioning that if we have one hunderd percent (or equivalently zero percent) of successes, the standard error is equal to zero. This might cause some problems in the fitting procedure described in~\cref{radius:critical_noise}, where we have to pass the errors as parameters to the \texttt{curve\_fit} function. As a workaround we set the uncertainty to be the maximum between a very small value and the one obtained from the simulation:
 \begin{equation*}
     \sigma_{\pret{p}} = \max\left(10^{-4}, \, \text{S. E.}\right)
 \end{equation*}
 
 \section{Critical Noise}\label{sec:radius:critical_noise}
-As can be deduced from~\cref{fig:pret_example}, in the thermodynamic limit $N \to \infty$, the retrieval probability becomes a step function $\tilde{\theta}(p - p_c)$:
+Our assumption, is that in the thermodynamic limit the retrieval probability shows a sharp threshold rather than a smooth sigmoid-like behaviour. Hence it becomes a reversed step function $\tilde{\theta}(p - p_c)$:
 \begin{equation*}
-    \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases},
+    \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases}.
 \end{equation*}
-where we use the tilde to distinguish it from the usual notation of the step function.\\
 The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely, otherwise retrieval is not possible. Furthermore, it comes out that, if the initial condition contains enough information, then retrieval il computationally efficient, (qui chiedere prof se vuole altri dettagli).
 
 To start with this, we first have to find the function that approximates our \pret{p}. To this end, since we deal with a sigmoid-like function, we make a fit using:
