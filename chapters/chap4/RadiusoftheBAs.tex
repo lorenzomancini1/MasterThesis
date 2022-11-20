@@ -133,7 +133,7 @@ Summarizing everything, in order to get our critical noise for a given $\alpha$ 
 \begin{itemize}
     \item Simulate retrievals probability accordingly to~\cref{alg:retrieval};
     \item fit the simulation data with the sigmoid-like function~\cref{eq:fit_pret};
-    \item compute the \emph{finite critical noise}, \ie the value where the fit is equale to $y = 0.5$;
+    \item compute the \emph{finite critical noise}, \ie the value where the fit is equal to $y = 0.5$;
     \item repeat for different sizes and fit the finite critical noises with~\cref{eq:scaling_noise};
     \item the intercept of this last fit is $p_c(\alpha)$.
 \end{itemize}
@@ -154,13 +154,13 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
 \begin{figure}[hbt]
     \centering
     \import{\imgpath}{fit_example}
-    \caption{Results of the fitting procedure for three sizes, $N = 200,\, 700$ and $1500$ with load parameter $\alpha = 0.1$. Averages are made for $10^5$, $2\cdot 10^4$ and $5\cdot10^3$ samples respectively. Errorbars are not shown since they're very small with respect to the markers. qua ci dovrei scrivere che i pallini sono i risultati delle simulazioni?}
+    \caption{Dots are the simulation results of the retrieval probabilities for different sizes and with $\alpha = 0.1$, whereas the corresponding lines are the function found with the fitting procedure.}
     \label{fig:sh_fit_example}
 \end{figure}
 \begin{figure}
     \centering
     \import{\imgpath}{scaling_example}
-    \caption{Example of scaling relationship for three different values of $\alpha$. Points are fitted with a polynomial of degree $2$. Errorbars are given by error propagation of\cref{eq:solution_fit}.}
+    \caption{Example of scaling relationships for three different values of $\alpha$. Data are fitted with a polynomial of degree $2$ following~\cref{eq:scaling_noise}. Errorbars are given by error propagation of~\cref{eq:solution_fit}.}
     \label{fig:sh:scaling_example}
 \end{figure}
 \begin{figure}

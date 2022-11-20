@@ -16,7 +16,7 @@ The goal of this chapter is to provide some insights about the critical load par
 We refer to $\alpha_c$ as that value above which the retrieval states disappear, just like it happens in the \acrlong{shm}. Regarding this, it is worth to stress that it is possible to obtain a finite -- \ie not zero -- overlap with the stored patterns even above $\alpha_c$, but meaningful retrieval is precluded~\cite{amit_phase}. We assume that the same holds for the \acrshort{mhm}.
 
 Carlo Lucibello and Marc Mézard are studying the phase of diagram of this model from an analytical point of view and some preliminary results discussed in private communications suggest that:
-\begin{equation}
+\begin{equation}\label{eq:preliminary_phase_diagram}
     \alpha_c\left( \lambda \right) = \lambda - \log \left( \cosh\left( \lambda \right) \right)
 \end{equation}
 \begin{figure}
@@ -24,7 +24,7 @@ Carlo Lucibello and Marc Mézard are studying the phase of diagram of this model
     \import{\imgpath}{theoretical_phase_diagram}
 \end{figure}
 
-\section{Estimation of }
+\section{Escape probability}
 If we are below the critical load parameter, $\alpha < \alpha_c$ and we run a low temperature \acrshort{mcmc} starting from one random stored pattern, we expect that the final configuration to be not to far from the initial one. ``Not to far'' means that the final overlap is as close as possible to the initial one, which is equal to unity if we start from a stored pattern. On the other hand, if we are in the region $\alpha > \alpha_c$ we should observe that the overlap of the final configuration is significantly different from the initial one, we say that the configuration \emph{escapes}.\\
 What we are saying is that above $\alpha_c$ the stored patterns no longer correspond to local or global minima of the energy. In this case, stability is governed by either mixed or glassy states. Equivalently, \acrlong{ba} shrink more and more as $\alpha$ increases, until they disappear completely. More details on this will be given in the next chapter.\\
 The transition where \emph{escape} takes place in the thermodynamic limit is $\alpha_c$. We can thus define the \emph{escape probability} for a given $\alpha$ as the frequency of ``escape events'' that occur in an ensemble of samples.
@@ -124,11 +124,21 @@ which is very similar to the one obtained by numerical simulations in~\cite{amit
 
 \clearpage
 \section{Results}
-The range of $\alpha$ for each simulation is choosen after some initial experiments in a way such that the ``sigmoid step'' can be well observed.
+The range of $\alpha$ for each simulation is choosen after some initial experiments in a way such that the ``sigmoid step'' can be well observed.\\
+As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident difference between the experimental results and the theoretical one given by~\cref{eq:preliminary_phase_diagram}. The reason of such difference is still under investigation. For sure, an important point to emphasize is that the sizes used for the simulations are quite small, hence finite size effects could be very important leading to uncorrect extrapolations. On the other hand, \Cref{eq:preliminary_phase_diagram} is just a preliminary result as we have mentioned before and it is still being investigated.
+
 \begin{figure}[hbt]
     \centering
     \import{\imgpath}{escape_prob_mh}
+    \caption{Example of the escape probability for $\lambda = 0.03$. Dots represent the results of the simulations over many samples, whereas the corresponding lines are the results of the fitting procedure.}
 \end{figure}
+\begin{figure}
+    \centering
+    \import{\imgpath}{mh_alpha_critical}
+    \caption{Comparison between the experimental results for the critical load parameters and the theoretical preliminary result.}
+    \label{fig:mh:alpha_critical}
+\end{figure}
+
 \subbibliography
 
 \end{document}
