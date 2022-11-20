@@ -142,8 +142,14 @@ keeping in mind that we have to manually set all the diagonal elements of $\hat{
 This is a sligthly different version of the first trivial method. As usual, we start from a random configuration and we run the \acrshort{mcmc}. As we have seen in~\cref{sec:trapping_states}, it is very likely that we land on a configuration which is not a stored pattern. The idea is to exploit~\cref{eq:unlearning} to ``delete'' that local minimum and run a new \acrshort{mcmc} restarting from there. More precisely, we keep a copy of the original $J$, say $J_{new}$, from which we subtract the local minima performing a sort of ``anti-hebb's rule'' using~\cref{eq:unlearning}. Doing so, we make \texttt{ntrials} attempt where, at each trial, two Monte Carlo simulations are needed:
 \begin{enumerate}
     \item the first is performed using the energy defined by $J_{new}$ (note that at the first iteration this is equal to the original coupling matrix $J$);
-    \item the second one takes the outputo configuration of the previous simulation and runs a new Monte Carlo using the origina $J$.
+    \item the second one takes the output configuration of the previous simulation and runs a new Monte Carlo using the original $J$.
 \end{enumerate}
 An illustration of what we are trying to do is given in \textbf{creare una bella figura che si capisca}.
+\begin{figure}
+    \centering
+    \includestandalone{\imgpath/unlearning}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
 \subbibliography
 \end{document}
