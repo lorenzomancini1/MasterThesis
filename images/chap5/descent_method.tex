@@ -1,0 +1,75 @@
+\documentclass[tikz]{standalone}
+\usepackage{import}
+\import{../../preamble/utils}{mygraphics}
+\usepackage[math-style=ISO, bold-style=ISO]{unicode-math}
+\begin{document}
+
+\begin{tikzpicture}[tdplot_main_coords, scale = 2]
+    \node[label = above:$\symbf{\sigma}$] (P) at ({-0.129},{-0.75},{1.85}) {};
+    
+    \shade[ball color = lightgray, opacity = 0.5] (0,0,0) circle (2cm);
+    
+    \tdplotsetrotatedcoords{0}{0}{0};
+    \draw[dashed, tdplot_rotated_coords, gray] (0,0,0) circle (2);
+    
+    %\tdplotsetrotatedcoords{90}{90}{90};
+    %\draw[dashed, tdplot_rotated_coords, gray] (1,0,0) arc (0:180:1);
+    
+    %\tdplotsetrotatedcoords{0}{90}{90};
+    %\draw[dashed, tdplot_rotated_coords, gray] (1,0,0) arc %(0:180:1);
+    
+    \draw[dashed, gray] (0,0,0) -- (-2,0,0);
+    \draw[dashed, gray, -stealth] (0,0,0) -- (0,-2,0) node[midway, below]{\tiny$r = \sqrt{N}$};
+    
+    \draw[-stealth] (0,0,0) -- (3.4,0,0) node[below left] {$\sigma_1$};
+    \draw[-stealth] (0,0,0) -- (0,2.30,0) node[below right] {$\sigma_i$};
+    \draw[-stealth] (0,0,0) -- (0,0,2.40) node[above] {$\sigma_N$};
+    %\draw[thick, -stealth] (0,0,0) -- (P) node[right] {$P$};
+    
+    %\draw[thin, dashed] (P) --++ (0,0,{-1/sqrt(3)});
+    %\draw[thin, dashed] ({1/sqrt(3)},{1/sqrt(3)},0) --++
+    %(0,{-1/sqrt(3)},0);
+    %\draw[thin, dashed] ({1/sqrt(3)},{1/sqrt(3)},0) --++
+    %({-1/sqrt(3)},0,0);
+    
+    %\draw[fill = lightgray!50] (P) circle (0.5pt);
+    
+    \node (a) at (1, 1, 1) {};
+    \node (b) at (1, 1, -1) {};
+    \node (c) at (1, -1, -1) {};
+    \node (d) at (-1, -1, -1) {};
+    \node (e) at (-1, -1, 1) {};
+    \node (f) at (-1, 1, 1) {};
+    \node (g) at (-1, 1, -1) {};
+    \node (h) at (1, -1, 1) {};
+    %\node (h) at ()
+    
+    \draw[dashed, blue] (a) to (b);
+    \draw[dashed, blue] (b) to (c);
+    \draw[dashed, blue] (c) to (d);
+    \draw[dashed, blue] (d) to (e);
+    
+    \draw[dashed, blue] (a) to (f);
+    \draw[dashed, blue] (f) to (g);
+    \draw[dashed, blue] (g) to (b);
+    
+    \draw[dashed, blue] (g) to (d);
+    \draw[dashed, blue] (a) to (h);
+    \draw[dashed, blue] (h) to (c);
+    \draw[dashed, blue] (h) to (e);
+    \draw[dashed, blue] (e) to (f);
+    
+    \draw[fill = {blue!40}] (a) circle (0.8pt);
+    \draw[fill = {blue!40}] (b) circle (0.8pt);
+    \draw[fill = {blue!40}] (c) circle (0.8pt);
+    \draw[fill = {blue!40}] (d) circle (0.8pt);
+    \draw[fill = {blue!40}] (e) circle (0.8pt);
+    \draw[fill = {blue!40}] (f) circle (0.8pt);
+    \draw[fill = {blue!40}] (g) circle (0.8pt);
+    \draw[fill = {blue!40}] (h) circle (0.8pt);
+    
+    \draw[fill = {black}] (P) circle (0.8pt);
+    
+    \draw[-stealth] (P) to[out = -10, in = 120] (h);
+    \end{tikzpicture}
+\end{document}
