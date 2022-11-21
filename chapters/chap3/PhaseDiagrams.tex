@@ -67,7 +67,9 @@ In order to compute the probability defined in the previous equation we need to 
     \State \textbf{return} \texttt{freqs}, \texttt{ferrors}
     \end{algorithmic}
 \end{algorithm}
-We expect \pesc\ to be something like a sigmoid for finite size systems, \ie it shows a smooth step -- from zero to one --  that covers a certain range of $\alpha$. Hence, simulation data should follow a function like:
+
+\section{Critical load parameter}
+We expect \pesc\ to be something like a sigmoid for finite size systems, \ie it shows a smooth step -- from zero to one --  that covers a certain range of $\alpha$. Hence, simulation data should fit a function like:
 \begin{equation}\label{eq:fit_pesc}
     \pesc= \frac{1}{1 + \exp \left[ - k_1 (\alpha - k_2) \right]} + k_3.
 \end{equation}
@@ -123,7 +125,7 @@ The result obtained from~\cref{fig:sh:critical_alpha} is:
 which is very similar to the one obtained by numerical simulations in~\cite{amit_phase, another_mc_study} and with the one derived with 1-RSB by~\textcite{Crisanti}.
 
 \clearpage
-\section{Results}
+\section{Results for the binary modern Hopfield}
 The range of $\alpha$ for each simulation is choosen after some initial experiments in a way such that the ``sigmoid step'' can be well observed.\\
 As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident difference between the experimental results and the theoretical one given by~\cref{eq:preliminary_phase_diagram}. The reason of such difference is still under investigation. For sure, an important point to emphasize is that the sizes used for the simulations are quite small, hence finite size effects could be very important leading to uncorrect extrapolations. On the other hand, \Cref{eq:preliminary_phase_diagram} is just a preliminary result as we have mentioned before and it is still being investigated.
 

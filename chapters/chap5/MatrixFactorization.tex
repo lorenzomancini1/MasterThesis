@@ -72,7 +72,7 @@ There are at least two trivial method which are somewhat equivalent:
 
 \section{First trivial method}
 Let's say that we have both the matrix $J$ and the corresponding matrix of patterns $\xi$ from which $J$ is generated. The idea is to start from a random configuration \bsigma and minimize energy using \acrshort{sa}. After minimization, we compute the overlaps between the final configuration, say $\bsigma_{rec}$, and all the patterns \bxi that compose $\xi$. It must be stressed that this last step would not be possible to perform since, in principle, we only know $J$ but not $\xi$. If we find that there is an overlap close to unity, then we have found an energy minimum. Therefore, we can subtract $\bsigma_{rec}$ from $J$:
-\begin{equation}\label{eq:unlearning rule}
+\begin{equation}\label{eq:unlearning_rule}
     J \gets J - \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
 \end{equation}
 The full procedure is shown in~\cref{alg:mf:trivial_method_1}, where, for each of the $M$ patterns that we want to find, we try \texttt{nrestarts} initial random configuration. At the end of the algorithm -- in the case where it finds all the minima -- we expect all the elements of $J_{new}$ to be small or, in the ideal case (that is perfect retrieval), zero. 
@@ -139,17 +139,69 @@ As can be seen in~\cref{metropolis_on_distance}, we start with a random configur
 keeping in mind that we have to manually set all the diagonal elements of $\hat{J}$ to zero.
 
 \section{Unlearning rule}
-This is a sligthly different version of the first trivial method. As usual, we start from a random configuration and we run the \acrshort{mcmc}. As we have seen in~\cref{sec:trapping_states}, it is very likely that we land on a configuration which is not a stored pattern. The idea is to exploit~\cref{eq:unlearning} to ``delete'' that local minimum and run a new \acrshort{mcmc} restarting from there. More precisely, we keep a copy of the original $J$, say $J_{new}$, from which we subtract the local minima performing a sort of ``anti-hebb's rule'' using~\cref{eq:unlearning}. Doing so, we make \texttt{ntrials} attempt where, at each trial, two Monte Carlo simulations are needed:
-\begin{enumerate}
-    \item the first is performed using the energy defined by $J_{new}$ (note that at the first iteration this is equal to the original coupling matrix $J$);
-    \item the second one takes the output configuration of the previous simulation and runs a new Monte Carlo using the original $J$.
-\end{enumerate}
-An illustration of what we are trying to do is given in \textbf{creare una bella figura che si capisca}.
+This is a sligthly different version of the first trivial method. The idea is to exploit~\cref{eq:unlearning_rule} to ``fill'' the local minima found by \acrshort{mcmc}. More precisely, we start as usual froma a random configuration \bsigma\. After some Monte Carlo sweeps we land in a minimum which is very likely to be just local. At this point, we try to delete this local minimum by subtracting the corresponding configuration from the matrix $J$, thus obtaining a new $J_{new}$. Now, we run again a Monte Carlo starting from the configuration found before but using the new coupling matrix $J_{new}$. Of course, all these steps can be repeated multiple times, with the goal of finding a global minima in a finite number of attempts.
+Notice that now we want to delete only local minima from our energy landscape, two coupling matrices are needed: the original one, ie $J$, and the one from which we subtract trapping configurations, \ie $J_{new}$.\\
+Furthermore, while we fill a local minimum by ``unlearning'' it, it may happen that new trapping states appear in the energy landscape defined by $J_{new}$. Therefore, what we would like to obtain is that any initial random configuration \bsigma\ gets trapped in a local minimum which is near enough to a global one, so that just few unlearnings would be needed.\\
+\begin{equation}\label{eq:unlearning_eta}
+    J_{new} \gets J_{new} - \eta \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
+\end{equation}
+\begin{algorithm}
+    \caption{Algorithm to recover global minimum with unlearning}
+    \label{alg:metropolis_on_distance}
+    \begin{algorithmic}[1]
+        \Require $J$, \texttt{ntrials}, \texttt{nrestarts}, $\eta$
+        \State Make a copy of $J$, say $J_{new}$
+        \State Select a random configuration $\bsigma_{f}$
+        \State Compute the energy per neuron $E_f$ of $\bsigma_{f}$
+
+        \For{$i = 1$ to \texttt{nrestarts}}
+            \State Select a random configuration \bsigma\ and compute the energy per neuron $E$
+            \For{$j = 1$ to \texttt{ntrials}}
+                \State Run a \acrshort{mcmc} from \bsigma\ with $J_{new}$ and obtain $\bsigma_{new}$
+                \State Update $\bsigma_{new}$ with a new \acrshort{mcmc} using $J$
+                \State Compute the energy per neuron $E_new$
+                \If{$E_{new} > E$}
+                    \State \textbf{break}
+                \EndIf
+                \State $\bsigma \gets \bsigma_{new}$
+                \State $E \gets E_{new}$
+                \State Subtract $\bsigma_{new}$ from $J_{new}$ using~\cref{eq:unlearning_eta}
+            \EndFor
+            \If{$E < E_f$}
+                \State $\bsigma_f \gets \bsigma$
+                \State $E_f \gets E$
+            \EndIf
+        \EndFor
+        \State \textbf{return $\bsigma_f$, $E_f$}
+    \end{algorithmic}
+    \end{algorithm}
+
+%As usual, we start from a random configuration and we run the \acrshort{mcmc}. As we have seen in~\cref{sec:trapping_states}, it is very likely that we land on a configuration which is not a stored pattern. The idea is to exploit~\cref{eq:unlearning} to ``delete'' that local minimum and run a new \acrshort{mcmc} restarting from there. More precisely, we keep a copy of the original $J$, say $J_{new}$, from which we subtract the local minima performing a sort of ``anti-hebb's rule'' using~\cref{eq:unlearning}. Doing so, we make \texttt{ntrials} attempt where, at each trial, two Monte Carlo simulations are needed:
+%\begin{enumerate}
+%    \item the first is performed using the energy defined by $J_{new}$ (note that at the first iteration this is equal to the original coupling matrix $J$);
+%    \item the second one takes the output configuration of the previous simulation and runs a new Monte Carlo using the original $J$.
+%\end{enumerate}
+%An illustration of what we are trying to do is given in \textbf{creare una bella figura che si capisca}.
 \begin{figure}
     \centering
     \includestandalone{\imgpath/unlearning}
-    \caption{Caption}
+    \caption{An illustration of the ideal unlearning procedure. The model is trapped in a local minimum (left) and we remove it by filling the energy hole using~\cref{eq:unlearning_eta}}
     \label{fig:my_label}
 \end{figure}
+
+\section{Gradient descent from continuous configurations}
+One more possibility is to start from a continuous configuration, \eg $\sigma_i \sim \mathcal{N}\left(0, 1\right)$, with $i = 1, \dots, N$, and performa gradient descent in order to minimize:
+\begin{equation}\label{eq:descent_method}
+    \min_{\bsigma \in \mathbb{R}^N} \left[ \left(\bsigma^T \cdot J \cdot \bsigma\right) + \gamma \sum_{i = 1}^{N} V(\sigma_i) \right]
+\end{equation} 
+where
+\begin{equation}
+    V(\sigma_i) = \left(\sigma_i - 1\right)^2 \left(\sigma_i + 1\right)^2. 
+\end{equation}
+Indeed, in the large $\gamma$ limit this is equivalent to:
+\begin{equation}
+    \min_{\bsigma \in \left\{-1, \, +1\right\}^N}  \left(\bsigma^T \cdot J \cdot \bsigma\right), \qquad \gamma \to \infty.
+\end{equation}
+Said in another way, we are starting from a point in the $N$-dimensional space which is near to the hypersphere whose radius is equal to $\sqrt{N}$ and, through~\cref{eq:descent_method} we are pushing that point towards a vertex of the hypercube centered in the origin and with linear size equal to $2$.
 \subbibliography
 \end{document}
