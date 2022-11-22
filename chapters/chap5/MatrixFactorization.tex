@@ -23,7 +23,7 @@ As a starting point, we consider the region of the phase diagram related to the 
 
 \section{Trapping states}\label{sec:trapping_states}
 Let's say that we generate $M = \alpha N$ patterns with $\alpha \lesssim 0.05$ and store them through the computation of $J$. If we run a zero-temperature \acrlong{mcmc} from a random configuration \bsigma, then what kind of minima does the system land on?\\
-To answer this it suffices to run~\cref{alg:shm_mcmc} with a very high $\beta$ and compute the overlaps between the final configuration and all the patterns \bxi.
+To answer this it suffices to run~\cref{alg:shm_mcmc} with a very high $\beta$ and measure the overlaps between the final configuration and all the patterns \bxi.
 \begin{figure}[hbt]
     \centering
     \import{\imgpath}{hist_trapping}
@@ -71,7 +71,7 @@ There are at least two trivial method which are somewhat equivalent:
 \end{enumerate}
 
 \section{First trivial method}
-Let's say that we have both the matrix $J$ and the corresponding matrix of patterns $\xi$ from which $J$ is generated. The idea is to start from a random configuration \bsigma and minimize energy using \acrshort{sa}. After minimization, we compute the overlaps between the final configuration, say $\bsigma_{rec}$, and all the patterns \bxi that compose $\xi$. It must be stressed that this last step would not be possible to perform since, in principle, we only know $J$ but not $\xi$. If we find that there is an overlap close to unity, then we have found an energy minimum. Therefore, we can subtract $\bsigma_{rec}$ from $J$:
+Let's say that we have both the matrix $J$ and the corresponding matrix of patterns $\xi$ from which $J$ is generated. The idea is to start from a random configuration \bsigma and minimize energy using \acrshort{sa}. After minimization, we compute the overlaps between the final configuration, say $\bsigma_{rec}$, and all the patterns \bxi that compose $\xi$.  If we find that there is an overlap close to unity, then we have found an energy minimum. Therefore, we can subtract $\bsigma_{rec}$ from $J$:
 \begin{equation}\label{eq:unlearning_rule}
     J \gets J - \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
 \end{equation}
