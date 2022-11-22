@@ -166,10 +166,24 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
 \begin{figure}
     \centering
     \import{\imgpath}{sh_radius}
-    \caption{Radius of the \acrlong{ba} for the \acrlong{shm}.}
+    \caption{Radius of the \acrlong{ba} for the \acrlong{shm} obtained with perturbations along random directions.}
     \label{fig:sh_radius}
 \end{figure}
-In~\cref{fig:sh_radius} it can be observed how the radius decays to $0$ in a region betwee $0.14 \leq \alpha \leq 0.15$. This suggest that the critical value of the load parameter, $\alpha_c$, lies within that range, thus verifying other numerical results~\cite{amit_phase, another_mc_study} (recall that $\alpha_c \simeq 0.143$).
+In~\cref{fig:sh_radius} we can clearly observe that the radius of the $\acrlong{ba}$ decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrshort{shm} is able to perform retrieval starting from an (almost) orthogonal configuration.
+
+\clearpage
+\subsection{Anisotropy}
+Up to now, we considered perturbed configurations obtained by adding noise uniformly to all the neurons, that is, each neuron is flipped with a certain probability that we called $p$.\\
+Now, the goal is to investigate the space distribution of such basins. To this end, the idea is that, for a given \bxi\ we rank all the other patterns by measuring the overlap with \bxi. Doing so, we can perturb \bxi\ along the direction of the pattern with which it has the largest overlap.
+Indeed, let's say that \bxi\ and \bxi[\nu]\ are the pattern that we want to perturb and the pattern with the largest overlap respectively. Then, the procedure consists on flipping with probability $p$ all the neurons that make $\bxi$ different from \bxi[\nu].
+\begin{figure}
+    \centering
+    \import{\imgpath}{sh_radius_anisotropy}
+    \caption{Comparison between the radius of the results obtained with perturbations along random directions (in green) and perturbations along the direction of the most correlated pattern (violet). In this last case, $p$ represent the fraction of neurons that differ between the two patterns that define the considered direction.}
+    \label{fig:sh:radius:anisotropy}
+\end{figure}
+\Cref{fig:sh:radius:anisotropy} shows that the radius of the \acrlong{ba} is not isotropic. Surprisingly, we observe that basins are wider if we move along the direction of the most correlated \bxi, thus introducing some anisotropy in the geometry of the energy landscape.
+It is not easy to justify this last result since, in principle, we would have expected to get a smaller radius. However, it is reasonable to assume that, along the most correlated direction, the energy landscape is smoother with respect to the \emph{random direction} case.
 
 \clearpage
 \section{Results for the binary Modern Hopfield}
@@ -181,7 +195,16 @@ Qua ci dovrei scrivere che nel capitolo del diagramma di fase del modern Hopfiel
 For computational reasons, here we show the results obtained with $\lambda$ equal to $\lambda = 0.05$, which gives a critical load parameter around $\alpha_c \simeq \dots$. To have a reasonable simulation time we need to decrease significantly the sizes of the system with respect to the \acrlong{shm}. Indeed if we set $\alpha = 0.07$ and $N = 200$, then the model stores more than a million patterns and doing a simulation with many samples would have been incredibly heavy. 
 
 Regarding the Monte Carlo parameters, what changes here is only the success threshold which is now set to $m_0 = 0.9$. (qua dovrei spiegare che è uguale se metto m0 = 0.8?)
+\begin{figure}[hbt]
+    \centering
+    \import{\imgpath}{mh_radius}
+    \caption{Radius of the \acrlong{ba} for the \acrlong{mhm} with $\lambda = 0.03$. Results are obtained with perturbations along random directions.}
+    \label{fig:mh:radius}
+\end{figure}
 
+Summarizing, in this chapter we have shown that the radius of the \acrshort{ba} displays a second order phase transition at the critical point, that is, it decreases continuously to zero.\\
+More over, at least for the \acrshort{shm}, both global and local minima are anisotropic.
+Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is sligthly smaller that the one obtained in~\cref{chap:phase_diagrams} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
 
 \subbibliography
 \end{document}

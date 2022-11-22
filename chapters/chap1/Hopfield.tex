@@ -87,7 +87,13 @@ Moreover, we introduce the \emph{load parameter}, \ie:
 \end{equation}
 which is just the number of stored patterns written in terms of the length of the configurations.\\
 \Citeauthor{amit_phase} studied the phase diagram of the Hopfield Model through the replica method \cite{amit_phase}.\\
-Results show that there exist a critical value of the load parameter $\alpha_c = 0.138$ above which retrieval states disappear discontinuously. Here, the system is on a spin glass phase. Below $\alpha_c$ patterns can be retrieved at $T = 0$ with an error smaller than $1.5\%$. Moreover, for $\alpha \leq 0.05$ patterns become global minimum. For $0.05 < \alpha < \alpha_c$ patterns are metastable.
+The most important results for $T \to 0$ are:
+\begin{enumerate}
+    \item below $\alpha \simeq 0.05$ patterns are global minima;
+    \item for $0.05 \lesssim \alpha_c \lesssim 0.14$ patterns are metastable;
+    \item for $\alpha \geq \alpha_c$ we have no meaningful retrieval, even if dynamics can lead to finite overlaps;
+    \item we can have two types of spurious states: \emph{mixed states} \ie states which have a finite overlap with some patterns and \emph{spin glass states} \ie states which, as $N \to \infty$ are orthogonal to all the stored patterns.  
+\end{enumerate}
 
 \section{The modern Hopfield model}\label{sec:modern_hop}
 The \acrlong{hm} introduced by J. J. Hopfield is able to store a number of patterns that grows linearly with the number of neurons $N$, as we discussed in \cref{sec:standard_hop}. The mathematical reason why \acrshort{shm} gets confused when many memories are stored is that several memories produce contributions to the energy which are of the same order. In other words the energy decreases too slowly as the pattern approaches a memory in the configuration space.\\
