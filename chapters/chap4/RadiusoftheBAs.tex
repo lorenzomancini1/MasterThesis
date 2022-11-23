@@ -90,7 +90,7 @@ In order to determine \pret{p} we rely on averaging the number of successes over
     \caption{Ciaoo}
 \end{figure}
 
-Proceeding in this way, for a given $\alpha$ we have an array of lenght equal to the number of samples that we want to perform. Each element of such array is either $1$ or $0$, depending on the value of the final overlap. Hence -- as described in~\cref{alg:retrieval} -- the retrieval probability can be estimated by counting the fraction of successes, \ie the mean of the aforementioned array. The corresponding uncertainty is just the standard error over the ensemble of samples. By the way, it is worth mentioning that if we have one hunderd percent (or equivalently zero percent) of successes, the standard error is equal to zero. This might cause some problems in the fitting procedure described in~\cref{radius:critical_noise}, where we have to pass the errors as parameters to the \texttt{curve\_fit} function. As a workaround we set the uncertainty to be the maximum between a very small value and the one obtained from the simulation:
+Proceeding in this way, for a given $\alpha$ we have an array of lenght equal to the number of samples that we want to perform. Each element of such array is either $1$ or $0$, depending on the value of the final overlap. Hence -- as described in~\cref{alg:retrieval} -- the retrieval probability can be estimated by counting the fraction of successes, \ie the mean of the aforementioned array. The corresponding uncertainty is just the standard error over the ensemble of samples. By the way, it is worth mentioning that if we have one hundred percent (or equivalently zero percent) of successes, the standard error is equal to zero. This might cause some problems in the fitting procedure where we have to pass the errors as parameters to the \texttt{curve\_fit} function. As a workaround we set the uncertainty to be the maximum between a very small value and the one obtained from the simulation:
 \begin{equation*}
     \sigma_{\pret{p}} = \max\left(10^{-4}, \, \text{S. E.}\right)
 \end{equation*}
@@ -112,7 +112,7 @@ Now, the idea is to find the value of $p$ for which the retrieval probability is
 \end{equation}
 Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
 If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$
-\begin{equation}\label{eq:solution_fit}
+\begin{equation}\label{eq:cn:solution_fit}
     p_c(N)^{\alpha,\, y} = - \frac{\log\left(\left(y - k_3\right)^{-1} - 1\right)}{k_1} + k_2
 \end{equation}
 Following this procedure, results should not change if we vary $y$, since we assumed that as $N \to \infty$ the retrieval probability becomes a step function and this is why the superscript $y$ was omitted in the definition of $p_c\left(\alpha\right)$. Indeed, what we are computing with~\cref{eq:critical_noise} is the value for $p$ for which the \pret{p} jumps from $1$ to $0$ in the thermodynamic limit. (qui forse vorrei metterci la figura di una step function ma mi sa che è un po' banale). From now on we fix $y = 0.5$ for simplicity.
@@ -160,7 +160,7 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
 \begin{figure}
     \centering
     \import{\imgpath}{scaling_example}
-    \caption{Example of scaling relationships for three different values of $\alpha$. Data are fitted with a polynomial of degree $2$ following~\cref{eq:scaling_noise}. Errorbars are given by error propagation of~\cref{eq:solution_fit}.}
+    \caption{Example of scaling relationships for three different values of $\alpha$. Data are fitted with a polynomial of degree $2$ following~\cref{eq:scaling_noise}. Errorbars are given by error propagation of~\cref{eq:cn:solution_fit}.}
     \label{fig:sh:scaling_example}
 \end{figure}
 \begin{figure}
@@ -204,7 +204,7 @@ Regarding the Monte Carlo parameters, what changes here is only the success thre
 
 Summarizing, in this chapter we have shown that the radius of the \acrshort{ba} displays a second order phase transition at the critical point, that is, it decreases continuously to zero.\\
 More over, at least for the \acrshort{shm}, both global and local minima are anisotropic.
-Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is sligthly smaller that the one obtained in~\cref{chap:phase_diagrams} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
+Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is sligthly smaller that the one obtained in~\cref{chap:phase_diagram} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
 
 \subbibliography
 \end{document}

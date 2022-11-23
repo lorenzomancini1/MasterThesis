@@ -171,15 +171,13 @@ Obviously, $-1 \leq m \leq 1$ and when it is equal to unity one speaks about \em
 
 Most of our numerical simulations make use of \cref{alg:shm_mcmc} where $\symbf{\sigma}$ is a noisy pattern. In this regard, we refer to $p$ as the \emph{perturb} probability (or spin-flip probability) used to perturb a pattern. Shortly speaking, given $\symbf{\xi}^{\mu}$, we flip each neuron with probability $p$. This also applies for the \acrlong{mhm} in the binary case. Instead for the continuous version we need to introduce a gaussian noise \cref{sec:numsim_continuous}.
 
-We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken and perturbed with spin-flip probability $p = 0.2$ and the \acrlong{mcmc} is executed on the perturbed configuration for $\texttt{nsweeps} = 100$ with $\beta = 100$. Then the overlap between the retrieved state and the original one is measured. In \cref{fig:shm:p02:final_overlaps} it can be clearly observed that there is a sharp peak centered at very high magnetization \ie $m \approx 1$. However, it is worth to notice that also a broad distribution centered at a lower value of $m$ appears.  
+We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken and perturbed with spin-flip probability $p = 0.2$ and the \acrlong{mcmc} is executed on the perturbed configuration for $\texttt{nsweeps} = 100$ with $\beta = 100$. Then the overlap between the retrieved state and the original one is measured. In \cref{fig:shm:p02:final_overlaps1} it can be clearly observed that there is a sharp peak centered at very high magnetization \ie $m \approx 1$. However, also a broad distribution centered at a lower value of $m$ appears.  
 \begin{figure}
     \centering
     \input{\imgpath/hist_retrieve_p02}
     \caption{Final overlaps after \acrshort{mcmc} at low temperature. Here, the spin-flip probability is $p = 0.2$ and $500$ independent trials are made.}
     \label{fig:shm:p02:final_overlaps1}
 \end{figure}
-
-As can be observed, in \cref{fig:shm:p02:final_overlaps2} most of the weight of the distribution is contained around a small value of magnetization: there are too stored patterns and the model's performances on retrieval are bad.
 
 \clearpage
 \section{Modern Hopfield}\label{sec:numsim_mh}
@@ -210,7 +208,7 @@ We have two problems:
     \item since in the \acrshort{mhm} the storage capacity increases exponentially, \cref{eq:numsim:mhm:energyvariation} involves a sum of a number of terms that is exponential;
     \item the computation of the exponential might lead to overflow problems during computations, thus leaving us with a numerical unstable algorithm.
 \end{itemize}
-Furthermore, the first point suggest that there is no particular computational advantage in computing the energy variation with the above analytical expression. For this reason, it is sufficient to compute the energies before and after one single spin-flip and take the difference. Indeed, in both \cref{eq:numsim:mhm:energyvariation} and in the computation of the energy difference using \cref{eq:hop:mhmenergy} it is involved a sum over an exponential number of terms.
+Furthermore, the first point suggest that there is no particular computational advantage in computing the energy variation with the above analytical expression. For this reason, it is sufficient to compute the energies before and after one single spin-flip and take the difference. Indeed, in both \cref{eq:numsim:mhm:energyvariation} and in the computation of the energy difference using \cref{eq:modern_binary_energy} it is involved a sum over an exponential number of terms.
 
 The second problem is easily solved with the usual trick of subtracting the maximum from exponential.\\
 For the first one we make use of the Kahan summation algorithm.
@@ -299,7 +297,7 @@ Here, the parameter used to perturb a stored pattern is governed by the variance
     \tilde{\xi}_i^{\mu} = \xi_i^{\mu} + \mathcal{N}\left(0, \delta\right),
 \end{equation*}
 where $\tilde{\xi}_i^{\mu}$ is the perturbed version of the $i$-th element belonging to the $\mu$-th pattern.\\
-The key operation of the update rule is the $\operatorname{softmax}$ operation, as stated in~\cref{eq:hop:cont_energy}. In~\cref{alg:softmax} the implementation of such function is shown~\cite{numerically_stable}.
+The key operation of the update rule is the $\operatorname{softmax}$ operation, as stated in~\cref{eq:continuous_energy}. In~\cref{alg:softmax} the implementation of such function is shown~\cite{numerically_stable}.
 
 \begin{algorithm}
     \caption{Softmax algorithm}

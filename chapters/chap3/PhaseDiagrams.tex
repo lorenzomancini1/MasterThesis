@@ -81,7 +81,7 @@ Now, the idea is to find the value of $\alpha$ for which the retrieval probabili
 \end{equation}
 Doing so, we obtain the critical $\alpha$ for finite sizes $\alpha_c\left(N,\,y\right)$, which is a function of the size of the system $N$, and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
 The finite critical $\alpha$ is given by
-\begin{equation}\label{eq:solution_fit}
+\begin{equation}\label{eq:pd:solution_fit}
     \alpha_c(N)_{y} = - \frac{\log\left(\left(y - k_3^*\right)^{-1} - 1\right)}{k_1^*} + k_2^*,
 \end{equation}
 and its uncertainty can be easily computed with error propagation. Regarding this last point, we assume that the coefficients $k_{i}^{*}$ are uncorrelated:
@@ -92,7 +92,7 @@ Since we are interested in the thermodynamic limit, we define the cricital load 
 \begin{equation}\label{eq:critical_alpha}
     \alpha_c = \lim_{N \to \infty} \alpha_c(N)^{y},
  \end{equation}
- The solution for different sizes given by~\cref{eq:solution_fit} can be plotted against the $1/N$ variable.
+ The solution for different sizes given by~\cref{eq:pd:solution_fit} can be plotted against the $1/N$ variable.
  If we are able to find some reasonable relationship for $\alpha_c(1/N)$ -- that is we can find reasonable function that well describes our data -- then our result is simply the intercept of such function with the $y$-axis. More precisely:
  \begin{equation}\label{eq:scaling_alpha}
     \alpha_c(N) \approx q + \frac{1}{N}a + \frac{1}{N^2} b + O\left(N^{-3}\right),
@@ -101,12 +101,12 @@ where
 \begin{equation*}
     \alpha_c \gets q.
 \end{equation*}
-For all our simulations we set $y = 0.5$ in~\cref{eq:solution_fit}. Clearly, everyghing is valid for both the \acrshort{shm} and the \acrshort{mhm}, keeping in mind that, concerning the latter, the critical value depends on $\lambda$.\\
+For all our simulations we set $y = 0.5$ in~\cref{eq:pd:solution_fit}. Clearly, everyghing is valid for both the \acrshort{shm} and the \acrshort{mhm}, keeping in mind that, concerning the latter, the critical value depends on $\lambda$.\\
 Moreover, this procedure is the same that we are going to apply in~\cref{chap:radius} for the computation of the critical noise. More details will be given later.
 
 \subsection{Result for the standard Hopfield}
 Before showing our results, it is worth to exploit~\cref{alg:escape} also for the \acrshort{shm} in order to have a comparison with theoretical results.\\
-In~\cref{fig:sh:escaoe_probs} we can observe the sigmoid-like behaviour of the \pesc\ function, where the steepness increases with the size of the system, thus tending towards a sharp step function in the thermodynamic limit.
+In~\cref{fig:sh:escape_probs} we can observe the sigmoid-like behaviour of the \pesc\ function, where the steepness increases with the size of the system, thus tending towards a sharp step function in the thermodynamic limit.
 \begin{figure}[hbt]
     \centering
     \import{\imgpath}{escape_prob_sh}[hbt]
@@ -129,12 +129,11 @@ which is very similar to the one obtained by numerical simulations in~\cite{amit
 \section{Results for the binary modern Hopfield}
 The range of $\alpha$ for each simulation is choosen after some initial experiments in a way such that the ``sigmoid step'' can be well observed.\\
 As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident difference between the experimental results and the theoretical one given by~\cref{eq:preliminary_phase_diagram}. The reason of such difference is still under investigation. For sure, an important point to emphasize is that the sizes used for the simulations are quite small, hence finite size effects could be very important leading to uncorrect extrapolations. On the other hand, \Cref{eq:preliminary_phase_diagram} is just a preliminary result as we have mentioned before and it is still being investigated.
-
-\begin{figure}[hbt]
+\begin{figure}
     \centering
     \import{\imgpath}{escape_prob_mh}
     \caption{Example of the escape probability for $\lambda = 0.03$. Dots represent the results of the simulations over many samples, whereas the corresponding lines are the results of the fitting procedure.}
-\end{figure}
+\end{figure}\\
 \begin{figure}
     \centering
     \import{\imgpath}{mh_alpha_critical}
@@ -142,12 +141,11 @@ As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident differ
     \label{fig:mh:alpha_critical}
 \end{figure}
 
-\begin{table}[hbt]
-    \centering
-    \import{\tabpath}{phase_diagram_results}
-    \caption{This is the first table.}
-\end{table}
+%\begin{table}[hbt]
+%    \centering
+%    \import{\tabpath}{phase_diagram_results}
+%    \caption{This is the first table.}
+%\end{table}
 
 \subbibliography
-
 \end{document}

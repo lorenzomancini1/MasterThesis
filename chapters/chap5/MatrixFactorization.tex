@@ -32,10 +32,10 @@ To answer this it suffices to run~\cref{alg:shm_mcmc} with a very high $\beta$ a
 \end{figure}
 \Cref{fig:hist_trapping} shows that the distributions of the overlaps tends towards a Dirac delta function centered in zero. This suggests that in the thermodynamic limit the \acrshort{mcmc} lands on a configuration which is ortogonal to all the stored patterns, that is a spin glass state. (e qui dobbiamo dire che questo non è un buon inizio per risolvere matrix factorization). If instead we observed finite magnetizations between the final configuration and a certain number of patterns, the system would be in a mixed state. However, this seems not to be our case.
 
-As a next step, it might be useful make the system explore higher-energy configurations during energy minimization. As we have mentioned in~\cref{chap:numerical_sim}, this procedure is called \acrlong{sa}. As the name suggests, the temperature is lowered during the execution of the \acrshort{mcmc} in a way such that we start with an high temperature for a certain number of sweeps, and then we end up with the standard low temperature dynamics.
+As a next step, it might be useful to make the system able to explore higher-energy configurations during energy minimization. As we have mentioned in~\cref{chap:numerical_sim}, this procedure is called \acrlong{sa}. As the name suggests, the temperature is lowered during the execution of the \acrshort{mcmc} in a way such that we start with an high temperature for a certain number of sweeps, and then we end up with the standard low temperature dynamics.
 \begin{algorithm}
     \caption{\acrlong{mcmc} with \acrlong{sa}}
-    \label{alg:1}
+    \label{alg:mcmc_sa}
     \begin{algorithmic}[1]
     \Require $\bsigma$, $J$, $\beta_i$, $\beta_f$, nsweeps, earlystop
     \State $\bsigma_{rec} \gets \bsigma$
@@ -75,7 +75,7 @@ Let's say that we have both the matrix $J$ and the corresponding matrix of patte
 \begin{equation}\label{eq:unlearning_rule}
     J \gets J - \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
 \end{equation}
-The full procedure is shown in~\cref{alg:mf:trivial_method_1}, where, for each of the $M$ patterns that we want to find, we try \texttt{nrestarts} initial random configuration. At the end of the algorithm -- in the case where it finds all the minima -- we expect all the elements of $J_{new}$ to be small or, in the ideal case (that is perfect retrieval), zero. 
+The full procedure is shown in~\cref{alg:mf:first_trivial_method}, where, for each of the $M$ patterns that we want to find, we try \texttt{nrestarts} initial random configuration. At the end of the algorithm -- in the case where it finds all the minima -- we expect all the elements of $J_{new}$ to be small or, in the ideal case (that is perfect retrieval), zero. 
 \begin{algorithm}
     \caption{First trivial method for matrix factorization}
     \label{alg:mf:first_trivial_method}
@@ -132,22 +132,21 @@ This is similar to the first method in a certain sense, indeed we are trying to 
     \State \textbf{return $\bsigma$, $d_i$, $\mathtt{fliprate}/N$}
 \end{algorithmic}
 \end{algorithm}
-As can be seen in~\cref{metropolis_on_distance}, we start with a random configuration \bsigma\ of $N \cdot M$ neurons and at each iteration, we compute the distance between the $\hat{J}$ matrix obtained by reshaping \bsigma\ as an $N \times M$ matrix:
+As can be seen in~\cref{alg:metropolis_on_distance}, we start with a random configuration \bsigma\ of $N \cdot M$ neurons and at each iteration, we compute the distance between the $\hat{J}$ matrix obtained by reshaping \bsigma\ as an $N \times M$ matrix:
 \begin{equation}
     \bsigma \rightarrow \hat{\xi}_{N \times M} \rightarrow \hat{J} = \frac{\hat{\xi} \cdot \hat{\xi}^T}{N},
 \end{equation} 
 keeping in mind that we have to manually set all the diagonal elements of $\hat{J}$ to zero.
 
 \section{Unlearning rule}
-This is a sligthly different version of the first trivial method. The idea is to exploit~\cref{eq:unlearning_rule} to ``fill'' the local minima found by \acrshort{mcmc}. More precisely, we start as usual froma a random configuration \bsigma\. After some Monte Carlo sweeps we land in a minimum which is very likely to be just local. At this point, we try to delete this local minimum by subtracting the corresponding configuration from the matrix $J$, thus obtaining a new $J_{new}$. Now, we run again a Monte Carlo starting from the configuration found before but using the new coupling matrix $J_{new}$. Of course, all these steps can be repeated multiple times, with the goal of finding a global minima in a finite number of attempts.
-Notice that now we want to delete only local minima from our energy landscape, two coupling matrices are needed: the original one, ie $J$, and the one from which we subtract trapping configurations, \ie $J_{new}$.\\
-Furthermore, while we fill a local minimum by ``unlearning'' it, it may happen that new trapping states appear in the energy landscape defined by $J_{new}$. Therefore, what we would like to obtain is that any initial random configuration \bsigma\ gets trapped in a local minimum which is near enough to a global one, so that just few unlearnings would be needed.\\
+This is a slightly different version of the first trivial method. The idea is to exploit~\cref{eq:unlearning_rule} to ``fill'' the local minima found by \acrshort{mcmc}. More precisely, we start as usual from a random configuration \bsigma. After some Monte Carlo sweeps we land in a minimum which is very likely to be just local. At this point, we try to delete this local minimum by subtracting the corresponding configuration from the matrix $J$, thus obtaining a new $J_{new}$. Now, we run again a Monte Carlo starting from the configuration found before but using the new coupling matrix $J_{new}$. Of course, all these steps can be repeated multiple times, with the goal of finding a global minima in a finite number of attempts. Notice that now we want to delete only local minima from our energy landscape, two coupling matrices are needed: the original one, ie $J$, and the one from which we subtract trapping configurations, \ie $J_{new}$.\\
+Furthermore, while we fill a local minimum by ``unlearning'' it, it may happen that new trapping states appear in the energy landscape defined by $J_{new}$. Therefore, what we would like to obtain is that any initial random configuration \bsigma\ gets trapped in a local minimum which is near enough to a global one, so that just few ``unlearnings'' would be needed.
 \begin{equation}\label{eq:unlearning_eta}
     J_{new} \gets J_{new} - \eta \frac{\bsigma_{rec} \cdot \bsigma_{rec}^{T}}{N}.
 \end{equation}
 \begin{algorithm}
     \caption{Algorithm to recover global minimum with unlearning}
-    \label{alg:metropolis_on_distance}
+    \label{alg:unlearning}
     \begin{algorithmic}[1]
         \Require $J$, \texttt{ntrials}, \texttt{nrestarts}, $\eta$
         \State Make a copy of $J$, say $J_{new}$
