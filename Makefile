@@ -22,5 +22,5 @@ mkdirs:
 	mkdir -p $(AUXSDIR)/chapters/chap3
 	mkdir -p $(AUXSDIR)/chapters/chap4
 	mkdir -p $(AUXSDIR)/chapters/chap5
-
+	mkdir -p $(AUXSDIR)/chapters/chap6
 .PHONY: all clean
