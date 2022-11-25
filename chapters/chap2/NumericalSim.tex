@@ -162,15 +162,10 @@ The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our 
     \end{algorithmic}
 \end{algorithm}
 
-The spirit of the \acrlong{hm} lies in the fact of being able to retrieve a stored pattern whenever we're presented with a perturbed version of the original configuration. In this sense, we need a criterion that allows us to measure how far we are from the correct retrieval. Given a stored pattern $\symbf{\xi}^{\mu}$ and a configuration $\symbf{\sigma}$, the overlap -- or magnetization -- between the two is defined as:
-\begin{equation*}
-    m = \frac{\symbf{\xi}^{\mu} \cdot \symbf{\symbf{\sigma}}}{N},
-\end{equation*}
-where $N$ is the dimension and it must be the same for the two vectors.\\
-Obviously, $-1 \leq m \leq 1$ and when it is equal to unity one speaks about \emph{perfect retrieval}.
-
+The spirit of the \acrlong{hm} lies in the fact of being able to retrieve a stored pattern whenever it is presented with a perturbed version of the original configuration.\\
 Most of our numerical simulations make use of \cref{alg:shm_mcmc} where $\symbf{\sigma}$ is a noisy pattern. In this regard, we refer to $p$ as the \emph{perturb} probability (or spin-flip probability) used to perturb a pattern. Shortly speaking, given $\symbf{\xi}^{\mu}$, we flip each neuron with probability $p$. This also applies for the \acrlong{mhm} in the binary case. Instead for the continuous version we need to introduce a gaussian noise \cref{sec:numsim_continuous}.
 
+\begin{comment}
 We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken and perturbed with spin-flip probability $p = 0.2$ and the \acrlong{mcmc} is executed on the perturbed configuration for $\texttt{nsweeps} = 100$ with $\beta = 100$. Then the overlap between the retrieved state and the original one is measured. In \cref{fig:shm:p02:final_overlaps1} it can be clearly observed that there is a sharp peak centered at very high magnetization \ie $m \approx 1$. However, also a broad distribution centered at a lower value of $m$ appears.  
 \begin{figure}
     \centering
@@ -178,6 +173,8 @@ We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken
     \caption{Final overlaps after \acrshort{mcmc} at low temperature. Here, the spin-flip probability is $p = 0.2$ and $500$ independent trials are made.}
     \label{fig:shm:p02:final_overlaps1}
 \end{figure}
+\end{comment}
+
 
 \clearpage
 \section{Modern Hopfield}\label{sec:numsim_mh}
@@ -337,7 +334,7 @@ One simple method is to plot the energy on the plane defined by three patterns $
 \begin{equation*}
     \symbf{\sigma} = \symbf{\xi}^1 + \epsilon_1 \left(\symbf{\xi}^2 - \symbf{\xi}^1\right) + \epsilon_2 \left(\symbf{\xi}^3 - \symbf{\xi}^1\right)
 \end{equation*}
-\begin{figure}
+\begin{figure}[hbt]
     \centering
     \input{\imgpath/contour}
     \caption{Contour plot of the energy on the plane defined by three random patterns. Three minima -- each of which correspond to the three patterns used for building the plane -- can be observed.}
