@@ -35,7 +35,7 @@ If have a configuration that is slightly different from a stored one, then if we
 \begin{definition}[Hebb's rule]
 The Hebb's rule defines the synaptic weights as
 \begin{equation}\label{eq:weights}
-    J_{ij} = (1 - J_{ij})\frac{1}{N} \sum_{\mu = 1}^{M} \xi_i^\mu \xi_j^\mu,
+    J_{ij} = (1 - \delta_{ij})\frac{1}{N} \sum_{\mu = 1}^{M} \xi_i^\mu \xi_j^\mu,
 \end{equation}
 or in matricial form
 \begin{equation}
@@ -67,36 +67,86 @@ The probability of a given configuration is given by the Boltzmann distribution:
 \begin{equation}
     \mathrm{P}(\symbf{\sigma}) = \frac{e^{- \beta E(\symbf{\sigma})}}{Z}
 \end{equation}
-We consider 
-which is just the number of stored patterns written in terms of the length of the configurations.\\
-\Citeauthor{amit_phase} studied the phase diagram of the Hopfield Model through the replica method \cite{amit_phase}.\\
-The most important results for $T \to 0$ are~\cite{amit_phase, amit2}:
+With this energy function, stored patterns become stable under some amount of noise. Nevertheless, stability is guaranteed if the number of memories does not exceed a certain threshold. From arguments of probability theory, we have that for random generated and uncorrelated memories, if
+\begin{equation*}
+    M > \frac{N}{2 \log \left( N\right)},
+\end{equation*}
+then stability is destroyed~\cite{hopfield_capacity}. However~\citeauthor{JJHop} pointed out that the \acrlong{am} behaviour can be generalized if one allows the presence of a small fraction of misaligned spins between the retrieved state and the original memory. In this case storage capacity is linear,
+\begin{equation}\label{eq:storage_capacity}
+    M = \alpha N,
+\end{equation}
+as long as it does not exceed a certain value
+\begin{equation}\label{eq:storage_condition}
+    M < \alpha_c N,
+\end{equation}
+above which stability disappears. In the previous equations, $\alpha$ is called \emph{load parameter} and measures the number of stored memories in terms of their length and $\alpha_c$ is the relative critical value which was estimated to be $\alpha_c \simeq 0.14$~\cite{amit_phase, amit2, amit_1989}.\\
+The retrieval procedure is determined by a certain update dynamics that will be discussed later in this chapter.\\
+The main observable that we use to measure similarity between configurations is the \emph{magnetization} or \emph{overlap}.
+\begin{definition}[Magnetization]
+Given two $N$-dimensional binary configurations $\bsigma^\mu$ and $\bsigma^\nu$, the magnetization between the two is defined as
+\begin{equation}\label{eq:magnetization}
+    m \coloneq \frac{\bsigma^\mu \cdot \bsigma^\nu}{N} = \frac{1}{N} \sum_{i = 1}^{N} \sigma_i^\mu \sigma_i^\nu,
+\end{equation}
+Here $m$ ranges from $-1$ to $1$ and it is equal to zero if the two configurations are orthogonal.\\
+Following~\cref{eq:magnetization}, the magnetization with one of the $\mu$ stored patterns is:
+\begin{equation}\label{eq:order_parameters}
+    m^\mu = \frac{1}{N}\sum_{i = 1}^N \langle \sigma_i \rangle \xi_i^\mu,
+\end{equation}
+where $\langle \cdot \rangle$ represents the thermal average. Moreover,~\cref{eq:order_parameters} can be used as order parameters for our system.
+\end{definition}
+This is not the only possibility to compute the similarity between two $N$-dimensional binary vectors. Indeed, another possibility that will be useful for our purpose is the Hamming distance, which essentially counts the number of different neurons.\\
+The \acrshort{shm} shows an interesting phase diagram on the $T$-$\alpha$ plane which has been investigated first by~\citeauthor{amit_phase}.\\
+What one gets, is that the system undergoes a second order phase transition at $T_c = 1$ and $\alpha \to 0$. Indeed, under $T_c$, there are two kind of stable states for the free energy. In particular, in the low temperature region:
+\begin{itemize}
+    \item Mattis-states or \emph{retrieval states} \textbf{è giusto???? sono la stessa cosa no?}, \ie $2M$ degenerate states each of which is correlated with only one stored memory;
+    \item \emph{mixed states}, \ie states which have a finite overlap with several stored patterns.
+\end{itemize}
+They both survive also for finite $\alpha$ and also a \acrfull{sg} class of metastable states appears. The latter tend to be orthogonal to all the embedded patterns in the thermodynamic limit, that is their overlap is of the order $O\left(1 / \sqrt{N \alpha} \right)$~\cite{amit_phase, sk}.\\ 
+Concerning retrieval states, for $T \to 0$ it results that:
 \begin{enumerate}
-    \item below $\alpha \simeq 0.05$ patterns are global minima;
+    \item below $\alpha \simeq 0.05$ patterns are global minima of the free energy;
     \item for $0.05 \lesssim \alpha_c \lesssim 0.14$ patterns are metastable;
     \item for $\alpha \geq \alpha_c$ we have no meaningful retrieval, even if dynamics can lead to finite overlaps;
-    \item we can have two types of spurious states: \emph{mixed states} \ie states which have a finite overlap with some patterns and \emph{spin glass states} \ie states which, as $N \to \infty$ are orthogonal to all the stored patterns.  
+    \item spurious states are well separated by energiy barriers \textbf{dubbio}\footnote{mettere una footnote dove dico qualcosa in più}.  
 \end{enumerate}
 
-\subsection{Dynamics}
-Stable states are retrieved through a dynamical rule defined on discrete time.
+\subsection{Dynamics and fixed points}
+As we have discussed, memories keep stability if some noise is applied. If~\cref{eq:storage_condition} is satisfied, then original patterns can be retrieved with a small percentage of error. To achieve this, a dynamical rule needs to be introduced. Over a discrete time interval, the evolution of the state of a given neuron reads
 \begin{equation}
-    S_i(t+1) = \text{sgn}\left(h_i(t) - \theta_i \right),
+    \sigma_i(t+1) = \text{sgn}\left(h_i(t) - \theta_i \right),
 \end{equation}
 where $t = 1, 2, \dots$ and $h_i(t)$ is a local field
 \begin{equation}
-    \sum_{j = 1}^{N} J_{ij}(S_j + 1).
+    h_i(t) = \sum_{j = 1}^{N} J_{ij}(\sigma_j + 1)
 \end{equation}
+collecting the information coming from all the other neurons (recall indeed that $J_{ii} = 0$).\\
 \Cref{eq:neur_dynamics} just tells us that state of a neuron $i$ evolves just by comparing the information coming from all the other neurons with a local threshold.
-Taking $\theta_i = \sum_j J_{ij}$ we get the following dynamical rule
+Taking $\theta_i = \sum_j J_{ij}$ we get the following deterministic dynamics
 \begin{equation}\label{eq:neur_dynamics}
-    S_i(t+1) = \text{sgn}\left(J_{ij}S_j(t) \right).
-\end{equation}\\
-Stored patterns $\xi$ are \emph{fixed points} of the dynamics, so they do not evolve if subject to \cref{eq:neur_dynamics}. Indeed, it must happen that
-\begin{equation}\label{eq:stablestates}
-    \xi_i^{\mu}(t+1) = \text{sgn}\left(J_{ij}\xi_j^{mu}(t) \right).
+    \sigma_i(t+1) = \text{sgn}\left(\sum_{j = 1}^N J_{ij}\sigma_j(t) \right),
 \end{equation}
-This can be easily seen just by substituting \cref{eq:weights} into \cref{eq:stablestates}:
+with
+\begin{equation}
+    \tilde{h_i}(t) = \sum_{j = 1}^N J_{ij}S_j(t)
+\end{equation}\\
+Now we show that $M$ uncorrelated random memories of length $N$ are \emph{fixed} point of the dynamics~\cref{eq:neur_dynamics}. Let's first introduce the definition of a fixed point.\\
+\begin{definition}[Fixed point]
+A configuration \bsigma\ is a fixed point for~\cref{eq:neur_dynamics} if
+\begin{equation}
+    \bsigma(t+1) = \bsigma_i(t) \quad \forall t.
+\end{equation}
+In other words, all the elements of \bsigma\ do not change their state under~\cref{eq:neur_dynamics}.
+\end{definition}
+If all the elements of a given memory are generated by taking the values $\left\{-1, 1\right\}$ with probability equal to $0.5$, then the following orthogonal relationship holds:
+\begin{equation}\label{eq:orthogonality}
+    m^{\mu \nu} \equiv \frac{1}{N} \sum_{i = 1}^{N} \xi_i^\mu \xi_j^\nu = \delta_{\mu \nu} +  O\left(1/\sqrt{N} \right) \left(1 - \delta_{\mu \nu} \right).
+\end{equation}
+As a matter of fact, the magnetization between two memories \bxi\ and $\bxi[\nu]$ vanishes like the square root of $N$ as long as $\mu \neq \nu$.\\
+In order to be fixed points of the dynamics, all the \bxi\ must satisfy:
+\begin{equation}\label{eq:stablestates}
+    \xi_i^{\mu} = \text{sgn}\left(J_{ij}\xi_j^{\mu} \right).
+\end{equation}
+This can be easily seen just by substituting \cref{eq:weights} and~\cref{eq:orthogonality} into \cref{eq:stablestates}:
 \begin{equation}
 \begin{split}
     &\operatorname{sgn}\left[\sum_{j=1}^N\left(\frac{1}{N} \sum_{\nu=1}^M \xi_i^\nu \xi_j^\nu\right) \xi_j^\mu\right] = \\
@@ -104,7 +154,20 @@ This can be easily seen just by substituting \cref{eq:weights} into \cref{eq:sta
     & \operatorname{sgn}\left[\sum_{\nu=1}^P \xi_i^\nu \delta_{\mu \nu}\right] = \xi_i^{\mu}.
 \end{split}
 \end{equation}
-
+A stochastic dynamics that depends on the temperature $T = \beta^{-1}$ can be used as well. Instead of activating neurons by calculating whether the local field exceeds the local threshold or vice versa, one can use a probabilistic approach by measuring the probability to ``flip'' a certain neuron given its state and the local field acting on it:
+\begin{equation}\label{eq:stoch_dynamics}
+    \mathrm{P}\left( \text{flip} \mid \sigma_i(t) \right) = \frac{1}{1 + e^{2 \beta \sigma_i(t) \tilde{h_i}(t)}},
+\end{equation}
+which is equivalent to~\cref{eq:neur_dynamics} for $\beta \to \infty$.\\
+\Cref{eq:stoch_dynamics} allows us to build a transition matrix $W\left( \bsigma \mid \bsigma'\right)$ which can be used to write a master equation for the probability of a given configuration \bsigma\ ~\cite{nishimori}:
+\begin{equation}\label{eq:master_eq}
+    \frac{\partial \mathrm{P}_t\left(\bsigma\right)}{\partial t} = \sum_{\bsigma'} W\left( \bsigma \mid \bsigma'\right) \mathrm{P}_t\left( \bsigma' \right),
+\end{equation}
+where the equilibrium distribution is the Boltzmann one, \ie:
+\begin{equation}
+   \frac{\partial \mathrm{P}_{eq}\left(\bsigma\right)}{\partial t} = 0 \Rightarrow \mathrm{P}_{eq} = \frac{e^{- \beta E(\symbf{\sigma})}}{Z}.
+\end{equation}
+\textbf{dire qualcosina in più qui su come si va avanti}
 \section{The modern Hopfield model}\label{sec:modern_hop}
 The \acrlong{hm} introduced by J. J. Hopfield is able to store a number of patterns that grows linearly with the number of neurons $N$, as we discussed in \cref{sec:standard_hop}. The mathematical reason why \acrshort{shm} gets confused when many memories are stored is that several memories produce contributions to the energy which are of the same order. In other words the energy decreases too slowly as the pattern approaches a memory in the configuration space.\\
 Further studies over the years have led to the development of \glspl{dam}, namely networks able to store a number of patterns that is much more greater than the number of neurons in the system.\\
@@ -120,7 +183,7 @@ For the case $a = 2$ we get back to the \acrlong{shm} with the corresponding sto
 where \emph{perfect retrieval} means that the energy minimization lead to a configuration that is perfectly aligned with one stored pattern. Hence, for \glspl{dam} the model can remember a number of patterns that is of order $O(N^{a - 1})$~\cite{Demircigil_2017}.\\
 \Cref{eq:dense_energy} can be further generalized by including exponential interactions $F = \operatorname{exp}(x)$ thus bringing to exponential storage capacity $e^{O(N)}$~\cite{EGardner_1987}.\\
 This is the starting point for the \acrfull{mhm} that we consider in this dissertation.\\
-Up to now, everything is valid for binary states, that is $\sigma_i = \pm 1$. \textcite{hopfield_is_all_you_need} extended these arguments to include also continuous-valued patterns.\\
+Up to now, everything is valid for binary states, that is $\sigma_i = \pm 1$. \textcite{hopfield_is_all_you_need} extended these arguments to include also continuous-valued memories.\\
 In the following sections we go into details about energy and update rules for both the binary and continuous case.
 
 \subsection{Binary case}
@@ -152,7 +215,7 @@ and it can be proven~\parencite{hopfield_is_all_you_need} that $0 \leq E\left(\s
 \subsubsection{Dynamics}
 The update rule in this case is simply:
 \begin{equation}\label{eq:update_rule_continuous}
-    \symbf{\sigma}(t + 1) = \symbf{\xi} \operatorname{softmax}(\lambda \symbf{\xi} \symbf{\sigma}),
+    \symbf{\sigma}(t + 1) = \symbf{\xi} \operatorname{softmax}(\lambda \symbf{\xi} \symbf{\sigma}(t)),
 \end{equation}
 where, given a certain vector $\symbf{x} \in \mathbb{R}^k$, the output of $\operatorname{softmax}(\symbf{x})$ is still a vector of dimension $k$,
 \begin{equation}
@@ -164,8 +227,20 @@ The fact that here the key mechanism is based on the softmax suggests some simil
 As an application, beyond the basic behaviour as a \acrlong{dam}, since we allow the presence of continuous values for neurons together with the fact it suffices to apply the update rule just once, the \acrlong{mhm} can also be thought as a layer into deep learning architectures~\parencite[see][for details]{hopfield_is_all_you_need}.
 
 \section{Basins of Attractions}
-The core of the memory-behaviour of the \acrlong{hm} relies on the fact that stored patterns are fixed points of the dynamics. In this way, any initial configuration which is close enough to a given memory, is attracted towards the latter and all the starting $N$-dimensional points which are attracted by the same memory define the so called Basin of Attraction.\\
-The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. The 
-
+The core of the memory-behaviour of the \acrlong{hm} (for both the standard and modern versions) relies on the fact that stored patterns are attractors for a low-temperature dynamics (\textbf{è corretto dire così?}). All the starting configurations that evolve towards the same attractor define what is called a \acrfull{ba}. The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this numerical results for this in~\cref{chap:radius}. However, we introduce now some notions that will be useful for the next chapters.\\
+First a natural distance measure that can be used in this case is the Hamming distance.
+\begin{definition}
+Given two binary $N$-dimensional configurations $\bsigma^mu$ and $\bsigma^\nu$ the Hamming distance between the two is just the number of neurons that differ. In mathematical form, we call $A$ the set that contains the positions where $\bsigma^\mu$ is different from $\bsigma^\nu$:
+\begin{equation*}
+    A = \left\{ 1 \leq i \leq N \mid \sigma_i^\mu \neq \sigma_i^\nu  \right\},
+\end{equation*}
+hence, the Hamming distance is just
+\begin{equation}
+    d\left(\bsigma^\mu, \bsigma^\nu \right) =  |A|
+\end{equation}
+and it is indeed a metric.
+\end{definition}
+As pointed out by~\textcite{Kanter} the key condition that allows the presence of retrieval states starting from noisy configurations, is the presence of the \acrlong{ba} in addition to the stability of stored memories. The consequence is that below a certain $\alpha_c$, whether this refers to the \acrshort{shm} or to the \acrshort{mhm}, such basins can be characterized by a suitable average distance, which, in principle, is null above $\alpha_c$. In~\cref{chap:phase_diagram} we exploit this fact by looking for the $\alpha$ value for which a deterministic dynamics escape from one of the learnt patterns. In other words, while for $\alpha < \alpha_c$ (almost) any configuration which has a macroscopic overlap, \ie much bigger than $O\left(1/\sqrt{N} \right)$, with only one memory is attracted by the latter, for $\alpha \geq \alpha_c$ spurious states become predominant.\\
+Instead, in~\cref{chap:radius} we give a rigorous definition of the size of the basins along with the corresponding numerical results.
 \subbibliography
 \end{document}
