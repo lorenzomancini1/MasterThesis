@@ -8,10 +8,10 @@
 In this chapter we highlight some of the most theoretical aspects regarding the \acrlong{hm}.\\
 \section{The standard Hopfield Model}\label{sec:standard_hop}
 At the end of the eighties, the american physicist J. Hopfield popularized what is now known as the Hopfield model.
-It is one of the first proposed models capable of mimicking, in a very simplified way, our human brain in the memorization process. In other words, it is a physical system able to assosciate some patterns that need to be stored to stable states of the systems~\cite{JJHop}. The way in which these patterns are stored, the very nature of the stable states that are associated and the collective properties of the system, make this model strongly correlated to physics concepts and theories, such as basins of attraction, spin glasses and statistical mechanics in general.\\
-The \acrshort{shm} is often addressed to as an associative memory, \ie a network whcih main purpose is to learn the association between an some items.\\
+It is one of the first proposed models capable of mimicking, in a very simplified way, human brain in the memorization process. In other words, it is a physical system able to associate some patterns that need to be stored to stable states of the systems~\cite{JJHop}. The way in which these patterns are stored, the very nature of the stable states that are associated and the collective properties of the system, make this model strongly correlated to physics concepts and theories, such as basins of attraction, spin glasses and statistical mechanics in general.\\
+The \acrlong{hm} is often addressed to as an associative memory, \ie a network whose main purpose is to learn the association between an some items.\\
 Clearly, the storage capacity of such model is not unlimited. We have some constraints on the number of memories that we can ``learn'' and, as we will see, this is the main point that governs the properties of the system.\\
-The building blocks of the Hopfield network are called \emph{formal neurons} \ie a simplified mathematical model that which mimics the behavior of the biological neuron~\cite{formal_neuron, statmecoflearn}. They're two state elements represented by a binary variable $S = \pm 1$, where the $+1$ state means \emph{active} and the $-1$ state means \emph{passive}.
+The building blocks of the Hopfield network are called \emph{formal neurons} \ie a simplified mathematical model that mimics the behavior of the biological neuron~\cite{formal_neuron, statmecoflearn}. They are two state elements represented by a binary variable $S = \pm 1$, where the $+1$ state means \emph{active} and the $-1$ state means \emph{passive}.
 A given neuron $S_i$ can change its state after receiving signal from other neurons $S_j$ through their \emph{synaptic efficiency} $J_{ij}$. By analogy of notation with statistical mechanics neurons can be mapped into spins and the \emph{synaptic efficiency} into the coupling between spins, thus leading to the Ising model variables.\\
 The idea underlying the memorization process comes directly from the study of the interaction of human neurons from a neurobiological point of view which translates into the well-known Hebb rule \cref{sec:hebbrule}.
 Obviously, this situation is quite far from the real biological counterpart which is extremely more elaborated. However, the aim of such simplified models is to capture the collective properties of the system. Other theories from statistical mechanics (\eg liquid crystals, Ising Model etc.) neglect most of the microscopic details but at the same time they provide very accurate results about the macroscopic behaviour of the system. Hence, a simple mathematical description is appropriate for our purpose~\cite{statmecoflearn}.
@@ -22,13 +22,13 @@ Inspired by neuroscientific studies on the activity of neurons, D. O. Hebb found
 In order to understand how this applies to the \acrshort{shm}, we introduce some notation.
 A general binary configuration is defined as:
 \begin{equation}\label{eq:general_config}
-    \symbf{\sigma} = \{\sigma_1, \dots, \sigma_N\} \equiv \{-1, 1\}^N,
+    \symbf{\sigma} = \{\sigma_1, \dots, \sigma_N\} \in \{-1, 1\}^N,
 \end{equation}
 \ie a network of $N$ neurons they can be in either the active or passive state.\\
 The aim is to store in some way a set of patterns in the network, that is we want to introduce a sort of memory in the system.\\
 We indicate with $\symbf{\xi}$ the stored patterns, in order to distinguish them from general configurations like \cref{eq:general_config}.
 \begin{equation}\label{eq:patterns}
-    {\xi^\mu} = \{\xi_1^\mu, \dots, \xi_N^\mu\} \equiv \{-1, 1\}^N \quad \mu = 1\,, \dots,\, M.
+    {\xi^\mu} = \{\xi_1^\mu, \dots, \xi_N^\mu\} \in \{-1, 1\}^N \quad \mu = 1\,, \dots,\, M.
 \end{equation}\\
 In short, we have $M$ binary patterns of size $N$ that we want to be \emph{remembered} by the system.
 If have a configuration that is slightly different from a stored one, then if we run \cref{eq:neur_dynamics} (where $S_i \rightarrow \xi_i$) we should be able to retrieve the original pattern just by exploiting the $J_{ij}$.
@@ -43,14 +43,19 @@ or in matricial form
 \end{equation}
 where $\xi$ is the $N \times M$ matrix containing all the stored patterns as columns and $\mathbb{I_N}$ is the identity matrix of dimension $N$.
 \end{definition}
-If two neurons $i$ and $j$ are in the same state, then they give a contribution equal to $1/N$ to the corresponding element in the matrix $J$. If the neurons are in different states, the contribution will be $-1/N$. Obviously, $J$ is a $NxN$ symmetric matrix. Moreover, we exclude self-connections \ie $J_{ii} = 0$, hence all the diagonal elements are set to 0.
+If two neurons $i$ and $j$ are in the same state, then they give a contribution equal to $1/N$ to the corresponding element in the matrix $J$. If the neurons are in different states, the contribution will be $-1/N$. From this, it results that:
+\begin{itemize}
+    \item $J$ is a symmetric $N \times N$ matrix, meaning that we are considering a situation where synapses have no direction;
+    \item all the diagonal elements of $J$ are set to $0$, thus avoiding self-connections between neurons, in analogy to what happens in the Ising-like systems;
+    \item memory is a collective property, in the sense that the state of a neuron is determined by the information (couplings) coming from the rest of the system and it evolves through a suitable dynamics.
+\end{itemize}
 \begin{figure}
     \centering
     \includestandalone{\imgpath/hebbian_rule}
-    \caption{Illustration of the learning procedure through the Hebb's rule.}
+    \caption{Illustration of the learning procedure through the Hebb's rule. After the learning process, neurons of a given pattern which have a different ``activation value'', have a weak (negative value) bond (in grey). Conversely, neurons in the same state have a strong connection (black).}
     \label{fig:hebbian_rule}
 \end{figure}
-In short, patterns $\xi$ are memorized just by exploiting a weighted average of the co-activation of neurons.
+If instead of having just one pattern like in~\cref{fig:hebbian_rule} we have many -- each of which with its bonds -- then the matrix $J$ is build by summing up the values of the bonds for each pair of indices.
 
 \subsection{Phase Diagram}
 We can introduce an energy function that maps this system to a disordered Ising model.\\
@@ -71,7 +76,7 @@ With this energy function, stored patterns become stable under some amount of no
 \begin{equation*}
     M > \frac{N}{2 \log \left( N\right)},
 \end{equation*}
-then stability is destroyed~\cite{hopfield_capacity}. However~\citeauthor{JJHop} pointed out that the \acrlong{am} behaviour can be generalized if one allows the presence of a small fraction of misaligned spins between the retrieved state and the original memory. In this case storage capacity is linear,
+then stability is destroyed~\cite{hopfield_capacity}. However,~\textcite{JJHop} pointed out that the \acrlong{am} behaviour can be generalized if one allows the presence of a small fraction of misaligned spins between the retrieved state and the original memory. In this case storage capacity is linear,
 \begin{equation}\label{eq:storage_capacity}
     M = \alpha N,
 \end{equation}
@@ -90,12 +95,23 @@ Given two $N$-dimensional binary configurations $\bsigma^\mu$ and $\bsigma^\nu$,
 Here $m$ ranges from $-1$ to $1$ and it is equal to zero if the two configurations are orthogonal.\\
 Following~\cref{eq:magnetization}, the magnetization with one of the $\mu$ stored patterns is:
 \begin{equation}\label{eq:order_parameters}
-    m^\mu = \frac{1}{N}\sum_{i = 1}^N \langle \sigma_i \rangle \xi_i^\mu,
+    m^\mu \coloneq \frac{1}{N}\sum_{i = 1}^N \langle \sigma_i \rangle \xi_i^\mu,
 \end{equation}
 where $\langle \cdot \rangle$ represents the thermal average. Moreover,~\cref{eq:order_parameters} can be used as order parameters for our system.
+Finally, we indicate with:
+\begin{equation}
+    m^{\mu \nu} \coloneq \frac{1}{N} \sum_{i = 1}^{N} \xi_{i}^{\mu} \xi_{i}^{\nu}
+\end{equation}
+the overlap between two stored patterns.
 \end{definition}
+\begin{remark}
+It is important to notice that for uncorrelated random patterns, $m^{\mu \nu}$ is a random variable normally distributed with zero mean and variance equal to $1/N$, \ie:
+\begin{equation}
+    m^{\mu \nu} \sim \mathcal{N} \left( 0, \, \frac{1}{N} \right).
+\end{equation}
+\end{remark}
 This is not the only possibility to compute the similarity between two $N$-dimensional binary vectors. Indeed, another possibility that will be useful for our purpose is the Hamming distance, which essentially counts the number of different neurons.\\
-The \acrshort{shm} shows an interesting phase diagram on the $T$-$\alpha$ plane which has been investigated first by~\citeauthor{amit_phase}.\\
+The \acrlong{shm} shows an interesting phase diagram on the $T$-$\alpha$ plane which has been investigated first by~\textcite{amit_phase}.\\
 What one gets, is that the system undergoes a second order phase transition at $T_c = 1$ and $\alpha \to 0$. Indeed, under $T_c$, there are two kind of stable states for the free energy. In particular, in the low temperature region:
 \begin{itemize}
     \item Mattis-states or \emph{retrieval states} \textbf{è giusto???? sono la stessa cosa no?}, \ie $2M$ degenerate states each of which is correlated with only one stored memory;
@@ -139,7 +155,7 @@ In other words, all the elements of \bsigma\ do not change their state under~\cr
 \end{definition}
 If all the elements of a given memory are generated by taking the values $\left\{-1, 1\right\}$ with probability equal to $0.5$, then the following orthogonal relationship holds:
 \begin{equation}\label{eq:orthogonality}
-    m^{\mu \nu} \equiv \frac{1}{N} \sum_{i = 1}^{N} \xi_i^\mu \xi_j^\nu = \delta_{\mu \nu} +  O\left(1/\sqrt{N} \right) \left(1 - \delta_{\mu \nu} \right).
+    m^{\mu \nu} = \frac{1}{N} \sum_{i = 1}^{N} \xi_i^\mu \xi_j^\nu = \delta_{\mu \nu} +  O\left(1/\sqrt{N} \right) \left(1 - \delta_{\mu \nu} \right).
 \end{equation}
 As a matter of fact, the magnetization between two memories \bxi\ and $\bxi[\nu]$ vanishes like the square root of $N$ as long as $\mu \neq \nu$.\\
 In order to be fixed points of the dynamics, all the \bxi\ must satisfy:
@@ -227,20 +243,29 @@ The fact that here the key mechanism is based on the softmax suggests some simil
 As an application, beyond the basic behaviour as a \acrlong{dam}, since we allow the presence of continuous values for neurons together with the fact it suffices to apply the update rule just once, the \acrlong{mhm} can also be thought as a layer into deep learning architectures~\parencite[see][for details]{hopfield_is_all_you_need}.
 
 \section{Basins of Attractions}
-The core of the memory-behaviour of the \acrlong{hm} (for both the standard and modern versions) relies on the fact that stored patterns are attractors for a low-temperature dynamics (\textbf{è corretto dire così?}). All the starting configurations that evolve towards the same attractor define what is called a \acrfull{ba}. The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this numerical results for this in~\cref{chap:radius}. However, we introduce now some notions that will be useful for the next chapters.\\
-First a natural distance measure that can be used in this case is the Hamming distance.
-\begin{definition}\label{def:hamming_distance}
-Given two binary $N$-dimensional configurations $\bsigma^mu$ and $\bsigma^\nu$ the Hamming distance between the two is just the number of neurons that differ. In mathematical form, we call $\mathcal{A}$ the set that contains the positions where $\bsigma^\mu$ is different from $\bsigma^\nu$:
+The core of the memory-behaviour of the \acrlong{hm} (for both the standard and modern versions) relies on the fact that stored patterns are attractors for a low-temperature dynamics (\textbf{è corretto dire così?}). All the starting configurations that evolve towards the same attractor define what is called a \acrfull{ba}. The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this with numerical results in~\cref{chap:radius}.
+However, we introduce now the distance measure for the case of binary configurations. Here, $\{-1, \, +1\}^{N}$ are the vertices of the hypercube whose centroid is the origin and the linear size is equal to $2$. For such $N$-dimensional points, we can define a distance which effectively makes the set of such vertices a metric space. The natural choice is given by the Hamming distance.
+\begin{definition}
+\label{def:hop:hamming_distance}
+Given two binary $N$-dimensional configurations $\bsigma^{\mu}$ and $\bsigma^\nu$ the Hamming distance between the two is just the number of neurons that differ. In mathematical form, we call ${A}$ the set that contains the positions where $\bsigma^\mu$ is different from $\bsigma^\nu$:
 \begin{equation*}
-    \mathcal{A} = \left\{ 1 \leq i \leq N \mid \sigma_i^\mu \neq \sigma_i^\nu  \right\},
+    {A} = \left\{ 1 \leq i \leq N \mid \sigma_i^\mu \neq \sigma_i^\nu  \right\},
 \end{equation*}
 hence, the Hamming distance is just
-\begin{equation}
-    d\left(\bsigma^\mu, \bsigma^\nu \right) =  |A|
+\begin{equation}\label{eq:hamming_distance}
+    d_H^N\left(\bsigma^\mu, \bsigma^\nu \right) =  |A|
 \end{equation}
-and it is indeed a metric.
 \end{definition}
-As pointed out by~\textcite{Kanter} the key condition that allows the presence of retrieval states starting from noisy configurations, is the presence of the \acrlong{ba} in addition to the stability of stored memories. The consequence is that below a certain $\alpha_c$, whether this refers to the \acrshort{shm} or to the \acrshort{mhm}, such basins can be characterized by a suitable average distance, which, in principle, is null above $\alpha_c$. In~\cref{chap:phase_diagram} we exploit this fact by looking for the $\alpha$ value for which a deterministic dynamics escape from one of the learnt patterns. In other words, while for $\alpha < \alpha_c$ (almost) any configuration which has a macroscopic overlap, \ie much bigger than $O\left(1/\sqrt{N} \right)$, with only one memory is attracted by the latter, for $\alpha \geq \alpha_c$ spurious states become predominant.\\
-Instead, in~\cref{chap:radius} we give a rigorous definition of the size of the basins along with the corresponding numerical results.
+\begin{remark}
+\Cref{eq:hamming_distance} is extensive on $N$, hence it is useful to normalize it:
+\begin{equation}
+    d_H\left(\bsigma^\mu, \bsigma^\nu \right) \coloneq \frac{d_H^N\left(\bsigma^\mu, \bsigma^\nu \right)}{N} = \frac{|A|}{N},
+\end{equation}
+thus measuring the fraction of misaligned neurons between two configurations.
+\end{remark}
+As pointed out by~\textcite{Kanter} the key condition that allows the presence of retrieval states starting from noisy configurations, is the presence of the \acrlong{ba} in addition to the stability of stored memories. The consequence is that below a certain $\alpha_c$, whether this refers to the \acrlong{shm} or to the \acrlong{mhm}, such basins can be characterized by a suitable average radius, which, in principle, is null above $\alpha_c$. In~\cref{chap:phase_diagram} we exploit this fact by looking for the $\alpha$ value for which a deterministic dynamics escape from one of the learnt patterns. In other words, while for $\alpha < \alpha_c$ (almost) any configuration which has a macroscopic overlap, \ie much bigger than $O\left(1/\sqrt{N} \right)$, with only one memory is attracted by the latter, for $\alpha \geq \alpha_c$ spurious states become predominant.\\
+On the other hand, in~\cref{chap:radius} we start from~\cref{def:hop:hamming_distance} and we introduce the rigorous definition of the radius of a \acrlong{ba} for the binary cases and investigate its behaviour.
+
+Obviously, this can be extended to the continuous case, where the metric space is $\mathbb{R}^N$ and the natural distance is the euclidean one. Nevertheless, the behaviour shown by the \acrlong{chm} requires a little more attention from both the theoretical and numerical points of view.
 \subbibliography
 \end{document}
