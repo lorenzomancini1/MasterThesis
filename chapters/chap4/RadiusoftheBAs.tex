@@ -186,7 +186,7 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
     \caption{Radius of the \acrlong{ba} for the \acrlong{shm} obtained with perturbations along random directions.}
     \label{fig:sh_radius}
 \end{figure}
-In~\cref{fig:sh_radius} we can clearly observe that the radius of the $\acrlong{ba}$ decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrshort{shm} is able to perform retrieval starting from an (almost) orthogonal configuration.
+In~\cref{fig:sh_radius} we can clearly observe that the radius of the \acrlong{ba} decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrshort{shm} is able to perform retrieval starting from an (almost) orthogonal configuration.
 
 \clearpage
 \subsection{Anisotropy}
@@ -267,7 +267,7 @@ and remembering the definition of Hamming distance~\cref{def:hamming_distance
 \begin{equation*}
     m = 1 - 2d_{H}.
 \end{equation*}
-Basically we are saying that, for $N \to \infty$ we get $m \to 0$ and thus $d_H \to 0.5$ meaning that memories have half of the neurons equal. Then, if we perturb a given memory towards any of the others, then we are keeping fixed that half neurons and~\cref{fig:sh:radius:anisotropy} says that we can, at most, lose information to half of the remaining part, leading to a Hamming distance of $0.25$. In simple terms, $d_H = 0.5$ is the halfway distance between two patterns in the thermodynamic limit.
+Basically we are saying that, for $N \to \infty$ we get $m \to 0$ and thus $d_H \to 0.5$\footnote{Notice that the average it is not needed since as $N \to \infty$ the distribution of $m$ has null variance.} meaning that memories have half of the neurons equal. Then, if we perturb a given memory towards any of the others, then we are keeping fixed that half neurons and~\cref{fig:sh:radius:anisotropy} says that we can, at most, lose information to half of the remaining part\footnote{Indeed simulations show that the $p_c$ tends towards $0.5$ also in this case}, leading to a Hamming distance of $0.25$. In simple terms, $d_H = 0.5$ is the halfway distance between two patterns in the thermodynamic limit.
 \clearpage
 \section{Results for the binary Modern Hopfield}
 The procedure to follow for the binary Modern Hopfield is the same as described before. The only change is that here we do not have the coupling matrix $J$, hence the energy variation must be computed accordingly to~\cref{alg:mhm_metropolis}.
