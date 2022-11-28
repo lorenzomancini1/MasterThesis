@@ -118,7 +118,7 @@ This is similar to the first method in a certain sense, indeed we are trying to 
 \begin{algorithmic}[1]
     \Require $J$, $\bsigma$, $N$, $M$, Initial distance $d_i$, Temperature $\beta$
     \State $n \gets N \cdot M$
-    \State $fliprate \gets 0$ \Comment{initialize fliprate}
+    \State fliprate $\gets 0$ \Comment{initialize fliprate}
     \For{$i = 1$ to $n$}
         \State Select a random neuron and flip it
         \State Compute the new distance, $d$ with $J$ 
@@ -130,7 +130,7 @@ This is similar to the first method in a certain sense, indeed we are trying to 
             \State Reject the flip
         \EndIf
     \EndFor
-    \State \textbf{return $\bsigma$, $d_i$, fliprate/$N$}
+    \State \textbf{return} $\bsigma$, $d_i$, fliprate/$N$
 \end{algorithmic}
 \end{algorithm}
 As can be seen in~\cref{alg:metropolis_on_distance}, we start with a random configuration \bsigma\ of $N \cdot M$ neurons and at each iteration, we compute the distance between the $\hat{J}$ matrix obtained by reshaping \bsigma\ as an $N \times M$ matrix, keeping in mind that we have to manually set all the diagonal elements of $\hat{J}$ to zero.
@@ -188,7 +188,7 @@ Furthermore, while we fill a local minimum by ``unlearning'' it, it may happen t
 \section{Gradient descent from continuous configurations}
 One more possibility is to start from a continuous configuration, \eg sampling elements from a standard normal distribution, and perform form there gradient descent in order to minimize:
 \begin{equation}\label{eq:descent_method}
-    \min_{\bsigma \in \mathbb{R}^N} \left[ \left(\bsigma^T  J  \bsigma\right) + \gamma \sum_{i = 1}^{N} V(\sigma_i) \right]
+    \min_{\bsigma \in \mathbb{R}^N} \left[ - \left(\bsigma^T  J  \bsigma\right) + \gamma \sum_{i = 1}^{N} V(\sigma_i) \right]
 \end{equation} 
 where
 \begin{equation}
@@ -207,12 +207,19 @@ Said in another way, we are starting from a point in the $N$-dimensional space w
 \end{figure}
 
 \section{Performance comparison}
-As already mentioned, we test such algorithms with a matrix $J_{2000 \times 2000}$ where the load parameter is $\alpha = 0.02$ \textbf{controllare}.
+As already mentioned, we test such algorithms with a matrix $J_{2000 \times 2000}$. The performances are measured by just counting the frequency of success over $200$ different attempts. A success means that we are able to recover one global minimum, \ie find a configuration \bsigma\ which has a magnetization $m \geq 0.95$ with one of the stored memories.\\
+As it can be observed, the best performances are achieved by the algorithm that exploits the unlearning rule to eliminate spurious minima. If we increase the load parameter then the task of finding a global minimum gets more and more difficult.
 \begin{table}[H]
     \centering
-    \import{\tabpath}{performance_comparison}
-    \caption{Caption}
-    \label{tab:my_label}
+    \import{\tabpath}{performance_comparison_002}
+    \caption{Performance obtained with the different algorithm presented for $\alpha = 0.02$.}
+    \label{tab:performacnes_002}
+\end{table}
+\begin{table}[H]
+    \centering
+    \import{\tabpath}{performance_comparison_004}
+    \caption{Performance obtained with the different algorithm presented for $\alpha = 0.04$.}
+    \label{tab:performances_004}
 \end{table}
 
 \section{Computational complexity}
