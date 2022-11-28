@@ -223,6 +223,14 @@ As it can be observed, the best performances are achieved by the algorithm that 
 \end{table}
 
 \section{Computational complexity}
-\textbf{mettere grafico stopping times}
+As we have seen in the previous section, the unlearning algorithm seems to be able to retrieve a global minimum with a certain rate of success. Our guess is that such algorithms requires a number of sweeps that grows exponentially with $N$, thus making the factorization of $J$ a computationally hard problem.
+Hence, we want to measure the minumum number of sweeps that make the unlearning algorithm capable to recover one global minimum with probability close to one. We call such quantity $\tau$ and for $\alpha = 0.04$ its behaviour is shown in~\cref{fig}.
+\begin{figure}[hbt]
+    \centering
+    \import{\imgpath}{stoppingtimes}
+    \caption{Minimum number of sweeps required by the unlearning algorithm in order to recover one global minimum with probability $\geq 0.98$ in the case of storage capacity $\alpha = 0.04$.}
+    \label{fig:stoppingtimes}
+\end{figure}
+Even if we are in the region where memories are global minima of the free energy, it comes out that if we start from a random point in the energy landscape, then it is very likely that we are far from any basin of attraction. Therefore, the systems flows towards spurious states which consist mostly of glassy states. However, if $N$ is small, one possible option is to exploit the unlearning of spurious minima together with a proper \acrlong{sa} technique. Doing so, if we allow our initial configuration to explore the free energy landscape long enough, then a global minimum can be found. Nevertheless, it seems that the minimum time required to explore that landscape, grows exponentially with $N$.
 \subbibliography
 \end{document}
