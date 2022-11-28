@@ -9,7 +9,7 @@
 While for the \acrlong{shm} we have numerous and well known studies for its phase diagram~\cite{amit_phase}(qui forse la seconda citazione è da togliere), the same does not apply for the \acrlong{mhm} whose critical values, phase transitions and so on are still under investigation.\\
 Studying the phase diagram of such models is indeed a very advanced analytical task, which requires strong theoretical background on statistical mechanics and spin glass theory \eg the replica trick, that might also lead to some approximations.
 
-As we have discussed in~\cref{sec:modern_hop}, for the \acrshort{mhm}, stable configurations are determined by three parameters, which are the temperature $T$ (or its inverse $\beta$), the load parameter $\alpha$ and the extra parameters that appears in the energy computation $\lambda$.\\
+As we have discussed in~\cref{sec:modern_hop}, for the \acrlong{mhm}, stable configurations are determined by three parameters, which are the temperature $T$ (or its inverse $\beta$), the load parameter $\alpha$ and the extra parameters that appears in the energy computation $\lambda$.\\
 The goal of this chapter is to provide some insights about the critical load parameters thorugh numerical simulations, namely $\alpha_c$, at least in the low $\lambda$ region. Indeed, it might make sense to believe that, for a given temperature $T$, a relationship between the critical load parameter $\alpha_c$ and $\lambda$ exists:
 \begin{equation}
     \alpha_c \equiv \alpha_c\left(\lambda\right).
@@ -27,18 +27,19 @@ Carlo Lucibello and Marc Mézard are studying the phase of diagram of this model
 
 \section{Escape probability}
 If we are below the critical load parameter, $\alpha < \alpha_c$ and we run a low temperature \acrshort{mcmc} starting from one random stored pattern, we expect that the final configuration to be not to far from the initial one. ``Not to far'' means that the final overlap is as close as possible to the initial one, which is equal to unity if we start from a stored pattern. On the other hand, if we are in the region $\alpha > \alpha_c$ we should observe that the overlap of the final configuration is significantly different from the initial one, we say that the configuration \emph{escapes}.\\
-What we are saying is that above $\alpha_c$ the stored patterns no longer correspond to local or global minima of the energy. In this case, stability is governed by either mixed or glassy states. Equivalently, \acrlong{ba} shrink more and more as $\alpha$ increases, until they disappear completely. More details on this will be given in the next chapter.\\
+What we are saying is that above $\alpha_c$ the stored patterns no longer correspond to local or global minima of the energy. In this case, stability is governed by either mixed or \acrlong{sg} states. Equivalently, \acrlong{ba} shrink more and more as $\alpha$ increases, until they disappear completely. More details on this will be given in the next chapter.\\
 The transition where \emph{escape} takes place in the thermodynamic limit is $\alpha_c$. We can thus define the \emph{escape probability} for a given $\alpha$ as the frequency of ``escape events'' that occur in an ensemble of samples.
 \begin{definition}[Escape probability]\label{def:pesc_definition}
-Given an ensemble of random patterns matrices $\xi_{N \times \alpha N}$, the \emph{escape probability} is defined as:
+Given an ensemble of many $\xi$, where each $\xi$ is a $N \times M$ matrix containing M memories as columns, the \emph{escape probability} is defined as:
 \begin{equation}\label{eq:pesc_definition}
-    \pesc \equiv \pescfull = \underset{\xi}{\mathbb{E}} \left[ \mathbb{I} \left( \frac{\bsigma_{t} \cdot \bxi}{N} \geq m_0 \right) \right], \qquad \mu = 1, \dots, \alpha \cdot N,
+    \pescfull = {\mathbb{E}} \left[ \mathbb{I} \left( \frac{\bsigma_{t} \cdot \bxi[1]}{N} < m_0 \right) \right],
 \end{equation}
-where $\bsigma_t$ is the result -- at time $t$ -- of the evolution of the configuration \bxi,
-\begin{equation*}
-    \bxi = \bsigma_0 \overset{\text{\tiny\acrshort{mcmc}}}{\longrightarrow} \bsigma_t.
-\end{equation*}
+where $\bsigma_t$ is the output at time $t$ of the zero-temperature \acrlong{mcmc} given that $\bsigma_0$ was exactly $\bxi[1]$. \textbf{scrivere che è uguale se prendo un mu qualsiasi}.
 \end{definition}
+From now on, we assume implicitly to keep $N$ fixed, \ie we omit the dependence on N:
+\begin{equation*}
+    \pesc = \mathrm{P}_{\text{escape}} \left(\alpha, \, N = N_0 \right).
+\end{equation*}
 
 In order to compute the probability defined in the previous equation we need to perform an average over an ensemble of samples. In other words, we repeat the same experiment multiple times by taking independent samples and storing the results as it is shown in~\cref{alg:escape}.
 
@@ -143,7 +144,7 @@ As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident differ
 \begin{table}[hbt]
     \centering
     \import{\tabpath}{phase_diagram_results}
-    \caption{This is the first table.}
+    \caption{Results of the critical load parameters for different values of $\lambda$.}
 \end{table}
 
 \subbibliography
