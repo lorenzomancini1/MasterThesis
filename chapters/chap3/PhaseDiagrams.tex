@@ -6,7 +6,7 @@
 \addbibresource{\rootdir/references.bib}
 \begin{document}
 \chapter{Phase diagram of the binary modern Hopfield}\label{chap:phase_diagram}
-While for the \acrlong{shm} we have numerous and well known studies for its phase diagram~\cite{amit_phase}(qui forse la seconda citazione è da togliere), the same does not apply for the \acrlong{mhm} whose critical values, phase transitions and so on are still under investigation.\\
+While for the \acrlong{shm} we have numerous and well known studies for its phase diagram, the same does not apply for the \acrlong{mhm} whose critical values, phase transitions and so on are still under investigation.\\
 Studying the phase diagram of such models is indeed a very advanced analytical task, which requires strong theoretical background on statistical mechanics and spin glass theory \eg the replica trick, that might also lead to some approximations.
 
 As we have discussed in~\cref{sec:modern_hop}, for the \acrlong{mhm}, stable configurations are determined by three parameters, which are the temperature $T$ (or its inverse $\beta$), the load parameter $\alpha$ and the extra parameters that appears in the energy computation $\lambda$.\\
@@ -14,7 +14,7 @@ The goal of this chapter is to provide some insights about the critical load par
 \begin{equation}
     \alpha_c \equiv \alpha_c\left(\lambda\right).
 \end{equation}
-We refer to $\alpha_c$ as that value above which the retrieval states disappear, just like it happens in the \acrlong{shm}. Regarding this, it is worth to stress that it is possible to obtain a finite -- \ie not zero -- overlap with the stored patterns even above $\alpha_c$, but meaningful retrieval is precluded~\cite{amit_phase}. We assume that the same holds for the \acrshort{mhm}.
+We refer to $\alpha_c$ as that value above which the retrieval states disappear, just like it happens in the \acrlong{shm}. Regarding this, it is worth to stress that it is possible to obtain a finite -- \ie not zero -- overlap with the stored patterns even above $\alpha_c$, but meaningful retrieval is precluded~\cite{amit_phase}. We assume that the same holds for the \acrlong{mhm}.
 
 Carlo Lucibello and Marc Mézard are studying the phase of diagram of this model from an analytical point of view and some preliminary results discussed in private communications suggest that:
 \begin{equation}\label{eq:preliminary_phase_diagram}
@@ -26,16 +26,20 @@ Carlo Lucibello and Marc Mézard are studying the phase of diagram of this model
 \end{figure}
 
 \section{Escape probability}
-If we are below the critical load parameter, $\alpha < \alpha_c$ and we run a low temperature \acrshort{mcmc} starting from one random stored pattern, we expect that the final configuration to be not to far from the initial one. ``Not to far'' means that the final overlap is as close as possible to the initial one, which is equal to unity if we start from a stored pattern. On the other hand, if we are in the region $\alpha > \alpha_c$ we should observe that the overlap of the final configuration is significantly different from the initial one, we say that the configuration \emph{escapes}.\\
+If we are below the critical load parameter, $\alpha < \alpha_c$ and we run a low temperature \acrlong{mcmc} starting from one random stored pattern, we expect that the final configuration to be not to far from the initial one. ``Not to far'' means that the final overlap is as close as possible to the initial one, which is equal to unity if we start from a stored pattern. On the other hand, if we are in the region $\alpha > \alpha_c$ we should observe that the overlap of the final configuration is significantly different from the initial one, we say that the configuration \emph{escapes}.\\
 What we are saying is that above $\alpha_c$ the stored patterns no longer correspond to local or global minima of the energy. In this case, stability is governed by either mixed or \acrlong{sg} states. Equivalently, \acrlong{ba} shrink more and more as $\alpha$ increases, until they disappear completely. More details on this will be given in the next chapter.\\
 The transition where \emph{escape} takes place in the thermodynamic limit is $\alpha_c$. We can thus define the \emph{escape probability} for a given $\alpha$ as the frequency of ``escape events'' that occur in an ensemble of samples.
-\begin{definition}[Escape probability]\label{def:pesc_definition}
+\begin{definition}[Escape probability]
+\label{def:pesc_definition}
 Given an ensemble of many $\xi$, where each $\xi$ is a $N \times M$ matrix containing M memories as columns, the \emph{escape probability} is defined as:
 \begin{equation}\label{eq:pesc_definition}
     \pescfull = {\mathbb{E}} \left[ \mathbb{I} \left( \frac{\bsigma_{t} \cdot \bxi[1]}{N} < m_0 \right) \right],
 \end{equation}
-where $\bsigma_t$ is the output at time $t$ of the zero-temperature \acrlong{mcmc} given that $\bsigma_0$ was exactly $\bxi[1]$. \textbf{scrivere che è uguale se prendo un mu qualsiasi}.
+where $\bsigma_t$ is the output at time $t$ of the zero-temperature \acrlong{mcmc} given that $\bsigma_0$ was exactly $\bxi[1]$.
 \end{definition}
+\begin{remark}
+In the definition~\cref{def:pesc_definition}, we can choose any $\mu = 1, \dots, M$ and the results are equivalent.
+\end{remark}
 From now on, we assume implicitly to keep $N$ fixed, \ie we omit the dependence on N:
 \begin{equation*}
     \pesc = \mathrm{P}_{\text{escape}} \left(\alpha, \, N = N_0 \right).
@@ -49,31 +53,30 @@ In order to compute the probability defined in the previous equation we need to 
     \begin{algorithmic}[1]
     \Require $N$, $\alpha \alpha$, $\beta$, $\mathtt{nsamples}$,$\mathtt{nsweeps}$, $\mathtt{earlystop}$, $m_0$
     \State $M \gets N\alpha$ (or $\exp(N\alpha)$)
-    \State $\mathtt{n\alpha} \gets |\alpha \alpha|$
     \State Initialize \texttt{freqs}, \texttt{ferrors} \Comment{arrays that contain probabilities and related errors}
 
-    \For{$i = 1$ to $\mathtt{n \alpha}$}
+    \For{every $\alpha$}
         \State Initialize $m_f$ \Comment{array with final magnetizations}
-        \For{$\mathtt{sample} = 1$ to $\mathtt{nsamples}$}
+        \For{$s = 1$ to the number of samples}
             \State Generate $M$ patterns of length $N$
             \State Store the patterns \Comment{\ie build $J$ for \acrshort{shm} otherwise do nothing}
             \State Take a random pattern \bxi
             \State Run the \acrshort{mcmc} with $\beta$, \texttt{nsweeps} and \texttt{earlystop}
             \State Compute final overlap $m$
-            \State $m_f[\text{sample}] \gets m$
+            \State $m_f[s] \gets m$
         \EndFor
-        \State Compute the number of \texttt{escapes} by checking $m_f < m_0$ elementwise
-        \State $freqs[i] \gets$ mean(\texttt{escapes})
-        \State $ferrors[i] \gets$ std(\texttt{escapes})
+        \State Compute the successes by checking $m_f < m_0$ element by element 
+        \State Compute the mean of the successes, \pesc
+        \State Compute the standard error of the successes, $\sigma_{\pesc}$ 
     \EndFor
-    \State \textbf{return} \texttt{freqs}, \texttt{ferrors}
+    \State \textbf{return} \pesc, $\sigma_{\pesc}$
     \end{algorithmic}
 \end{algorithm}
 
 \section{Critical load parameter}
 We expect \pesc\ to be something like a sigmoid for finite size systems, \ie it shows a smooth step -- from zero to one --  that covers a certain range of $\alpha$. Hence, simulation data should fit a function like:
 \begin{equation}\label{eq:fit_pesc}
-    \pesc= \frac{1}{1 + \exp \left[ - k_1 (\alpha - k_2) \right]} + k_3.
+    \pesc= \frac{1}{1 + \exp \left[ - k_1 (\alpha - k_2) \right]} \cdot k_3.
 \end{equation}
 This fit can be simply done with the \texttt{curve\_fit} function available in the \texttt{scipy} python library giving as results the set of coefficients $\vec{k^*}$ and the related covariance matrix $K^*$.\\
 Now, the idea is to find the value of $\alpha$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how the solution scales with the size of the system. Mathematically, we need to solve for $\alpha$:
@@ -83,7 +86,7 @@ Now, the idea is to find the value of $\alpha$ for which the retrieval probabili
 Doing so, we obtain the critical $\alpha$ for finite sizes $\alpha_c\left(N,\,y\right)$, which is a function of the size of the system $N$, and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
 The finite critical $\alpha$ is given by
 \begin{equation}\label{eq:pd:solution_fit}
-    \alpha_c(N)_{y} = - \frac{\log\left(\left(y - k_3^*\right)^{-1} - 1\right)}{k_1^*} + k_2^*,
+    \alpha_c(N)_{y} = - \frac{\log\left(\left(\frac{k_3^*}{y}\right)^{-1} - 1\right)}{k_1^*} + k_2^*,
 \end{equation}
 and its uncertainty can be easily computed with error propagation. Regarding this last point, we assume that the coefficients $k_{i}^{*}$ are uncorrelated:
 \begin{equation}
@@ -102,11 +105,11 @@ where
 \begin{equation*}
     \alpha_c \gets q.
 \end{equation*}
-For all our simulations we set $y = 0.5$ in~\cref{eq:pd:solution_fit}. Clearly, everyghing is valid for both the \acrshort{shm} and the \acrshort{mhm}, keeping in mind that, concerning the latter, the critical value depends on $\lambda$.\\
+For all our simulations we set $y = 0.5$ in~\cref{eq:pd:solution_fit}. Clearly, everyghing is valid for both the \acrlong{shm} and the \acrlong{mhm}, keeping in mind that, concerning the latter, the critical value depends on $\lambda$.\\
 Moreover, this procedure is the same that we are going to apply in~\cref{chap:radius} for the computation of the critical noise. More details will be given later.
 
 \subsection{Result for the standard Hopfield}
-Before showing our results, it is worth to exploit~\cref{alg:escape} also for the \acrshort{shm} in order to have a comparison with theoretical results.\\
+Before showing our results, it is worth to exploit~\cref{alg:escape} also for the \acrlong{shm} in order to have a comparison with theoretical results.\\
 In~\cref{fig:sh:escape_probs} we can observe the sigmoid-like behaviour of the \pesc\ function, where the steepness increases with the size of the system, thus tending towards a sharp step function in the thermodynamic limit.
 \begin{figure}[hbt]
     \centering
@@ -130,10 +133,10 @@ which is very similar to the one obtained by numerical simulations in~\cite{amit
 \section{Results for the binary modern Hopfield}
 The range of $\alpha$ for each simulation is choosen after some initial experiments in a way such that the ``sigmoid step'' can be well observed.\\
 As can be seen from~\cref{fig:mh:alpha_critical} there is a quite evident difference between the experimental results and the theoretical one given by~\cref{eq:preliminary_phase_diagram}. The reason of such difference is still under investigation. For sure, an important point to emphasize is that the sizes used for the simulations are quite small, hence finite size effects could be very important leading to uncorrect extrapolations. On the other hand, \Cref{eq:preliminary_phase_diagram} is just a preliminary result as we have mentioned before and it is still being investigated.
-\begin{figure}
+\begin{figure}[h]
     \centering
     \import{\imgpath}{escape_prob_mh}
-    \caption{Example of the escape probability for $\lambda = 0.03$. Dots represent the results of the simulations over many samples, whereas the corresponding lines are the results of the fitting procedure.}
+    \caption{Example of the escape probability for $\lambda = 0.03$ (\acrlong{mhm}). Dots represent the results of the simulations over many samples, whereas the corresponding lines are the results of the fitting procedure.}
 \end{figure}\\
 \begin{figure}
     \centering

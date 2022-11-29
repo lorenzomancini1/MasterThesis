@@ -33,7 +33,7 @@ Some interesting questions related to the characterization of the basins of attr
 In the following sections we show the main results that try to answer the previous questions. However, it is worth anticipating that the analysis made for modern hopfield is still being verified by analytical calculations of its phase diagram.
 
 \section{Retrieval probability}
-Here we refer to the Ising-like cases of the \acrshort{hm}, \ie the \acrshort{shm} and the binary version of the \acrshort{mhm} keeping in mind that everything also applies for the continuous \acrshort{shm} with the necessary changes.
+Here we refer to the Ising-like cases of the \acrlong{hm}, \ie the \acrlong{shm} and the binary version of the \acrlong{mhm} keeping in mind that everything also applies for the \acrlong{chm} with the necessary changes.
 
 The retrieval probability \pret{p} is simply defined as the frequency of \emph{correct retrievals} over a certain number of samples.
 \begin{definition}[Retrieval probability]
@@ -53,7 +53,7 @@ In~\cref{def:retrieval_prob} we assume that the retrieval probability depends on
     \item the spin-flip noise $p$, since it measures how far we go from the basin of attraction;
     \item the size of the system $N$.
 \end{itemize}
-What does a correct retrieval mean? The idea is to perform a zero-temperature \acrlong{mcmc} in order to minimize the energy in a (quasi)-deterministic way. Doing so, any configuration \bsigma\ flows towards states where the energy decreases or, at most, remains unchanged, \ie $E\left( \bsigma_{t + 1}\right) \leq E \left( \bsigma_t \right)$. If the output of the algorithm leads to configuration which has a magnetization that is bigger than a certain threshold with the reference memory (we'll discuss this in the respective sections) we consider it as a \emph{correct retrieval}. Hence, the event ``final magnetization bigger than a certain threshold'' is a random variable that follows a Bernoulli distribution\footnote{Consequently, the same experiment repeated multiple times leads to a Binomial distribution where the success probability is what we want to determine}.\\
+What does a correct retrieval mean? The idea is to perform a zero-temperature \acrlong{mcmc} in order to minimize the free energy in a nearly deterministic way. Doing so, any configuration \bsigma\ flows towards states where the energy decreases or, at most, remains unchanged, \ie $E\left( \bsigma_{t + 1}\right) \leq E \left( \bsigma_t \right)$. If the output of the algorithm leads to configuration which has a magnetization that is bigger than a certain threshold with the reference memory (we'll discuss this in the respective sections) we consider it as a \emph{correct retrieval}. Hence, the event ``final magnetization bigger than a certain threshold'' is a random variable that follows a Bernoulli distribution\footnote{Consequently, the same experiment repeated multiple times leads to a Binomial distribution where the success probability is what we want to determine}.\\
 \begin{comment}
 If we make many experiments with the same procedure we obtain that the number of successes obeys to a Binomial distribution:
 \begin{equation*}\label{eq:binomial_dist}
@@ -115,11 +115,11 @@ Our assumption, is that in the thermodynamic limit the retrieval probability sho
 \begin{equation*}
     \tilde{\theta}(p - p_c) = \begin{cases}1 & \text { if } p \leq p_c \\ 0 & \text { if } p > p_c\end{cases}.
 \end{equation*}
-The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely, otherwise retrieval is not possible. Furthermore, it comes out that, if the initial condition contains enough information, then retrieval il computationally efficient, (qui chiedere prof se vuole altri dettagli).
+The value of $p_c$ is what we want to estimate since it is strictly related to the size of a basin of attraction in terms of the minimum necessary information that the network needs to perform retrieval. More precisely, in the thermodynamic limit, if we perturb a pattern with $p \leq p_c$, the model is able to retrieve the original one almost surely, otherwise retrieval is not possible. Furthermore, it comes out that, if the initial condition contains enough information, then retrieval is computationally efficient.
 
 To start with this, we first have to find the function that approximates our \pret{p}. To this end, since we deal with a sigmoid-like function, we make a fit using:
 \begin{equation}\label{eq:fit_pret}
-    \pret{p}_{\alpha,\, N} = \frac{1}{1 + \exp \left[ - k_1 (p - k_2) \right]} + k_3
+    \pret{p}_{\alpha,\, N} = \frac{1}{1 + \exp \left[ - k_1 (p - k_2) \right]} \cdot k_3
 \end{equation}
 Now, the idea is to find the value of $p$ for which the retrieval probability is equal to a certain value $y \in (0,\, 1)$ and look how the solution scales with the size of the system. Mathematically, we need to solve for $p$:
 \begin{equation}\label{eq:finite_critical_noise}
@@ -128,9 +128,9 @@ Now, the idea is to find the value of $p$ for which the retrieval probability is
 Doing so, we obtain the \emph{finite critical noise} $p_c\left(N,\,\alpha,\,y\right)$, which is a function of the size of the system $N$, the load parameter $\alpha$ and the $y$ value that we choose (and also the set of coefficients $\vec{k^*}$).\\
 If we fix $\alpha$ and $y$, we can plot $p_c(N)^{\alpha,\, y}$
 \begin{equation}\label{eq:cn:solution_fit}
-    p_c(N)^{\alpha,\, y} = - \frac{\log\left(\left(y - k_3\right)^{-1} - 1\right)}{k_1} + k_2
+    p_c(N)^{\alpha,\, y} = - \frac{\log\left(\left(\frac{k_3^*}{y}\right)^{-1} - 1\right)}{k_1^*} + k_2^*
 \end{equation}
-Following this procedure, results should not change if we vary $y$, since we assumed that as $N \to \infty$ the retrieval probability becomes a step function and this is why the superscript $y$ was omitted in the definition of $p_c\left(\alpha\right)$. Indeed, what we are computing with~\cref{eq:critical_noise} is the value for $p$ for which the \pret{p} jumps from $1$ to $0$ in the thermodynamic limit. (qui forse vorrei metterci la figura di una step function ma mi sa che è un po' banale). From now on we fix $y = 0.5$ for simplicity.
+Following this procedure, results should not change if we vary $y$, since we assumed that as $N \to \infty$ the retrieval probability becomes a step function and this is why the superscript $y$ was omitted in the definition of $p_c\left(\alpha\right)$. Indeed, what we are computing with~\cref{eq:critical_noise} is the value for $p$ for which the \pret{p} jumps from $1$ to $0$ in the thermodynamic limit. From now on we fix $y = 0.5$ for simplicity.
 
 The \emph{critical noise} in the thermodynamic limit is defined as:
 \begin{equation}\label{eq:critical_noise}
@@ -150,14 +150,14 @@ Furthermore, the critical noise $p_c$ is proportional in average to the number o
 \end{equation}
 Summarizing everything, in order to get our critical noise for a given $\alpha$ in the thermodynamic limit we have to proceed as follows:
 \begin{itemize}
-    \item Simulate retrieval probabilities accordingly to~\cref{alg:retrieval};
+    \item simulate retrieval probabilities accordingly to~\cref{alg:retrieval};
     \item fit the simulation data with the sigmoid-like function~\cref{eq:fit_pret};
     \item compute the \emph{finite critical noise}, \ie the value where the fit is equal to $y = 0.5$;
     \item repeat for different sizes and fit the finite critical noises with~\cref{eq:scaling_noise};
     \item the intercept of this last fit is $p_c(\alpha)$.
 \end{itemize}
 
-In the following sections we show the main results for both the \acrshort{shm} and the \acrshort{mhm}.
+In the following sections we show the main results for both the \acrlong{shm} and the \acrlong{mhm}.
 
 \section{Results for the standard Hopfield}
 For the \acrlong{shm} the \acrlong{mcmc} parameters used are summarized in~\cref{tab:mc_params_sh}.\\
@@ -189,7 +189,7 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
     \caption{Radius of the \acrlong{ba} for the \acrlong{shm} obtained with perturbations along random directions.}
     \label{fig:sh_radius}
 \end{figure}
-In~\cref{fig:sh_radius} we can clearly observe that the radius of the \acrlong{ba} decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrshort{shm} is able to perform retrieval starting from an (almost) orthogonal configuration.
+In~\cref{fig:sh_radius} we can clearly observe that the radius of the \acrlong{ba} decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrlong{shm} is able to perform retrieval starting from an (almost) orthogonal configuration. Furthermore, the radius goes to zero for $\alpha \sim \alpha_c$, as expected.
 
 \clearpage
 \subsection{Anisotropy of the basins}
@@ -236,7 +236,7 @@ In other words, given two binary configurations, they have a fraction of neurons
     \end{equation}
     where
     \begin{equation*}
-        \bsigma_{\mu} = \left\{ \bxi[\nu] \mid \max_{\nu \neq \mu}\left\{ m^{\mu \nu} \right\} \right\}.
+        \bsigma_{\mu} = \left\{ \bxi[\nu] \mid m^{\mu \nu} = \max_{\alpha \neq \mu}\left\{ m^{\mu \alpha} \right\} \right\}.
     \end{equation*}
 \end{definition}
 
@@ -244,11 +244,11 @@ In other words, given two binary configurations, they have a fraction of neurons
     Given an ensemble of $\xi$, where each $\xi_{N \times M}$ is
     a matrix that contains $M$ patterns of length $N$ as columns, the average Hamming radius along the direction of the nearest pattern for basins generated by these conditions is:
     \begin{equation}
-        r_{H}(\alpha)_{\text{far}}^{{D}} = \lim_{N \to \infty} \mathbb{E} \left[ d_{max}^{{D}} \left( N, \, \alpha, \, \bsigma_mu \right) \right], 
+        r_{H}(\alpha)_{\text{far}}^{{D}} = \lim_{N \to \infty} \mathbb{E} \left[ d_{max}^{{D}} \left( N, \, \alpha, \, \bsigma_\mu \right) \right], 
     \end{equation}
     where
     \begin{equation*}
-        \bsigma_{\mu} = \left\{ \bxi[\nu] \mid \min_{\nu \neq \mu}\left\{ m^{\mu \nu} \right\} \right\}.
+        \bsigma_{\mu} = \left\{ \bxi[\nu] \mid m^{\mu \nu} = \min_{\alpha \neq \mu}\left\{ m^{\mu \alpha} \right\} \right\}.
     \end{equation*}
 \end{definition}
 
@@ -276,7 +276,7 @@ and remembering the definition of Hamming distance~\cref{def:hop:hamming_distanc
 \begin{equation*}
     m = 1 - 2d_{H}.
 \end{equation*}
-Basically we are saying that, for $N \to \infty$ we get $m \to 0$ and thus $d_H \to 0.5$\footnote{Notice that the average it is not needed since as $N \to \infty$ the distribution of $m$ has null variance.} meaning that memories have half of the neurons equal. Then, if we perturb a given pattern towards any of the others, then we are keeping fixed that half neurons and~\cref{fig:sh:radius:anisotropy} says that we can, at most, lose information to half of the remaining part\footnote{Indeed simulations show that the $p_c$ tends towards $0.5$ also in this case}, leading to a Hamming distance of $0.25$. In simple terms, $d_H = 0.5$ is the halfway distance between two patterns in the thermodynamic limit.
+Basically we are saying that, for $N \to \infty$ we get $m \to 0$ and thus $d_H \to 0.5$\footnote{Notice that the average it is not needed since as $N \to \infty$ the distribution of $m$ has null variance.} meaning that memories have half of the neurons equal. Then, if we perturb a given pattern towards any of the others, then we are keeping fixed that half neurons and~\cref{fig:sh:radius:anisotropy} says that we can, at most, lose information to half of the remaining part\footnote{Indeed simulations show that the $p_c$ tends towards $0.5$ also in this case.}, leading to a Hamming distance of $0.25$. In simple terms, $d_H = 0.5$ is the halfway distance between two patterns in the thermodynamic limit.
 \clearpage
 \section{Results for the binary Modern Hopfield}
 The procedure to follow for the binary Modern Hopfield is the same as described before. The only change is that here we do not have the coupling matrix $J$, hence the energy variation must be computed accordingly to~\cref{alg:mhm_metropolis}.
@@ -287,7 +287,7 @@ Furthermore, here we have an extra parameter, $\lambda$ that makes the phase dia
     \caption{Monte Carlo parameters used for retrieval probabilities simulations in the case of the \acrlong{mhm}.}
     \label{tab:my_label}
 \end{table}
-For computational reasons, here we show the results obtained with $\lambda$ equal to $\lambda = 0.03$, which gives a critical load parameter around $\alpha_c \simeq \dots$. To have a reasonable simulation time we need to decrease significantly the sizes of the system with respect to the \acrlong{shm}. Indeed if we set $\alpha = 0.07$ and $N = 200$, then the model stores more than a million patterns and doing a simulation with many samples would have been incredibly heavy. 
+For computational reasons, here we show the results obtained with $\lambda$ equal to $0.03$, which gives a critical load parameter around $\alpha_c \simeq 0.029$. To have a reasonable simulation time we need to decrease significantly the sizes of the system with respect to the \acrlong{shm}. Indeed if we set $\alpha = 0.07$ and $N = 200$, then the model stores more than a million patterns and doing a simulation with many samples would have been incredibly heavy. 
 
 \begin{figure}[hbt]
     \centering
@@ -296,9 +296,10 @@ For computational reasons, here we show the results obtained with $\lambda$ equa
     \label{fig:mh:radius}
 \end{figure}
 
-Summarizing, in this chapter we have shown that the radius of the \acrshort{ba} displays a second order phase transition at the critical point, that is, it decreases continuously to zero.\\
-More over, at least for the \acrshort{shm}, both global and local minima are anisotropic.
-Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is sligthly smaller that the one obtained in~\cref{chap:phase_diagram} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
+Summarizing, in this chapter we have shown that the radius of the \acrlong{ba} displays a second order phase transition at the critical point, that is, it decreases continuously to zero.\\
+Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is slightly smaller that the one obtained in~\cref{chap:phase_diagram} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
+
+However, in both the standard and the modern versions, the basins of attractions appear to be ellipsoids whose Hamming radius is equal to $0.25$ along $M$ directions (the ones defined by other memories) and equal to $0.5$ along the other $N - M$ directions.
 \clearpage
 \section{Discussion for the continuous Hopfield}
 We can relax the constraint of having binary neurons by allowing the memories to span the entire $\mathbb{R}^N$. As we have discussed in~\cref{chap:hopfield}, the \acrlong{hm} can be extended to this situation as pointed out by~\textcite{hopfield_is_all_you_need}.\\
@@ -328,5 +329,6 @@ The simplest distance measure that can be used in this case is the euclidean dis
 \begin{equation}
     d_E(\bsigma^\mu, \, \bsigma^\nu) = \lVert \bsigma^\mu - \bsigma^\nu \rVert.
 \end{equation}
+However, we are trying to look for the best setup in order to find a \emph{critical distance} in this situation.
 \subbibliography
 \end{document}

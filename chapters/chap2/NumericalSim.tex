@@ -46,7 +46,7 @@ The last definition just tells that $P$ is irreducible if and only if we can mov
 \end{definition}
 It is not hard to prove that if the Markov Chain is irreducible then all the states have the same period. In this last case, if the period is equal to $1$, the chain is called \emph{aperiodic}.
 If $P$ is irreducible then there exist a unique stationary distribution $\symbf{\pi}$ and it has positive entries, \ie $\symbf{\pi}_x > 0 \forall x \in S$. Moreover, if it is also aperiodic, every initial distribution $\symbf{\nu}$ will tend to the stationary one $\symbf{\pi}$.\\
-The goal of \acrshort{mcmc} is to \emph{sample} from a stationary distribution of a Markov Chain when direct sampling of i.i.d random variables is computationally hard.
+The goal of \acrlong{mcmc} is to \emph{sample} from a stationary distribution of a Markov Chain when direct sampling of i.i.d random variables is computationally hard.
 In other words, our goal is to generate an irreducible Markov Chain $\left(X_n \right)_{n \geq 0}$ with a certain stationary distribution $\symbf{\pi}$ that is our target distribution.\\
 For our simulations we relied on the well known Metropolis algorithm~\cite{metropolis}. 
 
@@ -140,11 +140,11 @@ Hence, the variation in energy reads:
 
 It is important to notice that the computational complexity of \cref{alg:shm_metropolis} is due to the computation of $\Delta E$. However, \cref{eq:energy_var_shm} allows the previous algorithm to be of order $O(N)$. Instead, if we had calculated this value by taking the difference between the final and the initial energies, we would have obtained an order complexity of the order $O(N^2)$. As we will see in \cref{sec:numsim_mh} this analytical trick does not lead to particular advantages.
 
-The \texttt{fliprate} parameter just tells what fraction of flips we obtain in $N$ trials. This is useful to set up a stopping condition for the algorithm if the number of flips goes below a certain threshold. If it is $0$ it menas that the state arrived to a minimimum (either local or global).
+The fliprate parameter just tells what fraction of flips we obtain in $N$ trials. This is useful to set up a stopping condition for the algorithm if the number of flips goes below a certain threshold. If it is $0$ it means that the state arrived to a minimimum (either local or global).
 Summarizing everything, the procedure of minimization is quite simple: we choose a random neuron and we flip it, if the consequent $\Delta E$ is negative we accept the flip, otherwise we accept it with a probability that depends on the temperature ($\beta = 1/ T$). An high value of temperature makes the state able to ``jump out'' of local minima, whereas, for $T \to 0$ the dynamics becomes deterministic and even a very small barrier in the energy landscape traps our configuration.\\
 All the steps described in \cref{alg:shm_metropolis} define what is usually addressed to as a Monte Carlo sweep. Shortly speaking, the full \acrlong{mcmc} algorithm executes the Metropolis algorithm for a certain number of times that is the number of sweeps that one wants to perform.
 
-The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our computations we set \texttt{earlystop} to zero so that the algorithm stops if no more spin-flips occur. Moreover, one might need to allow the system to visit states with higher energy, thus making the dynamics more ``stochastic''. One common procedure is to gradually reduce such randomness as a function of the number of sweeps. Such method is called \acrfull{sa} since we start with a low $\beta$ (high $T$) and we ``cool down'' the dynamics until we reach a very high $\beta$ (low $T$). In this way the system should have enough momentum to avoid local minima and to reach the global ones. However, we will make use of \acrshort{sa} in \cref{chap:fact}.
+The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our computations we set the fliprate threshold to zero so that the algorithm stops if no more spin-flips occur. Moreover, one might need to allow the system to visit states with higher energy, thus making the dynamics more ``stochastic''. One common procedure is to gradually reduce such randomness as a function of the number of sweeps. Such method is called \acrfull{sa} since we start with a low $\beta$ (high $T$) and we ``cool down'' the dynamics until we reach a very high $\beta$ (low $T$). In this way the system should have enough momentum to avoid local minima and to reach the global ones. However, we will make use of \acrlong{sa} in \cref{chap:fact}.
 
 \begin{algorithm}
     \caption{\acrlong{mcmc} for the \acrlong{shm}}
@@ -175,8 +175,6 @@ We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken
 \end{figure}
 \end{comment}
 
-
-\clearpage
 \section{Modern Hopfield}\label{sec:numsim_mh}
 \subsection{Binary case}
 In the \acrlong{mhm} things get more computationally heavy. Here there is no particular advantage in finding an analytical expression for the energy variation. Assuming that we have the usual configuration $\symbf{\sigma}$ for which we can compute the variation in energy after one spin-flip, we can first write the variation in the overlap, $\Delta m$ with one stored pattern $\symbf{\xi}^{\mu}$:
@@ -199,10 +197,10 @@ So we obtain:
 \begin{equation}\label{eq:numsim:mhm:energyvariation}
     \Delta E_{\text{spin-flip}} =  -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\exp\left(-2\lambda\xi_{k}^{\mu}\sigma_k \right) }{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
 \end{equation}
-Here, the magnetization $m$ is not rescaled by $N$. (boh forse ho fatto un po' di confusione con la notazione).
+Notice that here, the magnetization $m$ is not rescaled by $N$.\\
 We have two problems:
 \begin{itemize}
-    \item since in the \acrshort{mhm} the storage capacity increases exponentially, \cref{eq:numsim:mhm:energyvariation} involves a sum of a number of terms that is exponential;
+    \item since in the \acrlong{mhm} the storage capacity increases exponentially, \cref{eq:numsim:mhm:energyvariation} involves a sum of a number of terms that is exponential;
     \item the computation of the exponential might lead to overflow problems during computations, thus leaving us with a numerical unstable algorithm.
 \end{itemize}
 Furthermore, the first point suggest that there is no particular computational advantage in computing the energy variation with the above analytical expression. For this reason, it is sufficient to compute the energies before and after one single spin-flip and take the difference. Indeed, in both \cref{eq:numsim:mhm:energyvariation} and in the computation of the energy difference using \cref{eq:modern_binary_energy} it is involved a sum over an exponential number of terms.
@@ -214,7 +212,7 @@ For the first one we make use of the Kahan summation algorithm.
 The representation of floating point numbers and mathematical operations performed among them inevitably generate numerical errors. Indeed, such numbers have a finite precision, \ie, a fixed number of significant digits. Thus, the value ``seen'' by a calculator differs from the real one by a certain quantity. Mathematical operations performed on numerical representations can enhance the effects of such errors.\\
 The sum of $n$ floating point numbers leads to an error of the order $O(n)$ in the worst case and a root mean square error that goes like $O\left(\sqrt{n}\right)$ for inputs taken randomly~\cite{accuracy_floating_point}.
 In the computation of $\Delta E$ we deal with sum of $M \sim e^{O(n)}$ terms and the consequent error in numerical simulations might be very big.\\
-To reduce this problem we exploit the Kahan summation algorithm~\cite{kahan_truncation} based on a class of method that takes the name of \emph{compensated summation}~\cite{accuracy_floating_point}. Several similar algorithms that track the accumulated error in some kind of operations exist~\cite{deltasigma, bresenham}. Also, other variants of the Kahan summation might be used as well~\cite{kahan-babuska}. (qua forse devo mettere dei dettagli sulla kahan summation).
+To reduce this problem we exploit the Kahan summation algorithm~\cite{kahan_truncation} based on a class of method that takes the name of \emph{compensated summation}~\cite{accuracy_floating_point}. Several similar algorithms that track the accumulated error in some kind of operations exist~\cite{deltasigma, bresenham}. Also, other variants of the Kahan summation might be used as well~\cite{kahan-babuska}.
 
 \begin{algorithm}
     \caption{Kahan summation}
@@ -232,7 +230,7 @@ To reduce this problem we exploit the Kahan summation algorithm~\cite{kahan_trun
     \end{algorithmic}
 \end{algorithm}
 
-Overflow in the exponential is the other potential numerical problem. However, this can be simply solved with the usual trick of subtracting the maximum from the exponential argument. In particular, we deal with exponential of the magnetiazions between a configuration and the stored patterns, \ie, $\exp\left(\symbf{\sigma}\cdot \symbf{\xi}^{\mu}\right)$ where $\mu = 1,\dots, M$. Writing
+Overflow in the exponential is the other potential numerical problem. However, this can be simply solved with the usual trick of subtracting the maximum from the exponential argument. In particular, we deal with exponential of the overlaps between a configuration and the stored patterns, \ie, $\exp\left(\symbf{\sigma}\cdot \symbf{\xi}^{\mu}\right)$ where $\mu = 1,\dots, M$. Writing
 \begin{equation*}
     a = \max_{\mu} \left(\symbf{\sigma} \cdot \symbf{\xi}^{\mu}\right),
 \end{equation*}
@@ -256,7 +254,7 @@ Hence, following the work of~\textcite{numerically_stable} in ~\cref{alg:lse} we
     \end{algorithmic}
 \end{algorithm}
 
-In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm}. The full \acrshort{mcmc} is the same as~\cref{alg:shm_mcmc}.
+In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm}. The full \acrlong{mcmc} is the same as~\cref{alg:shm_mcmc}.
 
 
 \begin{algorithm}
@@ -284,7 +282,7 @@ In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm
 \end{algorithm}
 
 \subsection{Continuous case}\label{sec:numsim_continuous}
-The same considerations for the numerical stability argument hold also for the continuous case of the \acrshort{mhm}.\\
+The same considerations for the numerical stability argument hold also for the continuous case of the \acrlong{mhm}.\\
 Here, patterns and configurations are generated by sampling from a standard normal distribution, \ie:
 \begin{equation*}
     \xi_i^{\mu} \sim \mathcal{N}\left(0, 1\right), \qquad i = 1, \dots, N.
@@ -327,7 +325,6 @@ The key operation of the update rule is the $\operatorname{softmax}$ operation, 
 \end{algorithmic}
 \end{algorithm}
 
-\clearpage
 \subsubsection{Energy landscape}
 Also in this case with real variables, the energy landscape is non trivial. Nevertheless, visualization methods are easier to apply with respect to the binary counterpart but the results are quite far from giving a satisfactory description of what really happens.
 One simple method is to plot the energy on the plane defined by three patterns $\symbf{\xi}^1$, $\symbf{\xi}^2$ and $\symbf{\xi}^3$. Then, any new configuration belonging to the plane defined by such patterns can be written as:

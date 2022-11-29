@@ -5,9 +5,9 @@
 \addbibresource{\rootdir/references.bib}
 \begin{document}
 \chapter{Background on the Hopfield model}\label{chap:hopfield}
-In this chapter we highlight some of the most theoretical aspects regarding the \acrlong{hm}.\\
+In this chapter we highlight some of the most theoretical aspects regarding the \acrlong{hm}. Theoretical details on the computation of thermodynamic potential along with the analytical study of the phase diagram are not covered here and can be found in the given references.
 \section{The standard Hopfield Model}\label{sec:standard_hop}
-At the end of the eighties, the american physicist J. Hopfield popularized what is now known as the Hopfield model.
+At the end of the eighties, the physicist J. Hopfield popularized what is now known as the Hopfield model.
 It is one of the first proposed models capable of mimicking, in a very simplified way, human brain in the memorization process. In other words, it is a physical system able to associate some patterns that need to be stored to stable states of the systems~\cite{JJHop}. The way in which these patterns are stored, the very nature of the stable states that are associated and the collective properties of the system, make this model strongly correlated to physics concepts and theories, such as basins of attraction, spin glasses and statistical mechanics in general.\\
 The \acrlong{hm} is often addressed to as an associative memory, \ie a network whose main purpose is to learn the association between an some items.\\
 Clearly, the storage capacity of such model is not unlimited. We have some constraints on the number of memories that we can ``learn'' and, as we will see, this is the main point that governs the properties of the system.\\
@@ -17,9 +17,9 @@ The idea underlying the memorization process comes directly from the study of th
 Obviously, this situation is quite far from the real biological counterpart which is extremely more elaborated. However, the aim of such simplified models is to capture the collective properties of the system. Other theories from statistical mechanics (\eg liquid crystals, Ising Model etc.) neglect most of the microscopic details but at the same time they provide very accurate results about the macroscopic behaviour of the system. Hence, a simple mathematical description is appropriate for our purpose~\cite{statmecoflearn}.
 
 \subsection{The Hebbian rule}\label{sec:hebbrule}
-The core of the \acrshort{shm} lies in the choice of the couplings $J_{ij}$. Indeed, those are the quenched variables that determine the evolution of the dynamical variables \ie \emph{neurons} (or \emph{spins}).
+The core of the \acrlong{shm} lies in the choice of the couplings $J_{ij}$. Indeed, those are the quenched variables that determine the evolution of the dynamical variables \ie \emph{neurons} (or \emph{spins}).
 Inspired by neuroscientific studies on the activity of neurons, D. O. Hebb found that neurons that are often active at the same time increase their \emph{synaptic efficiency} \cite{hebb}. The results of the Hebb's work is often summarized as \emph{neurons that fire together wire together}. This is the so called Hebb's rule.
-In order to understand how this applies to the \acrshort{shm}, we introduce some notation.
+In order to understand how this applies to the \acrlong{shm}, we introduce some notation.
 A general binary configuration is defined as:
 \begin{equation}\label{eq:general_config}
     \symbf{\sigma} = \{\sigma_1, \dots, \sigma_N\} \in \{-1, 1\}^N,
@@ -114,7 +114,7 @@ This is not the only possibility to compute the similarity between two $N$-dimen
 The \acrlong{shm} shows an interesting phase diagram on the $T$-$\alpha$ plane which has been investigated first by~\textcite{amit_phase}.\\
 What one gets, is that the system undergoes a second order phase transition at $T_c = 1$ and $\alpha \to 0$. Indeed, under $T_c$, there are two kind of stable states for the free energy. In particular, in the low temperature region:
 \begin{itemize}
-    \item Mattis-states or \emph{retrieval states} \textbf{è giusto???? sono la stessa cosa no?}, \ie $2M$ degenerate states each of which is correlated with only one stored memory;
+    \item Mattis-states or \emph{retrieval states}, \ie $2M$ degenerate states each of which is correlated with only one stored memory;
     \item \emph{mixed states}, \ie states which have a finite overlap with several stored patterns.
 \end{itemize}
 They both survive also for finite $\alpha$ and also a \acrfull{sg} class of metastable states appears. The latter tend to be orthogonal to all the embedded patterns in the thermodynamic limit, that is their overlap is of the order $O\left(1 / \sqrt{N \alpha} \right)$~\cite{amit_phase, sk}.\\ 
@@ -123,7 +123,7 @@ Concerning retrieval states, for $T \to 0$ it results that:
     \item below $\alpha \simeq 0.05$ patterns are global minima of the free energy;
     \item for $0.05 \lesssim \alpha_c \lesssim 0.14$ patterns are metastable;
     \item for $\alpha \geq \alpha_c$ we have no meaningful retrieval, even if dynamics can lead to finite overlaps;
-    \item spurious states are well separated by energiy barriers \textbf{dubbio}\footnote{mettere una footnote dove dico qualcosa in più}.  
+    \item spurious states are well separated by energy barriers \footnote{Details on this are given in~\cite{amit2}.}.  
 \end{enumerate}
 
 \subsection{Dynamics and fixed points}
@@ -183,9 +183,13 @@ where the equilibrium distribution is the Boltzmann one, \ie:
 \begin{equation}
    \frac{\partial \mathrm{P}_{eq}\left(\bsigma\right)}{\partial t} = 0 \Rightarrow \mathrm{P}_{eq} = \frac{e^{- \beta E(\symbf{\sigma})}}{Z}.
 \end{equation}
-\textbf{dire qualcosina in più qui su come si va avanti}
+Hence, the problem reduces to the minimization of the Helmoltz free energy:
+\begin{equation}\label{eq:free_energy}
+    F = E - TS,
+\end{equation}
+where $T$ is the temperature and $S$ is the entropy\footnote{Notice that as $T \to 0$ we go back to the energy minimization given by the deterministic dynamics.}. From now on, we implicitly assume that, if a stochastic dynamics is applied, then we want to minimize~\cref{eq:free_energy}.
 \section{The modern Hopfield model}\label{sec:modern_hop}
-The \acrlong{hm} introduced by J. J. Hopfield is able to store a number of patterns that grows linearly with the number of neurons $N$, as we discussed in \cref{sec:standard_hop}. The mathematical reason why \acrshort{shm} gets confused when many memories are stored is that several memories produce contributions to the energy which are of the same order. In other words the energy decreases too slowly as the pattern approaches a memory in the configuration space.\\
+The \acrlong{hm} introduced by J. J. Hopfield is able to store a number of patterns that grows linearly with the number of neurons $N$, as we discussed in \cref{sec:standard_hop}. The mathematical reason why \acrlong{shm} gets confused when many memories are stored is that several memories produce contributions to the energy which are of the same order. In other words the energy decreases too slowly as the pattern approaches a memory in the configuration space.\\
 Further studies over the years have led to the development of \glspl{dam}, namely networks able to store a number of patterns that is much more greater than the number of neurons in the system.\\
 A first step in this direction was made by~\textcite{krotov} with the introduction of a new energy function:
 \begin{equation}\label{eq:dense_energy}
@@ -212,14 +216,13 @@ The new energy function is defined as:
 \end{split}
 \end{equation}
 where $\operatorname{lse}(\cdot)$ is the \emph{log-sum-exp} operator.\\
-\Cref{eq:modern_binary_energy} can be seen as a sum of $M$ energies, each of which takes into account the overlap between the configuration and the $\mu$-th pattern. Therefore, it is sufficient that the the configuration has a not negligible overlap with one of the stored patterns to give a huge negative contribution to the energy. Conversely if all the overlaps are negligible, then the contribution to the energy will be quite small.
-\subsubsection{Phase diagram}
-The goal is to \emph{learn} $M = e^{\alpha N}$ patterns and thus we can define the \emph{load parameter} as:
+\Cref{eq:modern_binary_energy} can be seen as a sum of $M$ energies, each of which takes into account the overlap between the configuration and the $\mu$-th pattern. Therefore, it is sufficient that the the configuration has a not negligible overlap with one of the stored patterns to give a huge negative contribution to the energy. On the other hand, if all the overlaps are negligible, then the contribution to the energy will be quite small.\\
+Here, the load parameter is given by
 \begin{equation}
-    \alpha = \frac{\operatorname{log}(M)}{N}
+    \alpha = \frac{\operatorname{log}(M)}{N}.
 \end{equation}
-\textbf{The phase diagram of this model is still under investigation from Prof. Carlo Lucibello and Marc Mezard}.
-
+Conversely to what happens for the \acrlong{shm}, here the analytical solution of the phase diagram is still being investigated. However, we are going to discuss a little more on this in~\cref{chap:phase_diagram}.\\
+The dynamics of this model is simply given by the sign of the energy variation arising from a single spin-flip.
 \subsection{Continuous case}
 If we relax the binary variables constraint, we can modify the energy function in order to adapt our model to deal with real-valued patterns, \ie configurations where $\sigma_i \in \mathbb{R}$, for example $\sigma_i \sim \mathcal{N}(0,1)$.
 The new energy function reads
@@ -228,7 +231,6 @@ The new energy function reads
     \left( \lambda, \symbf{\xi} \cdot \sigma \right) + \frac{1}{2} \symbf{\sigma}^2 + \frac{\operatorname{log}(M)}{\lambda} + \frac{1}{2}\left(\operatorname{max}_{\mu}\| \xi^{\mu}\|\right)^2,
 \end{equation}
 and it can be proven~\parencite{hopfield_is_all_you_need} that $0 \leq E\left(\symbf{\sigma} \right) \leq 2\left(\operatorname{max}_{\mu}\| \xi^{\mu}\|\right)^2$.
-\subsubsection{Dynamics}
 The update rule in this case is simply:
 \begin{equation}\label{eq:update_rule_continuous}
     \symbf{\sigma}(t + 1) = \symbf{\xi} \operatorname{softmax}(\lambda \symbf{\xi} \symbf{\sigma}(t)),
@@ -243,7 +245,11 @@ The fact that here the key mechanism is based on the softmax suggests some simil
 As an application, beyond the basic behaviour as a \acrlong{dam}, since we allow the presence of continuous values for neurons together with the fact it suffices to apply the update rule just once, the \acrlong{mhm} can also be thought as a layer into deep learning architectures~\parencite[see][for details]{hopfield_is_all_you_need}.
 
 \section{Basins of Attractions}
-The core of the memory-behaviour of the \acrlong{hm} (for both the standard and modern versions) relies on the fact that stored patterns are attractors for a low-temperature dynamics (\textbf{è corretto dire così?}). All the starting configurations that evolve towards the same attractor define what is called a \acrfull{ba}. The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this with numerical results in~\cref{chap:radius}.
+The core of the memory-behaviour of the \acrlong{hm} (for both the standard and modern versions) relies on the fact that stored patterns are attractors for a low-temperature dynamics. All the starting configurations that evolve towards the same attractor define what is called a \acrfull{ba}. 
+\begin{definition}[Basin of Attraction]
+The Basin of Attraction, $B$, of a memory \bxi\ is the set of all the points that flow toward \bxi\ under deterministic dynamics.
+\end{definition}
+The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this with numerical results in~\cref{chap:radius}.
 However, we introduce now the distance measure for the case of binary configurations. Here, $\{-1, \, +1\}^{N}$ are the vertices of the hypercube whose centroid is the origin and the linear size is equal to $2$. For such $N$-dimensional points, we can define a distance which effectively makes the set of such vertices a metric space. The natural choice is given by the Hamming distance.
 \begin{definition}
 \label{def:hop:hamming_distance}
