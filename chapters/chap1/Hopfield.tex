@@ -61,7 +61,7 @@ If instead of having just one pattern like in~\cref{fig:hebbian_rule} we have ma
 We can introduce an energy function that maps this system to a disordered Ising model.\\
 For any binary configuration $\symbf{\sigma}$, we define:
 \begin{equation}\label{eq:energy_ising}
-    E(\symbf{\sigma}) = \frac{1}{2} \sum_{i, j} J_{ij} \sigma_i \sigma_j.
+    E(\symbf{\sigma}) = - \frac{1}{2} \sum_{i, j} J_{ij} \sigma_i \sigma_j.
 \end{equation}
 Also, the partition function is
 \begin{equation}\label{eq:prob_configuration}
@@ -251,7 +251,7 @@ The Basin of Attraction, $B$, of a memory \bxi\ is the set of all the points tha
 \end{definition}
 The structure of such basins is quite hard to investigate, and it gets more and more complicated as the number of stored memories increases~\cite{Keeler}. One of the main goals of this work is to measure ``how large'' such basins are, in terms of the noise applied to a given memory. We will provide more details on this with numerical results in~\cref{chap:radius}.
 However, we introduce now the distance measure for the case of binary configurations. Here, $\{-1, \, +1\}^{N}$ are the vertices of the hypercube whose centroid is the origin and the linear size is equal to $2$. For such $N$-dimensional points, we can define a distance which effectively makes the set of such vertices a metric space. The natural choice is given by the Hamming distance.
-\begin{definition}
+\begin{definition}[Hamming distance]
 \label{def:hop:hamming_distance}
 Given two binary $N$-dimensional configurations $\bsigma^{\mu}$ and $\bsigma^\nu$ the Hamming distance between the two is just the number of neurons that differ. In mathematical form, we call ${A}$ the set that contains the positions where $\bsigma^\mu$ is different from $\bsigma^\nu$:
 \begin{equation*}

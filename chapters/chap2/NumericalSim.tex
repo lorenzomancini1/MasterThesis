@@ -134,7 +134,7 @@ Hence, the variation in energy reads:
             \State fliprate $\gets$ fliprate + 1
         \EndIf
         \EndFor
-    \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
+    \State \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
     \end{algorithmic}
 \end{algorithm}
 
@@ -158,7 +158,7 @@ The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our 
             \State break
         \EndIf
         \EndFor
-    \textbf{return} $\symbf{\sigma_{\text{rec}}}$
+    \State \textbf{return} $\symbf{\sigma_{\text{rec}}}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -267,7 +267,7 @@ In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm
         \State $E \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
         \For{$i$ in random permutation $N$}
         \State $\sigma[i] \gets - \sigma[i]$
-        \State $E_{new} \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
+        \State $E_{new} \gets \text{energy}\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
         \State $\Delta E \gets E_{new} - E$
         \If {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
             \State $\sigma[i] \gets - \sigma[i]$
@@ -277,7 +277,7 @@ In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm
             \State $\sigma[i] \gets - \sigma[i]$
         \EndIf
         \EndFor
-    \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
+    \State \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
     \end{algorithmic}
 \end{algorithm}
 
@@ -310,7 +310,7 @@ The key operation of the update rule is the $\operatorname{softmax}$ operation, 
     \For{$i = 1$ to $|x|$}
         \State $g[i] \gets w[i]/(1+s)$
     \EndFor
-    \textbf{return} $g$
+    \State \textbf{return} $g$
 \end{algorithmic}
 \end{algorithm}
 
@@ -321,7 +321,7 @@ The key operation of the update rule is the $\operatorname{softmax}$ operation, 
     \Require $\symbf{\sigma}$, $\symbf{\xi}$, $\lambda$
     \State $\symbf{\sigma}_{rec} \gets \symbf{\sigma}$
     \State $\symbf{\sigma}_{rec} \gets \symbf{\xi} \times \operatorname{softmax}\left(\lambda \symbf{\xi}^T \times \symbf{\sigma}_{rec}\right)$
-    \textbf{return} $\symbf{\sigma}_{rec}$
+    \State \textbf{return} $\symbf{\sigma}_{rec}$
 \end{algorithmic}
 \end{algorithm}
 

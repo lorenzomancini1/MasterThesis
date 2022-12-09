@@ -9,7 +9,7 @@
 An important question about the properties of the \acrlong{hm} is related to the \acrlong{ba} concept. In particular, one might be interested in the size of such basins. In our work we focus on the maximum information that a pattern can lose in order to let the model be able to retrieve the original configuration, thus relating with the $p$ parameter introduced in~\cref{chap:numerical_sim} for the binary cases and the $\delta$ parameter for the continuous one along with the notion of Hamming distance introduced in~\cref{chap:hopfield}.\\
 Following~\cite{Kanter}, the radius of a \acrlong{ba} can be defined as the largest Hamming distance below which a meaningful retrieval is possible.
 \begin{definition}[Maximum size of a basin of attraction]
-    Given a stored memory \bxi\ of dimension $N$, where $\mu = 1, \dots, N \cdot \alpha$ is chosen randomly, and its relative basin of attraction $\mathcal{B}$, the maximum size of such basin:
+    Given a stored memory \bxi\ of dimension $N$, where $\mu = 1, \dots, N \alpha$ is chosen randomly, and its relative basin of attraction $\mathcal{B}$, the maximum size of such basin:
     \begin{equation}\label{eq:max_dist}
         d_H^{max} \left( N, \alpha \right) = \max \left\{ d_H\left( \bxi, \, \bsigma \right) \mid \bsigma \in \mathcal{B} \right\},
     \end{equation}
@@ -180,7 +180,7 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
 \begin{figure}
     \centering
     \import{\imgpath}{scaling_example}
-    \caption{Example of scaling relationships for three different values of $\alpha$. Data are fitted with a polynomial of degree $2$ following~\cref{eq:scaling_noise}. Errorbars are given by error propagation of~\cref{eq:cn:solution_fit}.}
+    \caption{Example of scaling relationships for three different values of $\alpha$. Data are fitted with a polynomial of degree $2$ following~\cref{eq:scaling_noise}. Error bars are given by error propagation of~\cref{eq:cn:solution_fit}.}
     \label{fig:sh:scaling_example}
 \end{figure}
 \begin{figure}
@@ -189,7 +189,7 @@ As an example, in~\cref{fig:sh_fit_example} it can be clearly observed as the st
     \caption{Radius of the \acrlong{ba} for the \acrlong{shm} obtained with perturbations along random directions.}
     \label{fig:sh_radius}
 \end{figure}
-In~\cref{fig:sh_radius} we can clearly observe that the radius of the \acrlong{ba} decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrlong{shm} is able to perform retrieval starting from an (almost) orthogonal configuration. Furthermore, the radius goes to zero for $\alpha \sim \alpha_c$, as expected.
+In~\cref{fig:sh_radius} we can clearly observe that the radius of the \acrlong{ba} decreases continuously to zero and tends towards $p_c = 0.5$ as $\alpha \to 0$ meaning that if the load parameter is small enough, the \acrlong{shm} is able to perform retrieval starting from an (almost) orthogonal configuration. Furthermore, the radius goes to zero for $\alpha \to \alpha_c^-$, as expected.
 
 \clearpage
 \subsection{Anisotropy of the basins}
@@ -272,7 +272,7 @@ that is, the magnetization is equal to the difference between the number of neur
 \begin{equation}
     N = N_{=} + N_{\neq} \Rightarrow m = \frac{N -2 N_{\neq}}{N},
 \end{equation}
-and remembering the definition of Hamming distance~\cref{def:hop:hamming_distance} one gets 
+so by remembering the definition of Hamming distance~\cref{def:hop:hamming_distance} one gets 
 \begin{equation*}
     m = 1 - 2d_{H}.
 \end{equation*}
@@ -299,7 +299,7 @@ For computational reasons, here we show the results obtained with $\lambda$ equa
 Summarizing, in this chapter we have shown that the radius of the \acrlong{ba} displays a second order phase transition at the critical point, that is, it decreases continuously to zero.\\
 Nevertheless, the $\alpha_c$ for the \acrlong{mhm} is slightly smaller that the one obtained in~\cref{chap:phase_diagram} using the escape probability. This is probably due to the finite size effects that are not negligible in this case even if we are trying to extrapolate the thermodynamic limit. 
 
-However, in both the standard and the modern versions, the basins of attractions appear to be ellipsoids whose Hamming radius is equal to $0.25$ along $M$ directions (the ones defined by other memories) and equal to $0.5$ along the other $N - M$ directions.
+However, in both the standard and the modern versions, the basins of attractions appear to be ellipsoids whose Hamming radius is equal to $0.25$ along $M - 1$ directions (the ones defined by other memories) and equal to $0.5$ otherwise.
 \clearpage
 \section{Discussion for the continuous Hopfield}
 We can relax the constraint of having binary neurons by allowing the memories to span the entire $\mathbb{R}^N$. As we have discussed in~\cref{chap:hopfield}, the \acrlong{hm} can be extended to this situation as pointed out by~\textcite{hopfield_is_all_you_need}.\\
