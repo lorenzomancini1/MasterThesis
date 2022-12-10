@@ -15,7 +15,13 @@
 \subimport{utils/}{myglossaries}
 \subimport{utils/}{myalgorithms}
 
-\usepackage[colorlinks=true, allcolors = unipdred, linktocpage = true]{hyperref}
+\usepackage[colorlinks=true, linktocpage = true]{hyperref}
+\hypersetup{
+    linkcolor = unipdred,
+    citecolor = bocconiblue,
+    filecolor = unipdred,
+    urlcolor  = bocconiblue,
+}
 \usepackage{cleveref}
 
 
@@ -32,7 +38,7 @@
   {\clearpage           % we want a new page
    \thispagestyle{empty}% no header and footer
    \vspace*{\stretch{1}}% some space at the top 
-   \itshape             % the text is in italics
+   \swshape             % the text is in italics
    \raggedleft          % flush to the right margin
   }
   {\par % end the paragraph
