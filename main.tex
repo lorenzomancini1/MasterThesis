@@ -9,9 +9,9 @@
 \frontmatter 
 \pagestyle{empty}
 %\subfileinclude{./frontmatter/titlepage}
-\import{./frontmatter}{titlepage}
-\import{./frontmatter}{dedication}
-\import{./frontmatter}{abstract}
+\import{./frontbackmatter}{titlepage}
+\import{./frontbackmatter}{dedication}
+\import{./frontbackmatter}{abstract}
 
 \tableofcontents
 \listoffigures
@@ -38,5 +38,6 @@
 \backmatter
 \printbibliography[heading=bibintoc, title={References}]
 
-\import{./}{Ringraziamenti}
+\import{./frontbackmatter}{ringraziamenti}
+
 \end{document}
