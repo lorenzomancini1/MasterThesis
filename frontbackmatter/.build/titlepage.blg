@@ -1,0 +1,9 @@
+[0] Config.pm:307> INFO - This is Biber 2.17
+[0] Config.pm:310> INFO - Logfile is '.build/titlepage.blg'
+[103] biber-darwin:340> INFO - === Lun Nov 14, 2022, 23:51:27
+[123] Biber.pm:418> INFO - Reading '.build/titlepage.bcf'
+[229] Biber.pm:972> INFO - Found 0 citekeys in bib section 0
+[249] bbl.pm:654> INFO - Writing '.build/titlepage.bbl' with encoding 'UTF-8'
+[249] bbl.pm:757> INFO - Output to .build/titlepage.bbl
+[250] Biber.pm:130> WARN - The file '.build/titlepage.bcf' does not contain any citations!
+[250] Biber.pm:132> INFO - WARNINGS: 1

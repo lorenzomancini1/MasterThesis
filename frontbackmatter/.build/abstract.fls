@@ -1,0 +1,6 @@
+PWD /Users/lorenzomancini/Desktop/Physics of Data/Thesis/Latex/MasterThesis/frontmatter
+INPUT /usr/local/texlive/2022/texmf.cnf
+INPUT /usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt
+INPUT abstract.tex
+OUTPUT .build/abstract.log
