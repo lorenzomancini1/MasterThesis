@@ -1,0 +1,37 @@
+\providecommand{\fontpath}{./fonts}
+\usepackage[italian, english]{babel}
+\selectlanguage{english}
+\usepackage[math-style=ISO, bold-style=ISO]{unicode-math}
+\setmathfont{Garamond-Math.otf}[StylisticSet={7,8}]
+%\usepackage{fontspec} it is already loaded by unicode-math 
+
+%\setmainfont{Latin Modern Roman}
+%\setsansfont{Latin Modern Sans}
+%\setmonofont{Latin Modern Mono}
+%\setmathfont{Latin Modern Math}
+
+\setmainfont{EBGaramond}[
+    Path=\fontpath/EBGaramond/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    ItalicFont=*-Italic,
+    BoldItalicFont=*-BoldItalic,
+    SwashFont=*-SwashItalic
+    ]
+
+\setsansfont{SourceSansPro}[
+	Path=\fontpath/SourceSansPro/,
+	Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    ItalicFont=*-Italic,
+    BoldItalicFont=*-BoldItalic
+    ]
+
+\setmonofont{Inconsolata}[
+	Path=\fontpath/Inconsolata/,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+	]

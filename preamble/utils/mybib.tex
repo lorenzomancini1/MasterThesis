@@ -1,0 +1,19 @@
+% Bibliography
+\providecommand{\rootdir}{.}
+%\usepackage[utf8]{inputenc}
+\usepackage[style=numeric-comp, maxcitenames = 2, backend = biber, eprint = false, doi = false, url = true, isbn = false, date = year]{biblatex} %Imports biblatex package
+\addbibresource{\rootdir/references.bib}
+
+\AtEveryBibitem{%
+  \ifentrytype{article}{%
+    \clearfield{pages}%
+  }{%
+  }%
+}
+
+% Commands
+\newcommand{\subbibliography}{
+\ifSubfilesClassLoaded{
+    \printbibliography
+    }{}
+}

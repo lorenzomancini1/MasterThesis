@@ -1,0 +1,47 @@
+\usepackage{standalone}
+
+% Other
+\usepackage{listings} %for code snippets
+\usepackage{csquotes}
+\usepackage{comment}
+
+\subimport{utils/}{mymath}
+\subimport{utils/}{mycolors}
+\subimport{utils/}{mybib}
+\subimport{utils/}{mygraphics}
+\subimport{utils/}{mylayout}
+\subimport{utils/}{mytables}
+\subimport{utils/}{myfonts}
+\subimport{utils/}{myglossaries}
+\subimport{utils/}{myalgorithms}
+
+\usepackage[colorlinks=true, linktocpage = true]{hyperref}
+\hypersetup{
+    linkcolor = unipdred,
+    citecolor = bocconiblue,
+    filecolor = unipdred,
+    urlcolor  = bocconiblue,
+}
+\usepackage{cleveref}
+
+
+\usepackage{subfiles}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\etal}{\textit{et al}., }
+\newcommand{\ie}{\textit{i}.\textit{e}., }
+\newcommand{\eg}{\textit{e}.\textit{g}.\ }
+
+
+% environments
+\newenvironment{dedication}
+  {\clearpage           % we want a new page
+   \thispagestyle{empty}% no header and footer
+   \vspace*{\stretch{1}}% some space at the top 
+   \swshape             % the text is in italics
+   \raggedleft          % flush to the right margin
+  }
+  {\par % end the paragraph
+   \vspace{\stretch{3}} % space at bottom is three times that at the top
+   \clearpage           % finish off the page
+  }

@@ -1,0 +1,13 @@
+# macOS system files
+.DS_Store
+
+# pdf output
+Tesi_Mancini.pdf
+
+presentation/
+presentation.zip
+
+.build/
+
+frontbackmatter/dedication.tex
+frontbackmatter/ringraziamenti.tex

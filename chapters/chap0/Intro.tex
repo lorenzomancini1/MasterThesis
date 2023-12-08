@@ -1,0 +1,46 @@
+\providecommand{\rootdir}{../..}
+\providecommand{\imgpath}{\rootdir/images/chap0}
+\providecommand{\fontpath}{\rootdir/fonts}
+\documentclass[\rootdir/main.tex]{subfiles}
+\addbibresource{\rootdir/references.bib}
+\begin{document}
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+Starting from the end of the twentieth century, the study of theories based on statistical mechanics, spin glasses and complex systems in general has contributed in a crucial way to the growth of many fields of applications, from biology to neuroscience, computer science and \acrfull{ml}. The latter is nowadays probably one of the most popular topics among numerous researchers coming from different scientific backgrounds. The ability to make a machine to learn ``something'' by itself is a very fascinating concept especially when performances are comparable to those of a human being~\cite{imagenet, ml_vs_human, vandermaas}.
+
+Currently we can benefit of many state-of-the art \acrlong{ml} models for different perceptual tasks such as image recognition~\cite{resnet, vgg}, \acrfull{nlp}~\cite{lstm}, and many others. Moreover, the increase in research efforts along with the growth of computational resources have led to the development of incredibly powerful and elaborate state-of-the-art models such as \glspl{gan}~\cite{gans} and Transformers~\cite{attention}. Regarding the latter, in \cref{sec:modern_hop} we discuss how those are related to the update function of the \acrfull{chm}.
+Most \acrlong{ml} architectures work as \emph{input systems} \ie those model take an input and produce an output. Instead, in this work we put our attention on the so called \glspl{ann} where the system evolves over time towards a stable state.
+
+\section*{Hopfield Model and Attractor Neural Networks}
+In our context, an \acrlong{ann} is a particular \acrlong{ml} architecture that evolves over time under a certain dynamics. The time evolution of such network brings the system towards a certain stable state, which is, in our case, a fixed point~\cite{amit_1989}. In the most general case, the arrival points of the dynamics could be also cycles of states or non periodic sequences but those are not important for our purpose. 
+\acrlong{ann} with fixed points are strongly related to \glspl{am} or \glspl{cam}.
+The paradigmatic model in this regard is the well known \acrlong{hm}, which we are going to describe in detail in the next chapters. However the basic setup of such model is made up by a single input layer of fully connected neurons and, under some proper weights between neurons, the \acrlong{hm} exhibits a \acrlong{cam} behaviour from a collective point of view. In other terms, it is capable to store a certain amount of information and to retrieve it even if some noise is introduced or synaptic damage occurred. The maximum level of noise that can be tolerated is the central argument of~\cref{chap:radius}.\\
+From a \acrlong{ml} point of view, the \acrlong{hm} (at least in its standard version) is a kind of recurrent neural network. Moreover, the emergence of collective behaviour is strictly related to that of other models belonging to the class of \emph{complex systems}.
+
+\section*{Relationship with statistical mechanics}
+The \acrlong{hm} has been the subject of studies by physicists over the last years. This is due to the fact that it has very strong relationships with many other well known models. The most important among them is without doubt the Ising model~\cite{Ising}. The latter is a mathematical model that exhibits interesting properties related to phase transitions. Here, elementary units are represented by binary-valued spins which interact inside a $d$-dimensional lattice and indeed it comes out that some ferromagnetic properties arise under certain conditions.\\
+Usually, the key quantity that governs the behaviour of those system is strictly linked to a thermodynamic potential -- as the free energy, or the free energy density -- whose analytical investigation can easily become a very hard task to perform, thus forcing to rely on mean field theories. Just to give an idea, the Ising model was first solved exactly by~\citeauthor{Ising} in a $1$-dimensional lattice showing that no phase transitions occurred. The $2$-dimensional analytical and exact solution was given by \textcite{Onsager} about twenty years later. Surprisingly in this case, the model exhibits a phase transition between an ordered phase and a disordered one.\\
+Starting from this, several variations of the Ising model have been proposed along with their properties. Indeed, it happens that some models are characterized by a very complex free energy landscape: we are talking about \emph{disordered systems}.\\
+A free energy function with many basins is typical of systems characterized by \emph{quenched disorder} and this is indeed the case of the \acrlong{hm} where couplings are quenched.
+Maybe the most famous model regarding disordered systems is given by the \acrfull{sk} model~\cite{sk}, which deals again with binary-valued spin configurations that interact through quenched and randomly sampled couplings. The solution of such model was given by Parisi through the use of the replica method. More details on this are given in~\cite{parisi, nishimori}.
+Such models with quenched disordered belong to the class of the so-called \acrlong{sg} in the sense that they display somehow a glassy phase.\\
+As we have already mentioned, the analytical study of the free energy is often based on the replica trick which has proved to be very powerful and can be widely used~\cite{parisi_replica, montanari, Castellani}.\\
+As it was shown first by~\cite{amit_phase}, also the \acrlong{hm} shows a \acrlong{sg} phase, thus putting this model at the intersection of statistical physics and computer science. However, the analytical study of this model is out of the purpose of this thesis.
+    
+\section*{Thesis outline}
+The main topics of this work are structured in the following way:
+\begin{itemize}
+    \item[\Cref{chap:hopfield}] We highlight the main theoretical aspects of the \acrlong{hm} (both for the standard version and the modern one), explaining their properties and finally introducing the notion of a \acrlong{ba}.
+    
+    \item[\Cref{chap:numerical_sim}] In the second chapter we exhibit in detail the algorithms used for numerical simulations along with their limitation. Some workaround to achieve numerical stability are described, too.
+    
+    \item[\Cref{chap:phase_diagram}] Here we try to combine the notions introduced in the first chapter together with numerical simulations in order to investigate a particular region of the phase diagram of the \acrlong{mhm}. We also test our method with the \acrlong{shm} where results can be compared with the ones present in the scientific literature.
+    
+    \item[\Cref{chap:radius}] This chapter contains the main results of our work. We introduce the definitions of distance and radius of a \acrlong{ba} in the corresponding metric space. Through numerical simulations we provide results for the radius of such basins in the case of binary memories.
+    
+    \item[\Cref{chap:fact}] In this last chapter a new framework of the retrieval problem for the \acrlong{shm} is presented. The main goal is to infer unknown memories starting from their coupling matrix. It comes out that this is a very hard task to solve due to the fact that \acrlong{sg} states are predominant even in the ``low storage'' region. However, some possible algorithms are shown together with the analysis of the computational complexity.
+\end{itemize}
+
+\subbibliography % we have no 'else' action
+
+\end{document}

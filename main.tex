@@ -1,0 +1,43 @@
+\RequirePackage{import}
+\documentclass[a4paper, 12pt]{book}
+\import{./preamble/}{mypreamble}
+\begin{document}
+                        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FRONT MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter 
+\pagestyle{empty}
+%\subfileinclude{./frontmatter/titlepage}
+\import{./frontbackmatter}{titlepage}
+%\import{./frontbackmatter}{dedication}
+\import{./frontbackmatter}{abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\printglossary[type=\acronymtype, style = listdotted]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+\pagestyle{fancy}
+
+\subfileinclude{./chapters/chap0/Intro}
+\subfileinclude{./chapters/chap1/Hopfield}
+\subfileinclude{./chapters/chap2/NumericalSim}
+\subfileinclude{./chapters/chap3/PhaseDiagrams}
+\subfileinclude{./chapters/chap4/RadiusoftheBAs}
+\subfileinclude{./chapters/chap5/MatrixFactorization}
+\subfileinclude{./chapters/chap6/Conclusions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BACK MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+\printbibliography[heading=bibintoc, title={References}]
+
+%\import{./frontbackmatter}{acknowledgments}
+
+\end{document}

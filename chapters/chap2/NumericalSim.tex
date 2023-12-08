@@ -1,0 +1,341 @@
+\providecommand{\rootdir}{../..}
+\providecommand{\imgpath}{\rootdir/images/chap2}
+\providecommand{\fontpath}{\rootdir/fonts}
+\documentclass[\rootdir/main.tex]{subfiles}
+\addbibresource{\rootdir/references.bib}
+\begin{document}
+\chapter{Numerical simulations}\label{chap:numerical_sim}
+Numerical simulations are very useful when analytical analysis becomes too hard or impossible even if some approximation are introduced. This could be the case of the Ising model with dimension $d > 3$ where no analytical solution exists and the results present in the literature are obtained by means of Monte Carlo simulations~\parencite[\eg][]{Cosme_2015,3d_ising}.\\
+For our purpose, the key procedure to be performed is to retrieve stored patterns through energy minimization. However, at least in the binary cases, the energy landscape of the \acrlong{hm} is very complicated. For this reason we need to exploit some kind of stochastic dynamics rather than the update rules defined in \cref{eq:neur_dynamics}.\\
+This is done through a class of methods called \acrfull{mcmc}. As we will see in \cref{sec:numsim_continuous}, the situation is different for the continuous case where the update rule is given by \cref{eq:update_rule_continuous}.
+
+\section{Markov Chains}
+A Markov Chain is defined as a \emph{stochastic process} where each state depends only on the previous one, \ie it satisfies the Markov Property.\\ 
+In mathematical terms,  to have a finite set $S$ called state space and a sequence $x = \left(x_n \right)_{n \geq 0}$ with elements in $S$. We can set:
+\begin{equation*}
+    x_m^n = \left(x_m, x_{m+1}, \dots, x_n \right).
+\end{equation*}
+\begin{definition}[Markov Property]\label{def:markov_property}
+    A Markov Chain with values in $S$ is a sequence $\left(X_n \right)_{n \geq 0}$ of $S$-valued random variables such that for each $n \geq 0$ and each sequence $x = \left(x_n \right)_{n \geq 0}$ with elements in $S$:
+    \begin{equation}\label{eq:markov_property}
+         \mathrm{P}\left(X_{n+1}=x_{n+1} \mid X_0^n=x_0^n\right)=\mathrm{P}\left(X_{n+1}=x_{n+1} \mid X_n=x_n\right).
+\end{equation}
+\end{definition}
+In \cref{eq:markov_property} the conditional probabilities $\mathrm{P}_{yx} \coloneq \mathrm{P}\left(X_{n+1}=x \mid X_n=y\right)$ are ofter referred to as \emph{one step transition probabilities}. If $\mathrm{P}_{yx}$ does not depend on $n$, then the chain is said to be \emph{homogeneous}. If all the one step transition probabilities are known, one can define a $|S| \times |S|$ matrix called \emph{transition matrix} $P$.
+\begin{definition}[Stationary distribution]
+    A distribution $\symbf{\pi}$ on $S$ is called \emph{stationary} for an homogeneous Markov Chain if
+    \begin{equation*}
+        \symbf{\pi} P = \symbf{\pi},
+    \end{equation*}
+    where $P$ is the transition matrix of the chain.
+\end{definition}
+
+\begin{definition}[Reversible distribution and detailed balance]\label{def:detailed_balance}
+    A distribution $\symbf{\pi}$ is called \emph{reversible} for a Markov Chain if, for $x,\,y \in S$ the \emph{detailed balance} condition holds:
+    \begin{equation*}
+        \pi_x P_{xy} = \pi_y P_{yx}
+    \end{equation*}
+\end{definition}
+It can be shown that a reversible distribution is stationary.
+\begin{definition}[Irreducible transition matrix]
+    A transition matrix $P$ is called \emph{irreducible} if and only if for every $x \neq y$ there exist $n \geq 1$ such that $ \mathrm{P}_{xy}^n > 0$.
+\end{definition}
+The last definition just tells that $P$ is irreducible if and only if we can move from $x$ to $y$ in a certain number of steps $n$ bigger or equal than one.
+\begin{definition}[Period of a state]
+    Given a state $x \in S$ and a transition matrix $P$, the \emph{period} of $x$ is the greatest common divisor of $n$ such that $\mathrm{P}_{xx}^n > 0$.
+\end{definition}
+It is not hard to prove that if the Markov Chain is irreducible then all the states have the same period. In this last case, if the period is equal to $1$, the chain is called \emph{aperiodic}.
+If $P$ is irreducible then there exist a unique stationary distribution $\symbf{\pi}$ and it has positive entries, \ie $\symbf{\pi}_x > 0 \forall x \in S$. Moreover, if it is also aperiodic, every initial distribution $\symbf{\nu}$ will tend to the stationary one $\symbf{\pi}$.\\
+The goal of \acrlong{mcmc} is to \emph{sample} from a stationary distribution of a Markov Chain when direct sampling of i.i.d random variables is computationally hard.
+In other words, our goal is to generate an irreducible Markov Chain $\left(X_n \right)_{n \geq 0}$ with a certain stationary distribution $\symbf{\pi}$ that is our target distribution.\\
+For our simulations we relied on the well known Metropolis algorithm~\cite{metropolis}. 
+
+\section{Metropolis algorithm}\label{sec:metr-lg}
+This algorithm is based on the assumptions that there exist a stationary distribution and this distribution is unique. For the existence we have seed that \cref{def:detailed_balance} is a sufficient condition. For the second requirement we need aperiodicity and positive recurrence. Detailed balance can be rewritten as:
+\begin{equation*}
+    \frac{P_{xy}}{P_{yx}} = \frac{\pi_y}{\pi_{x}}.
+\end{equation*}
+The next step is to separate the transition probability into a product of two terms, the proposal distribution $g\left(y | x \right)$, \ie the conditional probability of proposing a new state $y$ given $x$, and the acceptance distribution $A(y,x)$, \ie probability of accepting the proposed state $y$:
+\begin{equation*}
+    P_{xy} = A(y, x)g(y | x)
+\end{equation*}
+Hence, from the previous equation it follows that:
+\begin{equation*}
+    \frac{A(y, x)}{A(x, y)} = \frac{\pi_y}{\pi_x} \frac{g(x | y)}{g(y | x)}.
+\end{equation*}
+We can choose $A(\cdot | \cdot)$ in multiple different ways. Usually, following the Metropolis choice we set:
+\begin{equation}
+    A(y , x) = \operatorname{min} \left(1,  \frac{\pi_y}{\pi_x} \frac{g(x | y)}{g(y | x)}\right)
+\end{equation}
+Thus, the Metropolis algorithm can be summarized as follows.
+\begin{algorithm}
+    \caption{General Metropolis algorithm}
+    \label{alg:1}
+    \begin{algorithmic}[1]
+    \Require $x_0$, $t_{max} > 0$
+        \For{$t = 1$ to $t_{max} + 1$}
+        \State sample $x_{t} \sim g(x' | x_{t-1}) $ 
+        \State sample $u \sim U(0, 1)$
+        \If {$u \leq A(x', x_t)$}
+            \State $x_{t-1} \gets x_{t} $
+        \EndIf
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+When dealing with binary states -- which is our case except for the continuous Hopfield -- a \emph{single spin-flip dynamics} can be applied. The underlying idea is pretty simple. At each step a random neuron is selected and if the energy variation that would occur by flipping that neuron (spin) is negative, we accept the new state with probability one. Instead, if it is positive we accept the new state with a suitable probability. It is important to note that this last step --that as we will show in a moment is strictly dependent on the temperature of the system-- is what introduces \emph{stochasticity} in our dynamics. If our configurations are made by $N$ neurons, the proposal distribution of the single spin-flip dynamics is just the uniform distribution $g(y | x) = 1/N$. On the other hand, if the equilibrium distribution is given by \cref{eq:prob_configuration} we have that:
+\begin{equation*}
+    \frac{A(y, x)}{A(x, y)} = e^{- \beta \Delta E},
+\end{equation*}
+where $y$ is the state in which a random neuron is flipped and $\Delta E$ is the consequent energy variation.\\
+By setting the maximum between $A(x,\, y)$ and $A(y,\, x)$ to $1$, one gets~\cite{binder2010monte}:
+\begin{equation}\label{eq:acceptance_prob}
+A(x, \,y) = 
+\left\{
+\begin{alignedat}{3}
+% R & L   &  R & L   &  R & L 
+ & e^{-\beta \Delta E} \qquad & \Delta  E > 0 \\
+ & 1 \qquad & \text{otherwise}
+\end{alignedat}
+\right.
+\end{equation}
+In the following sections we're going to show details on the Monte Carlo algorithms used for the simulations.
+Some initial examples are also shown.
+
+\section{Standard Hopfield Model}
+As stated by \cref{eq:acceptance_prob} we need the enenrgy variation which derives from a spin-flip in a given configuration. For this purpose, whenever possible it is better to find an analytic expression for $\Delta E$, since in this way we can significantly reduce the computational cost. This is not true in general.\\
+For the \acrlong{shm} this expression can be derived without much efforts. Let's say that we have a configuration $\symbf{\sigma} \in \{-1, +1 \}^N$ and we choose to flip the $k$-th neuron. We indicate with $\symbf{\sigma}_i$ and $\symbf{\sigma}_f$ the initial and final configurations respectively. Obviously those are equal except for the $k$-th element.
+\begin{equation*}
+\begin{split}
+        E(\symbf{\sigma}_i) & = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \frac{1}{2}\left(\sum_j J_{kj} \sigma_k \sigma_j + \sum_i J_{ik} \sigma_i \sigma_k \right) \\
+        & = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \sum_j J_{kj} \sigma_k \sigma_j,
+\end{split}
+\end{equation*}
+where the terms inside the parentheses are equal since the matrix $J$ is symmetric.\\
+Similarly, one gets:
+\begin{equation*}
+        E(\symbf{\sigma}_f) = \frac{1}{2} \sum_{(i, j) \neq k} J_{ij} \sigma_i \sigma_j + \sum_j J_{kj} \left(-\sigma_k\right) \sigma_j,
+\end{equation*}
+Hence, the variation in energy reads:
+\begin{equation}\label{eq:energy_var_shm}
+    \Delta E \equiv E(\symbf{\sigma}_f) - E(\symbf{\sigma}_i) = -2 \sigma_k \sum_j J_{kj} = -2 \sigma_k \sum_i J_{ik}.
+\end{equation}
+
+\begin{algorithm}
+    \caption{Metropolis algorithm for the \acrlong{shm}}
+    \label{alg:shm_metropolis}
+    \begin{algorithmic}[1]
+    \Require $\symbf{\sigma}$, $J$, $\beta$
+        \State $N \gets |\symbf{\sigma}|$ 
+        \State fliprate $\gets 0$
+        \For{$i$ in random permutation $N$}
+        \State Compute $\Delta E$ using \cref{eq:energy_var_shm}
+        \If {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
+            \State $\sigma[i] \gets - \sigma[i]$
+            \State fliprate $\gets$ fliprate + 1
+        \EndIf
+        \EndFor
+    \State \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
+    \end{algorithmic}
+\end{algorithm}
+
+It is important to notice that the computational complexity of \cref{alg:shm_metropolis} is due to the computation of $\Delta E$. However, \cref{eq:energy_var_shm} allows the previous algorithm to be of order $O(N)$. Instead, if we had calculated this value by taking the difference between the final and the initial energies, we would have obtained an order complexity of the order $O(N^2)$. As we will see in \cref{sec:numsim_mh} this analytical trick does not lead to particular advantages.
+
+The fliprate parameter just tells what fraction of flips we obtain in $N$ trials. This is useful to set up a stopping condition for the algorithm if the number of flips goes below a certain threshold. If it is $0$ it means that the state arrived to a minimimum (either local or global).
+Summarizing everything, the procedure of minimization is quite simple: we choose a random neuron and we flip it, if the consequent $\Delta E$ is negative we accept the flip, otherwise we accept it with a probability that depends on the temperature ($\beta = 1/ T$). An high value of temperature makes the state able to ``jump out'' of local minima, whereas, for $T \to 0$ the dynamics becomes deterministic and even a very small barrier in the energy landscape traps our configuration.\\
+All the steps described in \cref{alg:shm_metropolis} define what is usually addressed to as a Monte Carlo sweep. Shortly speaking, the full \acrlong{mcmc} algorithm executes the Metropolis algorithm for a certain number of times that is the number of sweeps that one wants to perform.
+
+The full Monte Carlo algorithm is shown in \cref{alg:shm_mcmc}. For most of our computations we set the fliprate threshold to zero so that the algorithm stops if no more spin-flips occur. Moreover, one might need to allow the system to visit states with higher energy, thus making the dynamics more ``stochastic''. One common procedure is to gradually reduce such randomness as a function of the number of sweeps. Such method is called \acrfull{sa} since we start with a low $\beta$ (high $T$) and we ``cool down'' the dynamics until we reach a very high $\beta$ (low $T$). In this way the system should have enough momentum to avoid local minima and to reach the global ones. However, we will make use of \acrlong{sa} in \cref{chap:fact}.
+
+\begin{algorithm}
+    \caption{\acrlong{mcmc} for the \acrlong{shm}}
+    \label{alg:shm_mcmc}
+    \begin{algorithmic}[1]
+    \Require $\symbf{\sigma}$, $J$, $\beta$, nsweeps, earlystop
+        \State $\symbf{\sigma_{\text{rec}}} \gets \symbf{\sigma}$ 
+        \For{$\_ = 1$ to nsweeps}
+        \State $\symbf{\sigma_{\text{rec}}},\, \text{fliprate} \gets \text{metropolis}\left(\symbf{\sigma_{\text{rec}}},\, J,\, \beta \right)$  
+        \If {fliprate $\leq$ earlystop}
+            \State break
+        \EndIf
+        \EndFor
+    \State \textbf{return} $\symbf{\sigma_{\text{rec}}}$
+    \end{algorithmic}
+\end{algorithm}
+
+The spirit of the \acrlong{hm} lies in the fact of being able to retrieve a stored pattern whenever it is presented with a perturbed version of the original configuration.\\
+Most of our numerical simulations make use of \cref{alg:shm_mcmc} where $\symbf{\sigma}$ is a noisy pattern. In this regard, we refer to $p$ as the \emph{perturb} probability (or spin-flip probability) used to perturb a pattern. Shortly speaking, given $\symbf{\xi}^{\mu}$, we flip each neuron with probability $p$. This also applies for the \acrlong{mhm} in the binary case. Instead for the continuous version we need to introduce a gaussian noise \cref{sec:numsim_continuous}.
+
+\begin{comment}
+We store $M = N \alpha$ patterns of length $N = 1000$. A random pattern is taken and perturbed with spin-flip probability $p = 0.2$ and the \acrlong{mcmc} is executed on the perturbed configuration for $\texttt{nsweeps} = 100$ with $\beta = 100$. Then the overlap between the retrieved state and the original one is measured. In \cref{fig:shm:p02:final_overlaps1} it can be clearly observed that there is a sharp peak centered at very high magnetization \ie $m \approx 1$. However, also a broad distribution centered at a lower value of $m$ appears.  
+\begin{figure}
+    \centering
+    \input{\imgpath/hist_retrieve_p02}
+    \caption{Final overlaps after \acrshort{mcmc} at low temperature. Here, the spin-flip probability is $p = 0.2$ and $500$ independent trials are made.}
+    \label{fig:shm:p02:final_overlaps1}
+\end{figure}
+\end{comment}
+
+\section{Modern Hopfield}\label{sec:numsim_mh}
+\subsection{Binary case}
+In the \acrlong{mhm} things get more computationally heavy. Here there is no particular advantage in finding an analytical expression for the energy variation. Assuming that we have the usual configuration $\symbf{\sigma}$ for which we can compute the variation in energy after one spin-flip, we can first write the variation in the overlap, $\Delta m$ with one stored pattern $\symbf{\xi}^{\mu}$:
+\begin{equation*}
+    N \cdot \Delta m \equiv N \left( m_{fin} - m_{in} \right) = \left(\sum_{i \neq k}\xi_i^\mu \sigma_i + \xi_k^\mu (-\sigma_k)\right) - \left(\sum_{i \neq k}\xi_i^\mu \sigma_i + \xi_k^\mu \sigma_k\right)\\
+= -2\xi_{k}^{\mu}\sigma_k, 
+\end{equation*}
+where $m_{fin}$ and $m_in$ are the final and initial overlaps respectively.\\
+Hence, the energy variation is (referring to \cref{eq:modern_binary_energy}):
+\begin{equation*}
+\begin{split}
+    \Delta E \equiv E_f - E_i & = - \frac{1}{\lambda} \log \left( \sum_{\mu = 1}^{M} \exp\left( \lambda \cdot m_{in}^\mu\right) \right)
++ \frac{1}{\lambda} \log \left( \sum_{\mu = 1}^{M} \exp\left( \lambda \cdot m_{fin}^\mu\right) \right)\\
+& = - \frac{1}{\lambda} \left[\log \left(\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{fin}^\mu \right)\right)
+- \log \left(\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\right)\right]\\
+& = -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{fin}^\mu\right)}{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
+\end{split}
+\end{equation*}
+So we obtain:
+\begin{equation}\label{eq:numsim:mhm:energyvariation}
+    \Delta E_{\text{spin-flip}} =  -\frac{1}{\lambda} \left[ \log \left( \frac{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu \right)\exp\left(-2\lambda\xi_{k}^{\mu}\sigma_k \right) }{\sum_{\mu = 1}^{M} \exp\left(\lambda \cdot m_{in}^\mu\right)} \right) \right].
+\end{equation}
+Notice that here, the magnetization $m$ is not rescaled by $N$.\\
+We have two problems:
+\begin{itemize}
+    \item since in the \acrlong{mhm} the storage capacity increases exponentially, \cref{eq:numsim:mhm:energyvariation} involves a sum of a number of terms that is exponential;
+    \item the computation of the exponential might lead to overflow problems during computations, thus leaving us with a numerical unstable algorithm.
+\end{itemize}
+Furthermore, the first point suggest that there is no particular computational advantage in computing the energy variation with the above analytical expression. For this reason, it is sufficient to compute the energies before and after one single spin-flip and take the difference. Indeed, in both \cref{eq:numsim:mhm:energyvariation} and in the computation of the energy difference using \cref{eq:modern_binary_energy} it is involved a sum over an exponential number of terms.
+
+The second problem is easily solved with the usual trick of subtracting the maximum from exponential.\\
+For the first one we make use of the Kahan summation algorithm.
+
+\subsubsection{Kahan summation and numerically stable log-sum-exp}
+The representation of floating point numbers and mathematical operations performed among them inevitably generate numerical errors. Indeed, such numbers have a finite precision, \ie, a fixed number of significant digits. Thus, the value ``seen'' by a calculator differs from the real one by a certain quantity. Mathematical operations performed on numerical representations can enhance the effects of such errors.\\
+The sum of $n$ floating point numbers leads to an error of the order $O(n)$ in the worst case and a root mean square error that goes like $O\left(\sqrt{n}\right)$ for inputs taken randomly~\cite{accuracy_floating_point}.
+In the computation of $\Delta E$ we deal with sum of $M \sim e^{O(n)}$ terms and the consequent error in numerical simulations might be very big.\\
+To reduce this problem we exploit the Kahan summation algorithm~\cite{kahan_truncation} based on a class of method that takes the name of \emph{compensated summation}~\cite{accuracy_floating_point}. Several similar algorithms that track the accumulated error in some kind of operations exist~\cite{deltasigma, bresenham}. Also, other variants of the Kahan summation might be used as well~\cite{kahan-babuska}.
+
+\begin{algorithm}
+    \caption{Kahan summation}
+    \label{alg:kahan_summation}
+    \begin{algorithmic}[1]
+    \Require $x$
+    \State sum $\gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $y \gets x[i]$ - c
+        \State $t \gets $ sum + $y$
+        \State c $\gets t$ - sum - $y$
+        \State sum $\gets t$
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Overflow in the exponential is the other potential numerical problem. However, this can be simply solved with the usual trick of subtracting the maximum from the exponential argument. In particular, we deal with exponential of the overlaps between a configuration and the stored patterns, \ie, $\exp\left(\symbf{\sigma}\cdot \symbf{\xi}^{\mu}\right)$ where $\mu = 1,\dots, M$. Writing
+\begin{equation*}
+    a = \max_{\mu} \left(\symbf{\sigma} \cdot \symbf{\xi}^{\mu}\right),
+\end{equation*}
+one clearly gets $0 \leq \exp\left(\symbf{\sigma}\cdot \symbf{\xi}^{\mu} - a\right) \leq 1$.
+Hence, following the work of~\textcite{numerically_stable} in ~\cref{alg:lse} we show a numerically stable computation of the log-sum-exp operator.
+
+\begin{algorithm}
+    \caption{Log-Sum-Exp algorithm}
+    \label{alg:lse}
+    \begin{algorithmic}[1]
+    \Require $x$
+    \State $s \gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $w[i] \gets \exp\left(x[i] - a\right)$
+        \If{$i \neq k$}
+            \State $s \gets s + w[i]$
+        \EndIf
+    \EndFor
+    \textbf{return} $a + \log1p (s)$ 
+    \end{algorithmic}
+\end{algorithm}
+
+In~\cref{alg:mhm_metropolis} we show the Metropolis version for the \acrlong{mhm}. The full \acrlong{mcmc} is the same as~\cref{alg:shm_mcmc}.
+
+
+\begin{algorithm}
+    \caption{Metropolis algorithm for the \acrlong{mhm}}
+    \label{alg:mhm_metropolis}
+    \begin{algorithmic}[1]
+    \Require $\symbf{\sigma}$, $\symbf{\xi}$, $\beta$, $\lambda$
+        \State $N \gets |\symbf{\sigma}|$ 
+        \State fliprate $\gets 0$
+        \State $E \gets energy\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
+        \For{$i$ in random permutation $N$}
+        \State $\sigma[i] \gets - \sigma[i]$
+        \State $E_{new} \gets \text{energy}\left(\symbf{\sigma}, \symbf{\xi}, \lambda\right)$
+        \State $\Delta E \gets E_{new} - E$
+        \If {$\Delta E < 0$ or $u \sim U(0,1) < e^{-\beta \Delta E}$}
+            \State $\sigma[i] \gets - \sigma[i]$
+            \State fliprate $\gets$ fliprate + 1
+            \State $E \gets E_{new}$
+        \Else
+            \State $\sigma[i] \gets - \sigma[i]$
+        \EndIf
+        \EndFor
+    \State \textbf{return} $\symbf{\sigma}$, $\text{fliprate} / N$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Continuous case}\label{sec:numsim_continuous}
+The same considerations for the numerical stability argument hold also for the continuous case of the \acrlong{mhm}.\\
+Here, patterns and configurations are generated by sampling from a standard normal distribution, \ie:
+\begin{equation*}
+    \xi_i^{\mu} \sim \mathcal{N}\left(0, 1\right), \qquad i = 1, \dots, N.
+\end{equation*}
+Here, the parameter used to perturb a stored pattern is governed by the variance of a gaussian noise. In mathematical terms:
+\begin{equation*}
+    \tilde{\xi}_i^{\mu} = \xi_i^{\mu} + \mathcal{N}\left(0, \delta^2\right),
+\end{equation*}
+where $\tilde{\xi}_i^{\mu}$ is the perturbed version of the $i$-th element belonging to the $\mu$-th pattern.\\
+The key operation of the update rule is the $\operatorname{softmax}$ operation, as stated in~\cref{eq:continuous_energy}. In~\cref{alg:softmax} the implementation of such function is shown~\cite{numerically_stable}.
+
+\begin{algorithm}
+    \caption{Softmax algorithm}
+    \label{alg:softmax}
+    \begin{algorithmic}[1]
+    \Require $x$
+    \State $s \gets 0$
+    \State c $\gets 0$
+    \For{$i = 1$ to $|x|$}
+        \State $w[i] \gets \exp\left(x[i] - a\right)$
+        \If{$i \neq k$}
+            \State $s \gets s + w[i]$
+        \EndIf
+    \EndFor
+    \For{$i = 1$ to $|x|$}
+        \State $g[i] \gets w[i]/(1+s)$
+    \EndFor
+    \State \textbf{return} $g$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Update function for the continuous \acrshort{mhm}}
+    \label{alg:update_continuous_mhm}
+    \begin{algorithmic}[1]
+    \Require $\symbf{\sigma}$, $\symbf{\xi}$, $\lambda$
+    \State $\symbf{\sigma}_{rec} \gets \symbf{\sigma}$
+    \State $\symbf{\sigma}_{rec} \gets \symbf{\xi}  \operatorname{softmax}\left(\lambda \symbf{\xi}^T  \symbf{\sigma}_{rec}\right)$
+    \State \textbf{return} $\symbf{\sigma}_{rec}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Energy landscape}
+Also in this case with real variables, the energy landscape is non trivial. Nevertheless, visualization methods are easier to apply with respect to the binary counterpart but the results are quite far from giving a satisfactory description of what really happens.
+One simple method is to plot the energy on the plane defined by three patterns $\symbf{\xi}^1$, $\symbf{\xi}^2$ and $\symbf{\xi}^3$. Then, any new configuration belonging to the plane defined by such patterns can be written as:
+\begin{equation*}
+    \symbf{\sigma} = \symbf{\xi}^1 + \epsilon_1 \left(\symbf{\xi}^2 - \symbf{\xi}^1\right) + \epsilon_2 \left(\symbf{\xi}^3 - \symbf{\xi}^1\right)
+\end{equation*}
+\begin{figure}[hbt]
+    \centering
+    \input{\imgpath/contour}
+    \caption{Contour plot of the energy on the plane defined by three random patterns. Three minima -- each of which correspond to the three patterns used for building the plane -- can be observed.}
+\end{figure}
+
+\subbibliography
+\end{document}

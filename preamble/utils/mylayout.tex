@@ -1,0 +1,53 @@
+% Geometry and layout
+
+% Packages
+%\usepackage[left=1.5in, right=1in, top=1in, bottom=1in, includefoot, headheight=14.5pt]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[a4paper, width=150mm, top=25mm, bottom=25mm, bindingoffset=6mm, headheight=14.5pt]{geometry}
+\usepackage{xspace}
+\usepackage{indentfirst}
+\usepackage{multirow}
+\usepackage{parskip}
+\raggedbottom
+
+% Headers and footers
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyhead[LE,RO]{\nouppercase{\textsc{\leftmark}}}
+\fancyfoot[C]{--~\thepage~--}
+%\cfoot{--~\thepage~--}
+
+\renewcommand{\headrulewidth}{0pt}
+
+% put the same fancy footer in first pages of chapters
+\fancypagestyle{plain}{
+\fancyhf{}
+\fancyfoot[C]{--~\thepage~--}
+}
+
+% chapter heading
+\titleformat{\chapter}[display]
+  {\normalsize}% qua c'era \color{black}
+  {\flushright \normalsize \color{unipdred}
+   \fontsize{90}{90}\selectfont\thechapter}
+ {-4ex}
+  {\flushleft\color{black!100} \bfseries \Huge}
+  [\vspace{1ex} \color{black!100} \titlerule]
+\titlespacing*{\chapter}{0pt}{0pt}{40pt}
+
+
+%\titleformat{\section}{\Large}{{\thesection}}{0.5em}%{\scshape}
+
+%\titleformat{\subsection}{\large}{{\thesubsection}}%{0.5em}{\scshape}
+
+%\titleformat{\subsubsection}{\normalsize}%{{\thesubsection}}{0.5em}{\scshape}
+
+% the following is for appendix
+\makeatletter
+\renewcommand{\chaptermark}[1]{\markboth{\textsc{\@chapapp}\ \thechapter:\ #1}{}}
+\makeatother
+
+% print only chapter and section in toc
+\setcounter{tocdepth}{2} 

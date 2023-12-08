@@ -1,0 +1,29 @@
+% Packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{mathtools}
+%\usepackage{bm}
+
+% Environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% Commands
+%\newcommand{\pesc}{\ensuremath{\mathrm{P}\left(\text{escape}\right)}}
+\newcommand{\pesc}{\ensuremath{ \mathrm{P}_{\text{escape}} }}
+\newcommand{\pescfull}{\ensuremath{ \mathrm{P}_{\text{escape}}\left(\alpha, \, N \right) } }
+%\newcommand{\pret}[1]{\ensuremath{\mathrm{P}\left(\text{retrieval} \mid {#1} \right)}}
+\newcommand{\pret}[1]{\ensuremath{ \mathrm{P}_{\text{retrieval}} \left( \alpha, \, p, \, N \right) }}
+
+\newcommand{\pretshort}{\ensuremath{ \mathrm{P}_{\text{retrieval}} }}
+
+\newcommand{\bsigma}{\ensuremath{\symbf{\sigma}}}
+
+\newcommand{\bxi}[1][\mu]{\ensuremath{\symbf{\xi}^{#1}}}
+
+\newcommand{\pcn}{\ensuremath{p_c\left(N,\,\alpha,\,\vec{k^{*}}\right)}}
